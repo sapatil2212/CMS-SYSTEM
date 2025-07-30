@@ -104,7 +104,7 @@ export default function Header() {
       opacity: 1,
       transition: {
         duration: 0.3,
-        ease: [0.04, 0.62, 0.23, 0.98]
+        ease: "easeInOut"
       }
     },
     closed: {
@@ -112,7 +112,7 @@ export default function Header() {
       opacity: 0,
       transition: {
         duration: 0.2,
-        ease: [0.04, 0.62, 0.23, 0.98]
+        ease: "easeInOut"
       }
     }
   }
@@ -212,7 +212,7 @@ export default function Header() {
                   </>
                 ) : (
                   <Link
-                    href={item.href}
+                    href={item.href || '#'}
                     className="text-sm font-medium transition-colors duration-200 hover:text-blue-700 text-gray-700"
                   >
                     {item.name}
@@ -287,10 +287,10 @@ export default function Header() {
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
-              variants={mobileMenuVariants}
-              initial="closed"
-              animate="open"
-              exit="closed"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
               className="md:hidden overflow-hidden rounded-xl bg-white border mx-2 mt-2 p-5 mb-5"
             >
               <motion.nav 
@@ -345,7 +345,7 @@ export default function Header() {
                         whileTap={{ scale: 0.95 }}
                       >
                         <Link
-                          href={item.href}
+                          href={item.href || '#'}
                           onClick={() => setIsMenuOpen(false)}
                           className="text-base font-medium transition-colors duration-200 hover:text-blue-700 text-gray-700"
                         >

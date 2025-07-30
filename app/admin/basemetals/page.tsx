@@ -166,7 +166,6 @@ const BaseMetalsPage = () => {
           onClose={handleCloseModal}
           process={selectedBaseMetal}
           onSave={handleSaveBaseMetal}
-          title={`Edit ${selectedBaseMetal.name} Content`}
         />
       )}
     </div>

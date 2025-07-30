@@ -184,6 +184,7 @@ export async function POST(
             whatIsImage: body.whatIsImage,
             whatIsBestFor: body.whatIsBestFor,
             whatIsMaterials: body.whatIsMaterials,
+            whatIsAlkalineOffers: body.whatIsAlkalineOffers,
             benefitsTitle: body.benefitsTitle,
             benefitsSubtitle: body.benefitsSubtitle,
             processTitle: body.processTitle,

@@ -55,7 +55,7 @@ const HomeGallery: React.FC = () => {
   const imagesPerView = getImagesPerView();
   const activeImages = galleryImages.filter(img => img.isActive).sort((a, b) => a.order - b.order);
   const extendedImages = [...activeImages, ...activeImages.slice(0, imagesPerView)];
-  const carouselRef = useRef(null);
+  const carouselRef = useRef<HTMLDivElement | null>(null);
 
   // Fetch gallery data
   useEffect(() => {
@@ -114,17 +114,17 @@ const HomeGallery: React.FC = () => {
 
   // Handle transition end
   useEffect(() => {
-    if (carouselRef.current) {
-      const handleTransitionEnd = () => {
-        if (currentIndex >= totalSlides) {
-          setIsTransitioning(false);
-          setCurrentIndex(0);
-        } else {
-          setIsTransitioning(false);
-        }
-      };
+    const handleTransitionEnd = () => {
+      if (currentIndex >= totalSlides) {
+        setIsTransitioning(false);
+        setCurrentIndex(0);
+      } else {
+        setIsTransitioning(false);
+      }
+    };
 
-      const carousel = carouselRef.current;
+    const carousel = carouselRef.current;
+    if (carousel) {
       carousel.addEventListener("transitionend", handleTransitionEnd);
       return () => carousel.removeEventListener("transitionend", handleTransitionEnd);
     }
