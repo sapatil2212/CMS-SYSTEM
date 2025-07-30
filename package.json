@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Full-stack CMS system with Next.js and Vite",
   "private": true,
-  "scripts": {
+"scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "db:generate": "prisma generate",
