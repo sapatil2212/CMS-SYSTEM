@@ -1,0 +1,103 @@
+name: Deploy CMS System
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: cms_db
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+        ports:
+          - 3306:3306
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Generate Prisma client
+      run: npm run db:generate
+    
+    - name: Setup environment
+      run: |
+        cp env.example .env
+        echo "DATABASE_URL=mysql://root:password@localhost:3306/cms_db" >> .env
+        echo "JWT_SECRET=test-jwt-secret" >> .env
+        echo "NEXTAUTH_SECRET=test-nextauth-secret" >> .env
+        echo "NEXTAUTH_URL=http://localhost:3000" >> .env
+    
+    - name: Push database schema
+      run: npm run db:push
+    
+    - name: Build application
+      run: npm run build
+    
+    - name: Run tests
+      run: npm run lint
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Generate Prisma client
+      run: npm run db:generate
+    
+    - name: Build application
+      run: npm run build
+    
+    # Deploy to Vercel (uncomment if using Vercel)
+    # - name: Deploy to Vercel
+    #   uses: amondnet/vercel-action@v20
+    #   with:
+    #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
+    #     vercel-org-id: ${{ secrets.ORG_ID }}
+    #     vercel-project-id: ${{ secrets.PROJECT_ID }}
+    #     vercel-args: '--prod'
+    
+    # Deploy to Railway (uncomment if using Railway)
+    # - name: Deploy to Railway
+    #   uses: railway/deploy@v1
+    #   with:
+    #     railway_token: ${{ secrets.RAILWAY_TOKEN }}
+    #     service: ${{ secrets.RAILWAY_SERVICE }}
+    
+    # Deploy to DigitalOcean App Platform (uncomment if using DigitalOcean)
+    # - name: Deploy to DigitalOcean
+    #   uses: digitalocean/app_action@main
+    #   with:
+    #     app_name: cms-system
+    #     token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} 

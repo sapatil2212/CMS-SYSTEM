@@ -1,0 +1,1788 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Page {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  content     String   @db.Text
+  metaTitle   String?
+  metaDesc    String?  @db.Text
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  sections    Section[]
+}
+
+model Section {
+  id          String   @id @default(cuid())
+  pageId      String
+  page        Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  title       String
+  content     String   @db.Text
+  order       Int
+  type        SectionType
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  images      Image[]
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  sectionId String
+  section   Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  filename  String
+  originalName String
+  path      String
+  alt       String?
+  order     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String   @db.Text
+  content     String   @db.Text
+  image       String?
+  isActive    Boolean  @default(true)
+  order       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model HeroSlider {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String?
+  description String?  @db.Text
+  image       String
+  mobileImage  String?
+  ctaText     String?  @default("Learn More")
+  ctaLink     String?
+  order       Int
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model HomeAbout {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model HomeProcess {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  content     String   @db.Text
+  image       String?
+  link        String
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model HomeOrderProcessStep {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  details     String   @db.Text // JSON stringified array
+  icon        String
+  order       Int      @default(0)
+  gradientFrom String
+  gradientTo   String
+  bgColor     String
+  borderColor String
+  textColor   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model WhyChooseUsContent {
+  id             String   @id @default(cuid())
+  title          String
+  description    String   @db.Text
+  image          String?
+  rating         Int      @default(5)
+  ratingText     String
+  technologyText String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model WhyChooseUsFeature {
+  id          String   @id @default(cuid())
+  icon        String
+  title       String
+  description String
+  color       String
+  bg          String
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model GalleryContent {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String
+  description String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model GalleryImage {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  image       String
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TestimonialContent {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String
+  description String   @db.Text
+  averageRating String
+  totalClients String
+  qualityCompliance String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  name        String
+  avatar      String
+  company     String
+  quote       String   @db.Text
+  rating      Int
+  date        String
+  verified    Boolean  @default(true)
+  industry    String
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AboutContent {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String
+  description String   @db.Text
+  image       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AboutValue {
+  id          String   @id @default(cuid())
+  icon        String
+  title       String
+  description String   @db.Text
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AboutCapability {
+  id          String   @id @default(cuid())
+  icon        String
+  title       String
+  description String   @db.Text
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AboutMissionVision {
+  id          String   @id @default(cuid())
+  type        String   // "mission" or "vision"
+  title       String
+  description String   @db.Text
+  icon        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum SectionType {
+  HERO
+  CONTENT
+  GALLERY
+  CONTACT
+  ABOUT
+  SERVICES
+}
+
+// Copper Plating Models
+model CopperPlatingContent {
+  id          String   @id @default(cuid())
+  heroTitle   String
+  heroSubtitle String
+  heroDescription String @db.Text
+  heroImage   String
+  whatIsTitle String
+  whatIsDescription String @db.Text
+  whatIsImage String
+  whatIsBestFor String @db.Text
+  whatIsMaterials String @db.Text
+  whatIsAlkalineOffers String @db.Text
+  benefitsTitle String
+  benefitsSubtitle String
+  processTitle String
+  processSubtitle String
+  applicationsTitle String
+  applicationsSubtitle String
+  industriesTitle String
+  industriesSubtitle String
+  qualityTitle String
+  qualityDescription String @db.Text
+  qualityImage String?
+  ctaTitle   String
+  ctaDescription String @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  benefits    CopperPlatingBenefit[]
+  processSteps CopperPlatingProcessStep[]
+  applications CopperPlatingApplication[]
+  industries  CopperPlatingIndustry[]
+  qualityChecks CopperPlatingQualityCheck[]
+}
+
+model CopperPlatingBenefit {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     CopperPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  icon        String
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CopperPlatingProcessStep {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     CopperPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  step        String
+  title       String
+  description String
+  icon        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CopperPlatingApplication {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     CopperPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  image       String
+  items       String @db.Text // JSON stringified array
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CopperPlatingIndustry {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     CopperPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String
+  examples    String @db.Text // JSON stringified array
+  image       String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CopperPlatingQualityCheck {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     CopperPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Silver Plating Models
+model SilverPlatingContent {
+  id          String   @id @default(cuid())
+  heroTitle   String
+  heroSubtitle String
+  heroDescription String @db.Text
+  heroImage   String
+  whatIsTitle String
+  whatIsDescription String @db.Text
+  whatIsImage String
+  whatIsBestFor String @db.Text
+  whatIsMaterials String @db.Text
+  whatIsAlkalineOffers String @db.Text
+  benefitsTitle String
+  benefitsSubtitle String
+  processTitle String
+  processSubtitle String
+  applicationsTitle String
+  applicationsSubtitle String
+  industriesTitle String
+  industriesSubtitle String
+  qualityTitle String
+  qualityDescription String @db.Text
+  qualityImage String?
+  ctaTitle   String
+  ctaDescription String @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  benefits    SilverPlatingBenefit[]
+  processSteps SilverPlatingProcessStep[]
+  applications SilverPlatingApplication[]
+  industries  SilverPlatingIndustry[]
+  qualityChecks SilverPlatingQualityCheck[]
+}
+
+model SilverPlatingBenefit {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     SilverPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  icon        String
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SilverPlatingProcessStep {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     SilverPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  step        String
+  title       String
+  description String
+  icon        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SilverPlatingApplication {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     SilverPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  image       String
+  items       String @db.Text // JSON stringified array
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SilverPlatingIndustry {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     SilverPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String
+  examples    String @db.Text // JSON stringified array
+  image       String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SilverPlatingQualityCheck {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     SilverPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Gold Plating Models
+model GoldPlatingContent {
+  id          String   @id @default(cuid())
+  heroTitle   String
+  heroSubtitle String
+  heroDescription String @db.Text
+  heroImage   String
+  whatIsTitle String
+  whatIsDescription String @db.Text
+  whatIsImage String
+  whatIsBestFor String @db.Text
+  whatIsMaterials String @db.Text
+  whatIsAlkalineOffers String @db.Text
+  benefitsTitle String
+  benefitsSubtitle String
+  processTitle String
+  processSubtitle String
+  applicationsTitle String
+  applicationsSubtitle String
+  industriesTitle String
+  industriesSubtitle String
+  qualityTitle String
+  qualityDescription String @db.Text
+  qualityImage String?
+  ctaTitle   String
+  ctaDescription String @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  benefits    GoldPlatingBenefit[]
+  processSteps GoldPlatingProcessStep[]
+  applications GoldPlatingApplication[]
+  industries  GoldPlatingIndustry[]
+  qualityChecks GoldPlatingQualityCheck[]
+}
+
+model GoldPlatingBenefit {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     GoldPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  icon        String
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model GoldPlatingProcessStep {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     GoldPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  step        String
+  title       String
+  description String
+  icon        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model GoldPlatingApplication {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     GoldPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  image       String
+  items       String @db.Text // JSON stringified array
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model GoldPlatingIndustry {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     GoldPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String
+  examples    String @db.Text // JSON stringified array
+  image       String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model GoldPlatingQualityCheck {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     GoldPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Busbar Plating Models
+model BusbarPlatingContent {
+  id          String   @id @default(cuid())
+  heroTitle   String
+  heroSubtitle String
+  heroDescription String @db.Text
+  heroImage   String
+  whatIsTitle String
+  whatIsDescription String @db.Text
+  whatIsImage String
+  whatIsBestFor String @db.Text
+  whatIsMaterials String @db.Text
+  whatIsAlkalineOffers String @db.Text
+  benefitsTitle String
+  benefitsSubtitle String
+  processTitle String
+  processSubtitle String
+  applicationsTitle String
+  applicationsSubtitle String
+  industriesTitle String
+  industriesSubtitle String
+  qualityTitle String
+  qualityDescription String @db.Text
+  qualityImage String?
+  ctaTitle   String
+  ctaDescription String @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  benefits    BusbarPlatingBenefit[]
+  processSteps BusbarPlatingProcessStep[]
+  applications BusbarPlatingApplication[]
+  industries  BusbarPlatingIndustry[]
+  qualityChecks BusbarPlatingQualityCheck[]
+}
+
+model BusbarPlatingBenefit {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     BusbarPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  icon        String
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BusbarPlatingProcessStep {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     BusbarPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  step        String
+  title       String
+  description String
+  icon        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BusbarPlatingApplication {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     BusbarPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  image       String
+  items       String @db.Text // JSON stringified array
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BusbarPlatingIndustry {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     BusbarPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String
+  examples    String @db.Text // JSON stringified array
+  image       String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BusbarPlatingQualityCheck {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     BusbarPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Zinc Plating Models
+model ZincPlatingContent {
+  id          String   @id @default(cuid())
+  heroTitle   String
+  heroSubtitle String
+  heroDescription String @db.Text
+  heroImage   String
+  whatIsTitle String
+  whatIsDescription String @db.Text
+  whatIsImage String
+  whatIsBestFor String @db.Text
+  whatIsMaterials String @db.Text
+  whatIsAlkalineOffers String @db.Text
+  benefitsTitle String
+  benefitsSubtitle String
+  processTitle String
+  processSubtitle String
+  applicationsTitle String
+  applicationsSubtitle String
+  industriesTitle String
+  industriesSubtitle String
+  qualityTitle String
+  qualityDescription String @db.Text
+  qualityImage String?
+  ctaTitle   String
+  ctaDescription String @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  benefits    ZincPlatingBenefit[]
+  processSteps ZincPlatingProcessStep[]
+  applications ZincPlatingApplication[]
+  industries  ZincPlatingIndustry[]
+  qualityChecks ZincPlatingQualityCheck[]
+}
+
+model ZincPlatingBenefit {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     ZincPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  icon        String
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ZincPlatingProcessStep {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     ZincPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  step        String
+  title       String
+  description String
+  icon        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ZincPlatingApplication {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     ZincPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  image       String
+  items       String @db.Text // JSON stringified array
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ZincPlatingIndustry {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     ZincPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String
+  examples    String @db.Text // JSON stringified array
+  image       String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ZincPlatingQualityCheck {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     ZincPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Nickel Plating Models
+model NickelPlatingContent {
+  id          String   @id @default(cuid())
+  heroTitle   String
+  heroSubtitle String
+  heroDescription String @db.Text
+  heroImage   String
+  whatIsTitle String
+  whatIsDescription String @db.Text
+  whatIsImage String
+  whatIsBestFor String @db.Text
+  whatIsMaterials String @db.Text
+  whatIsAlkalineOffers String @db.Text
+  benefitsTitle String
+  benefitsSubtitle String
+  processTitle String
+  processSubtitle String
+  applicationsTitle String
+  applicationsSubtitle String
+  industriesTitle String
+  industriesSubtitle String
+  qualityTitle String
+  qualityDescription String @db.Text
+  qualityImage String?
+  ctaTitle   String
+  ctaDescription String @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  benefits    NickelPlatingBenefit[]
+  processSteps NickelPlatingProcessStep[]
+  applications NickelPlatingApplication[]
+  industries  NickelPlatingIndustry[]
+  qualityChecks NickelPlatingQualityCheck[]
+}
+
+model NickelPlatingBenefit {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     NickelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  icon        String
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model NickelPlatingProcessStep {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     NickelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  step        String
+  title       String
+  description String
+  icon        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model NickelPlatingApplication {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     NickelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  image       String
+  items       String @db.Text // JSON stringified array
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model NickelPlatingIndustry {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     NickelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String
+  examples    String @db.Text // JSON stringified array
+  image       String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model NickelPlatingQualityCheck {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     NickelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Electroless Nickel Plating Models
+model ElectrolessNickelPlatingContent {
+  id          String   @id @default(cuid())
+  heroTitle   String
+  heroSubtitle String
+  heroDescription String @db.Text
+  heroImage   String
+  whatIsTitle String
+  whatIsDescription String @db.Text
+  whatIsImage String
+  whatIsBestFor String @db.Text
+  whatIsMaterials String @db.Text
+  whatIsAlkalineOffers String @db.Text
+  benefitsTitle String
+  benefitsSubtitle String
+  processTitle String
+  processSubtitle String
+  applicationsTitle String
+  applicationsSubtitle String
+  industriesTitle String
+  industriesSubtitle String
+  qualityTitle String
+  qualityDescription String @db.Text
+  qualityImage String?
+  ctaTitle   String
+  ctaDescription String @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  benefits    ElectrolessNickelPlatingBenefit[]
+  processSteps ElectrolessNickelPlatingProcessStep[]
+  applications ElectrolessNickelPlatingApplication[]
+  industries  ElectrolessNickelPlatingIndustry[]
+  qualityChecks ElectrolessNickelPlatingQualityCheck[]
+}
+
+model ElectrolessNickelPlatingBenefit {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     ElectrolessNickelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  icon        String
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ElectrolessNickelPlatingProcessStep {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     ElectrolessNickelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  step        String
+  title       String
+  description String
+  icon        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ElectrolessNickelPlatingApplication {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     ElectrolessNickelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  image       String
+  items       String @db.Text // JSON stringified array
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ElectrolessNickelPlatingIndustry {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     ElectrolessNickelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String
+  examples    String @db.Text // JSON stringified array
+  image       String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ElectrolessNickelPlatingQualityCheck {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     ElectrolessNickelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Bright Tin Plating Models
+model BrightTinPlatingContent {
+  id          String   @id @default(cuid())
+  heroTitle   String
+  heroSubtitle String
+  heroDescription String @db.Text
+  heroImage   String
+  whatIsTitle String
+  whatIsDescription String @db.Text
+  whatIsImage String
+  whatIsBestFor String @db.Text
+  whatIsMaterials String @db.Text
+  whatIsAlkalineOffers String @db.Text
+  benefitsTitle String
+  benefitsSubtitle String
+  processTitle String
+  processSubtitle String
+  applicationsTitle String
+  applicationsSubtitle String
+  industriesTitle String
+  industriesSubtitle String
+  qualityTitle String
+  qualityDescription String @db.Text
+  qualityImage String?
+  ctaTitle   String
+  ctaDescription String @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  benefits    BrightTinPlatingBenefit[]
+  processSteps BrightTinPlatingProcessStep[]
+  applications BrightTinPlatingApplication[]
+  industries  BrightTinPlatingIndustry[]
+  qualityChecks BrightTinPlatingQualityCheck[]
+}
+
+model BrightTinPlatingBenefit {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     BrightTinPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  icon        String
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BrightTinPlatingProcessStep {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     BrightTinPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  step        String
+  title       String
+  description String
+  icon        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BrightTinPlatingApplication {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     BrightTinPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  image       String
+  items       String @db.Text // JSON stringified array
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BrightTinPlatingIndustry {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     BrightTinPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String
+  examples    String @db.Text // JSON stringified array
+  image       String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BrightTinPlatingQualityCheck {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     BrightTinPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Dull Tin Plating Models
+model DullTinPlatingContent {
+  id          String   @id @default(cuid())
+  heroTitle   String
+  heroSubtitle String
+  heroDescription String @db.Text
+  heroImage   String
+  whatIsTitle String
+  whatIsDescription String @db.Text
+  whatIsImage String
+  whatIsBestFor String @db.Text
+  whatIsMaterials String @db.Text
+  whatIsAlkalineOffers String @db.Text
+  benefitsTitle String
+  benefitsSubtitle String
+  processTitle String
+  processSubtitle String
+  applicationsTitle String
+  applicationsSubtitle String
+  industriesTitle String
+  industriesSubtitle String
+  qualityTitle String
+  qualityDescription String @db.Text
+  qualityImage String?
+  ctaTitle   String
+  ctaDescription String @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  benefits    DullTinPlatingBenefit[]
+  processSteps DullTinPlatingProcessStep[]
+  applications DullTinPlatingApplication[]
+  industries  DullTinPlatingIndustry[]
+  qualityChecks DullTinPlatingQualityCheck[]
+}
+
+model DullTinPlatingBenefit {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     DullTinPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  icon        String
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model DullTinPlatingProcessStep {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     DullTinPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  step        String
+  title       String
+  description String
+  icon        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model DullTinPlatingApplication {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     DullTinPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  image       String
+  items       String @db.Text // JSON stringified array
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model DullTinPlatingIndustry {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     DullTinPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String
+  examples    String @db.Text // JSON stringified array
+  image       String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model DullTinPlatingQualityCheck {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     DullTinPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Rack & Barrel Plating Models
+model RackBarrelPlatingContent {
+  id          String   @id @default(cuid())
+  heroTitle   String
+  heroSubtitle String
+  heroDescription String @db.Text
+  heroImage   String
+  whatIsTitle String
+  whatIsDescription String @db.Text
+  whatIsImage String
+  whatIsBestFor String @db.Text
+  whatIsMaterials String @db.Text
+  whatIsAlkalineOffers String @db.Text
+  benefitsTitle String
+  benefitsSubtitle String
+  processTitle String
+  processSubtitle String
+  applicationsTitle String
+  applicationsSubtitle String
+  industriesTitle String
+  industriesSubtitle String
+  qualityTitle String
+  qualityDescription String @db.Text
+  qualityImage String?
+  ctaTitle   String
+  ctaDescription String @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  benefits    RackBarrelPlatingBenefit[]
+  processSteps RackBarrelPlatingProcessStep[]
+  applications RackBarrelPlatingApplication[]
+  industries  RackBarrelPlatingIndustry[]
+  qualityChecks RackBarrelPlatingQualityCheck[]
+}
+
+model RackBarrelPlatingBenefit {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     RackBarrelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  icon        String
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model RackBarrelPlatingProcessStep {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     RackBarrelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  step        String
+  title       String
+  description String
+  icon        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model RackBarrelPlatingApplication {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     RackBarrelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  image       String
+  items       String @db.Text // JSON stringified array
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model RackBarrelPlatingIndustry {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     RackBarrelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String
+  examples    String @db.Text // JSON stringified array
+  image       String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model RackBarrelPlatingQualityCheck {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     RackBarrelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Zinc Flake Coating Models
+model ZincFlakeCoatingContent {
+  id          String   @id @default(cuid())
+  heroTitle   String
+  heroSubtitle String
+  heroDescription String @db.Text
+  heroImage   String
+  whatIsTitle String
+  whatIsDescription String @db.Text
+  whatIsImage String
+  whatIsBestFor String @db.Text
+  whatIsMaterials String @db.Text
+  whatIsAlkalineOffers String @db.Text
+  benefitsTitle String
+  benefitsSubtitle String
+  processTitle String
+  processSubtitle String
+  applicationsTitle String
+  applicationsSubtitle String
+  industriesTitle String
+  industriesSubtitle String
+  qualityTitle String
+  qualityDescription String @db.Text
+  qualityImage String?
+  ctaTitle   String
+  ctaDescription String @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  benefits    ZincFlakeCoatingBenefit[]
+  processSteps ZincFlakeCoatingProcessStep[]
+  applications ZincFlakeCoatingApplication[]
+  industries  ZincFlakeCoatingIndustry[]
+  qualityChecks ZincFlakeCoatingQualityCheck[]
+}
+
+model ZincFlakeCoatingBenefit {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     ZincFlakeCoatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  icon        String
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ZincFlakeCoatingProcessStep {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     ZincFlakeCoatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  step        String
+  title       String
+  description String
+  icon        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ZincFlakeCoatingApplication {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     ZincFlakeCoatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  image       String
+  items       String @db.Text // JSON stringified array
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ZincFlakeCoatingIndustry {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     ZincFlakeCoatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String
+  examples    String @db.Text // JSON stringified array
+  image       String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ZincFlakeCoatingQualityCheck {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     ZincFlakeCoatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Molykote Models
+model MolykoteContent {
+  id          String   @id @default(cuid())
+  heroTitle   String
+  heroSubtitle String
+  heroDescription String @db.Text
+  heroImage   String
+  whatIsTitle String
+  whatIsDescription String @db.Text
+  whatIsImage String
+  whatIsBestFor String @db.Text
+  whatIsMaterials String @db.Text
+  whatIsAlkalineOffers String @db.Text
+  benefitsTitle String
+  benefitsSubtitle String
+  processTitle String
+  processSubtitle String
+  applicationsTitle String
+  applicationsSubtitle String
+  industriesTitle String
+  industriesSubtitle String
+  qualityTitle String
+  qualityDescription String @db.Text
+  qualityImage String?
+  ctaTitle   String
+  ctaDescription String @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  benefits    MolykoteBenefit[]
+  processSteps MolykoteProcessStep[]
+  applications MolykoteApplication[]
+  industries  MolykoteIndustry[]
+  qualityChecks MolykoteQualityCheck[]
+}
+
+model MolykoteBenefit {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     MolykoteContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  icon        String
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MolykoteProcessStep {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     MolykoteContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  step        String
+  title       String
+  description String
+  icon        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MolykoteApplication {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     MolykoteContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  image       String
+  items       String @db.Text // JSON stringified array
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MolykoteIndustry {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     MolykoteContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String
+  examples    String @db.Text // JSON stringified array
+  image       String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MolykoteQualityCheck {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     MolykoteContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+} 
+
+// Base Metals Models
+model AluminiumContent {
+  id          String   @id @default(cuid())
+  heroTitle   String
+  heroSubtitle String
+  heroDescription String @db.Text
+  heroImage   String
+  whatIsTitle String
+  whatIsDescription String @db.Text
+  whatIsImage String
+  whatIsBestFor String @db.Text
+  whatIsMaterials String @db.Text
+  whatIsAlkalineOffers String @db.Text
+  benefitsTitle String
+  benefitsSubtitle String
+  processTitle String
+  processSubtitle String
+  applicationsTitle String
+  applicationsSubtitle String
+  industriesTitle String
+  industriesSubtitle String
+  qualityTitle String
+  qualityDescription String @db.Text
+  qualityImage String?
+  ctaTitle   String
+  ctaDescription String @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  benefits    AluminiumBenefit[]
+  processSteps AluminiumProcessStep[]
+  applications AluminiumApplication[]
+  industries  AluminiumIndustry[]
+  qualityChecks AluminiumQualityCheck[]
+}
+
+model AluminiumBenefit {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     AluminiumContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  icon        String
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AluminiumProcessStep {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     AluminiumContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  step        String
+  title       String
+  description String
+  icon        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AluminiumApplication {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     AluminiumContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  image       String
+  items       String @db.Text // JSON stringified array
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AluminiumIndustry {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     AluminiumContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String
+  examples    String @db.Text // JSON stringified array
+  image       String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AluminiumQualityCheck {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     AluminiumContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SteelContent {
+  id          String   @id @default(cuid())
+  heroTitle   String
+  heroSubtitle String
+  heroDescription String @db.Text
+  heroImage   String
+  whatIsTitle String
+  whatIsDescription String @db.Text
+  whatIsImage String
+  whatIsBestFor String @db.Text
+  whatIsMaterials String @db.Text
+  whatIsAlkalineOffers String @db.Text
+  benefitsTitle String
+  benefitsSubtitle String
+  processTitle String
+  processSubtitle String
+  applicationsTitle String
+  applicationsSubtitle String
+  industriesTitle String
+  industriesSubtitle String
+  qualityTitle String
+  qualityDescription String @db.Text
+  qualityImage String?
+  ctaTitle   String
+  ctaDescription String @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  benefits    SteelBenefit[]
+  processSteps SteelProcessStep[]
+  applications SteelApplication[]
+  industries  SteelIndustry[]
+  qualityChecks SteelQualityCheck[]
+}
+
+model SteelBenefit {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     SteelContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  icon        String
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SteelProcessStep {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     SteelContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  step        String
+  title       String
+  description String
+  icon        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SteelApplication {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     SteelContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  image       String
+  items       String @db.Text // JSON stringified array
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SteelIndustry {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     SteelContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String
+  examples    String @db.Text // JSON stringified array
+  image       String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SteelQualityCheck {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     SteelContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CopperContent {
+  id          String   @id @default(cuid())
+  heroTitle   String
+  heroSubtitle String
+  heroDescription String @db.Text
+  heroImage   String
+  whatIsTitle String
+  whatIsDescription String @db.Text
+  whatIsImage String
+  whatIsBestFor String @db.Text
+  whatIsMaterials String @db.Text
+  whatIsAlkalineOffers String @db.Text
+  benefitsTitle String
+  benefitsSubtitle String
+  processTitle String
+  processSubtitle String
+  applicationsTitle String
+  applicationsSubtitle String
+  industriesTitle String
+  industriesSubtitle String
+  qualityTitle String
+  qualityDescription String @db.Text
+  qualityImage String?
+  ctaTitle   String
+  ctaDescription String @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  benefits    CopperBenefit[]
+  processSteps CopperProcessStep[]
+  applications CopperApplication[]
+  industries  CopperIndustry[]
+  qualityChecks CopperQualityCheck[]
+}
+
+model CopperBenefit {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     CopperContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  icon        String
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CopperProcessStep {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     CopperContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  step        String
+  title       String
+  description String
+  icon        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CopperApplication {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     CopperContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  image       String
+  items       String @db.Text // JSON stringified array
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CopperIndustry {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     CopperContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String
+  examples    String @db.Text // JSON stringified array
+  image       String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CopperQualityCheck {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     CopperContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BrassContent {
+  id          String   @id @default(cuid())
+  heroTitle   String
+  heroSubtitle String
+  heroDescription String @db.Text
+  heroImage   String
+  whatIsTitle String
+  whatIsDescription String @db.Text
+  whatIsImage String
+  whatIsBestFor String @db.Text
+  whatIsMaterials String @db.Text
+  whatIsAlkalineOffers String @db.Text
+  benefitsTitle String
+  benefitsSubtitle String
+  processTitle String
+  processSubtitle String
+  applicationsTitle String
+  applicationsSubtitle String
+  industriesTitle String
+  industriesSubtitle String
+  qualityTitle String
+  qualityDescription String @db.Text
+  qualityImage String?
+  ctaTitle   String
+  ctaDescription String @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  benefits    BrassBenefit[]
+  processSteps BrassProcessStep[]
+  applications BrassApplication[]
+  industries  BrassIndustry[]
+  qualityChecks BrassQualityCheck[]
+}
+
+model BrassBenefit {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     BrassContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  icon        String
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BrassProcessStep {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     BrassContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  step        String
+  title       String
+  description String
+  icon        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BrassApplication {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     BrassContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  image       String
+  items       String @db.Text // JSON stringified array
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BrassIndustry {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     BrassContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String
+  examples    String @db.Text // JSON stringified array
+  image       String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BrassQualityCheck {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     BrassContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+} 
