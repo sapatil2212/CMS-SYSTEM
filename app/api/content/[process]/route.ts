@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/db'
+import { revalidatePath } from 'next/cache'
 
 export async function GET(
   request: NextRequest,
@@ -82,41 +81,51 @@ export async function POST(
   try {
     const { process } = params
     const body = await request.json()
+    
+    console.log('API: Received request for process:', process)
+    console.log('API: Request body:', JSON.stringify(body, null, 2))
 
-    // For now, we only have copper-plating implemented
     if (process === 'copper-plating') {
-      // Check if content exists
+      // Check if content already exists
       const existingContent = await prisma.copperPlatingContent.findFirst()
+
+      // Extract content fields from the body (they might be nested in a content object)
+      const contentData = body.content || body
       
+      console.log('API: Extracted content data:', JSON.stringify(contentData, null, 2))
+
       if (existingContent) {
+        console.log('API: Updating existing content with ID:', existingContent.id)
         // Update existing content
         const updatedContent = await prisma.copperPlatingContent.update({
           where: { id: existingContent.id },
           data: {
-            heroTitle: body.heroTitle,
-            heroSubtitle: body.heroSubtitle,
-            heroDescription: body.heroDescription,
-            heroImage: body.heroImage,
-            whatIsTitle: body.whatIsTitle,
-            whatIsDescription: body.whatIsDescription,
-            whatIsImage: body.whatIsImage,
-            whatIsBestFor: body.whatIsBestFor,
-            whatIsMaterials: body.whatIsMaterials,
-            benefitsTitle: body.benefitsTitle,
-            benefitsSubtitle: body.benefitsSubtitle,
-            processTitle: body.processTitle,
-            processSubtitle: body.processSubtitle,
-            applicationsTitle: body.applicationsTitle,
-            applicationsSubtitle: body.applicationsSubtitle,
-            industriesTitle: body.industriesTitle,
-            industriesSubtitle: body.industriesSubtitle,
-            qualityTitle: body.qualityTitle,
-            qualityDescription: body.qualityDescription,
-            ctaTitle: body.ctaTitle,
-            ctaDescription: body.ctaDescription,
+            heroTitle: contentData.heroTitle || '',
+            heroSubtitle: contentData.heroSubtitle || '',
+            heroDescription: contentData.heroDescription || '',
+            heroImage: contentData.heroImage || '',
+            whatIsTitle: contentData.whatIsTitle || '',
+            whatIsDescription: contentData.whatIsDescription || '',
+            whatIsImage: contentData.whatIsImage || '',
+            whatIsBestFor: contentData.whatIsBestFor || '',
+            whatIsMaterials: contentData.whatIsMaterials || '',
+            whatIsAlkalineOffers: contentData.whatIsAlkalineOffers || '',
+            benefitsTitle: contentData.benefitsTitle || '',
+            benefitsSubtitle: contentData.benefitsSubtitle || '',
+            processTitle: contentData.processTitle || '',
+            processSubtitle: contentData.processSubtitle || '',
+            applicationsTitle: contentData.applicationsTitle || '',
+            applicationsSubtitle: contentData.applicationsSubtitle || '',
+            industriesTitle: contentData.industriesTitle || '',
+            industriesSubtitle: contentData.industriesSubtitle || '',
+            qualityTitle: contentData.qualityTitle || '',
+            qualityDescription: contentData.qualityDescription || '',
+            qualityImage: contentData.qualityImage || '',
+            ctaTitle: contentData.ctaTitle || '',
+            ctaDescription: contentData.ctaDescription || '',
             benefits: {
               deleteMany: {},
-              create: (body.benefits || []).map((benefit: any, index: number) => ({
+              create: (contentData.benefits || []).map((benefit: any, index: number) => ({
                 icon: benefit.icon || '',
                 title: benefit.title || '',
                 description: benefit.description || '',
@@ -125,7 +134,7 @@ export async function POST(
             },
             processSteps: {
               deleteMany: {},
-              create: (body.processSteps || []).map((step: any, index: number) => ({
+              create: (contentData.processSteps || []).map((step: any, index: number) => ({
                 step: step.step || '',
                 title: step.title || '',
                 description: step.description || '',
@@ -135,7 +144,7 @@ export async function POST(
             },
             applications: {
               deleteMany: {},
-              create: (body.applications || []).map((app: any, index: number) => ({
+              create: (contentData.applications || []).map((app: any, index: number) => ({
                 title: app.title || '',
                 image: app.image || '',
                 items: JSON.stringify(app.items || []),
@@ -144,7 +153,7 @@ export async function POST(
             },
             industries: {
               deleteMany: {},
-              create: (body.industries || []).map((industry: any, index: number) => ({
+              create: (contentData.industries || []).map((industry: any, index: number) => ({
                 name: industry.name || '',
                 icon: industry.icon || '',
                 examples: JSON.stringify(industry.examples || []),
@@ -154,7 +163,7 @@ export async function POST(
             },
             qualityChecks: {
               deleteMany: {},
-              create: (body.qualityChecks || []).map((check: any, index: number) => ({
+              create: (contentData.qualityChecks || []).map((check: any, index: number) => ({
                 title: check.title || '',
                 description: check.description || '',
                 order: index
@@ -170,35 +179,43 @@ export async function POST(
           }
         })
         
+        console.log('API: Content updated successfully')
+        
+        // Revalidate the process page to ensure frontend updates
+        revalidatePath(`/processes/${process}`)
+        revalidatePath('/processes')
+        
         return NextResponse.json(updatedContent)
       } else {
-        // Create new content
+        console.log('API: Creating new content')
+        // Create new content with default values for all required fields
         const newContent = await prisma.copperPlatingContent.create({
           data: {
-            heroTitle: body.heroTitle,
-            heroSubtitle: body.heroSubtitle,
-            heroDescription: body.heroDescription,
-            heroImage: body.heroImage,
-            whatIsTitle: body.whatIsTitle,
-            whatIsDescription: body.whatIsDescription,
-            whatIsImage: body.whatIsImage,
-            whatIsBestFor: body.whatIsBestFor,
-            whatIsMaterials: body.whatIsMaterials,
-            whatIsAlkalineOffers: body.whatIsAlkalineOffers,
-            benefitsTitle: body.benefitsTitle,
-            benefitsSubtitle: body.benefitsSubtitle,
-            processTitle: body.processTitle,
-            processSubtitle: body.processSubtitle,
-            applicationsTitle: body.applicationsTitle,
-            applicationsSubtitle: body.applicationsSubtitle,
-            industriesTitle: body.industriesTitle,
-            industriesSubtitle: body.industriesSubtitle,
-            qualityTitle: body.qualityTitle,
-            qualityDescription: body.qualityDescription,
-            ctaTitle: body.ctaTitle,
-            ctaDescription: body.ctaDescription,
+            heroTitle: contentData.heroTitle || '',
+            heroSubtitle: contentData.heroSubtitle || '',
+            heroDescription: contentData.heroDescription || '',
+            heroImage: contentData.heroImage || '',
+            whatIsTitle: contentData.whatIsTitle || '',
+            whatIsDescription: contentData.whatIsDescription || '',
+            whatIsImage: contentData.whatIsImage || '',
+            whatIsBestFor: contentData.whatIsBestFor || '',
+            whatIsMaterials: contentData.whatIsMaterials || '',
+            whatIsAlkalineOffers: contentData.whatIsAlkalineOffers || '',
+            benefitsTitle: contentData.benefitsTitle || '',
+            benefitsSubtitle: contentData.benefitsSubtitle || '',
+            processTitle: contentData.processTitle || '',
+            processSubtitle: contentData.processSubtitle || '',
+            applicationsTitle: contentData.applicationsTitle || '',
+            applicationsSubtitle: contentData.applicationsSubtitle || '',
+            industriesTitle: contentData.industriesTitle || '',
+            industriesSubtitle: contentData.industriesSubtitle || '',
+            qualityTitle: contentData.qualityTitle || '',
+            qualityDescription: contentData.qualityDescription || '',
+            qualityImage: contentData.qualityImage || '',
+            ctaTitle: contentData.ctaTitle || '',
+            ctaDescription: contentData.ctaDescription || '',
             benefits: {
-              create: (body.benefits || []).map((benefit: any, index: number) => ({
+              create: (contentData.benefits || []).map((benefit: any, index: number) => ({
                 icon: benefit.icon || '',
                 title: benefit.title || '',
                 description: benefit.description || '',
@@ -206,7 +223,7 @@ export async function POST(
               }))
             },
             processSteps: {
-              create: (body.processSteps || []).map((step: any, index: number) => ({
+              create: (contentData.processSteps || []).map((step: any, index: number) => ({
                 step: step.step || '',
                 title: step.title || '',
                 description: step.description || '',
@@ -215,7 +232,7 @@ export async function POST(
               }))
             },
             applications: {
-              create: (body.applications || []).map((app: any, index: number) => ({
+              create: (contentData.applications || []).map((app: any, index: number) => ({
                 title: app.title || '',
                 image: app.image || '',
                 items: JSON.stringify(app.items || []),
@@ -223,7 +240,7 @@ export async function POST(
               }))
             },
             industries: {
-              create: (body.industries || []).map((industry: any, index: number) => ({
+              create: (contentData.industries || []).map((industry: any, index: number) => ({
                 name: industry.name || '',
                 icon: industry.icon || '',
                 examples: JSON.stringify(industry.examples || []),
@@ -232,7 +249,7 @@ export async function POST(
               }))
             },
             qualityChecks: {
-              create: (body.qualityChecks || []).map((check: any, index: number) => ({
+              create: (contentData.qualityChecks || []).map((check: any, index: number) => ({
                 title: check.title || '',
                 description: check.description || '',
                 order: index
@@ -247,15 +264,26 @@ export async function POST(
             qualityChecks: { orderBy: { order: 'asc' } }
           }
         })
+        
+        console.log('API: Content created successfully')
+        
+        // Revalidate the process page to ensure frontend updates
+        revalidatePath(`/processes/${process}`)
+        revalidatePath('/processes')
         
         return NextResponse.json(newContent)
       }
     }
 
-    // For other processes, return success but don't save (placeholder)
-    return NextResponse.json({ message: 'Process not implemented yet' })
+    return NextResponse.json(
+      { error: 'Process not found' },
+      { status: 404 }
+    )
   } catch (error) {
-    console.error(`Error saving ${params.process} content:`, error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error saving copper plating content:', error)
+    return NextResponse.json(
+      { error: 'Failed to save content' },
+      { status: 500 }
+    )
   }
 } 

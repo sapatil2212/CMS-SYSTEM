@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/db'
+import { revalidatePath } from 'next/cache'
 
 export async function GET() {
   try {
@@ -38,6 +37,10 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    // Revalidate home page to ensure frontend updates
+    revalidatePath('/')
+    revalidatePath('/admin/home')
+
     return NextResponse.json(result)
   } catch (error) {
     console.error('Error creating home process:', error)
@@ -66,6 +69,10 @@ export async function PUT(request: NextRequest) {
       }
     })
 
+    // Revalidate home page to ensure frontend updates
+    revalidatePath('/')
+    revalidatePath('/admin/home')
+
     return NextResponse.json(result)
   } catch (error) {
     console.error('Error updating home process:', error)
@@ -91,6 +98,10 @@ export async function DELETE(request: NextRequest) {
     await prisma.homeProcess.delete({
       where: { id }
     })
+
+    // Revalidate home page to ensure frontend updates
+    revalidatePath('/')
+    revalidatePath('/admin/home')
 
     return NextResponse.json({ success: true })
   } catch (error) {

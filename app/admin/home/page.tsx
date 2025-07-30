@@ -295,7 +295,9 @@ export default function HomeContentPage() {
 
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(body),
       })
 
@@ -303,6 +305,15 @@ export default function HomeContentPage() {
         setIsProcessModalOpen(false)
         setEditingProcess(null)
         fetchProcesses()
+        
+        // Trigger frontend refresh for home processes
+        if (typeof window !== 'undefined') {
+          const refreshHomeProcesses = (window as any).refreshHomeProcesses
+          if (refreshHomeProcesses && typeof refreshHomeProcesses === 'function') {
+            refreshHomeProcesses()
+          }
+        }
+        
         showSuccessModal(editingProcess ? 'Process updated successfully!' : 'Process created successfully!')
       } else {
         toast.error('Failed to save process')
@@ -332,6 +343,15 @@ export default function HomeContentPage() {
 
           if (response.ok) {
             fetchProcesses()
+            
+            // Trigger frontend refresh for home processes
+            if (typeof window !== 'undefined') {
+              const refreshHomeProcesses = (window as any).refreshHomeProcesses
+              if (refreshHomeProcesses && typeof refreshHomeProcesses === 'function') {
+                refreshHomeProcesses()
+              }
+            }
+            
             showSuccessModal('Process deleted successfully!')
           } else {
             toast.error('Failed to delete process')
@@ -358,6 +378,15 @@ export default function HomeContentPage() {
 
       if (response.ok) {
         fetchProcesses()
+        
+        // Trigger frontend refresh for home processes
+        if (typeof window !== 'undefined') {
+          const refreshHomeProcesses = (window as any).refreshHomeProcesses
+          if (refreshHomeProcesses && typeof refreshHomeProcesses === 'function') {
+            refreshHomeProcesses()
+          }
+        }
+        
         showSuccessModal(`Process ${!process.isActive ? 'activated' : 'deactivated'} successfully!`)
       } else {
         toast.error('Failed to update process status')

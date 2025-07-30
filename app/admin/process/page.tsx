@@ -204,6 +204,19 @@ export default function ProcessContentPage() {
             ? { ...p, content: savedData }
             : p
         ))
+        
+        // Trigger frontend refresh for the specific process
+        if (typeof window !== 'undefined') {
+          const refreshFunction = (window as any)[`refresh${updatedProcess.slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')}`]
+          console.log('Admin Process: Attempting to trigger refresh for', updatedProcess.slug, 'Function:', refreshFunction)
+          if (refreshFunction && typeof refreshFunction === 'function') {
+            refreshFunction()
+            console.log('Admin Process: Refresh function called successfully')
+          } else {
+            console.log('Admin Process: Refresh function not found')
+          }
+        }
+        
         toast.success(`${updatedProcess.name} updated successfully`)
         setIsEditModalOpen(false)
         setSelectedProcess(null)

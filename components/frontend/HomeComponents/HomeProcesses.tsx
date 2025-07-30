@@ -18,14 +18,22 @@ interface Process {
 export default function HomeProcesses() {
   const [processes, setProcesses] = useState<Process[]>([])
   const [loading, setLoading] = useState(true)
+  const [lastUpdate, setLastUpdate] = useState<number>(Date.now())
 
   useEffect(() => {
     fetchProcesses()
-  }, [])
+  }, [lastUpdate])
 
   const fetchProcesses = async () => {
     try {
-      const response = await fetch('/api/content/home-processes')
+      // Add cache-busting parameter to force fresh data
+      const response = await fetch(`/api/content/home-processes?t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
       if (response.ok) {
         const data = await response.json()
         setProcesses(data)
@@ -36,6 +44,20 @@ export default function HomeProcesses() {
       setLoading(false)
     }
   }
+
+  // Force refresh function that can be called externally
+  const forceRefresh = () => {
+    console.log('HomeProcesses: Force refresh triggered')
+    setLastUpdate(Date.now())
+  }
+
+  // Expose the refresh function globally for admin updates
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).refreshHomeProcesses = forceRefresh
+      console.log('HomeProcesses: Refresh function exposed globally')
+    }
+  }, [])
 
   if (loading) {
     return (

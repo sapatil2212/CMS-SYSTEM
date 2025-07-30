@@ -7,14 +7,22 @@ import { ChevronRight, Check, Zap, Layers, Activity, Cpu, CircuitBoard, TestTube
 const CopperPlating = () => {
   const [content, setContent] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [lastUpdate, setLastUpdate] = useState<number>(Date.now())
 
   useEffect(() => {
     fetchContent()
-  }, [])
+  }, [lastUpdate])
 
   const fetchContent = async () => {
     try {
-      const response = await fetch('/api/content/copper-plating')
+      // Add cache-busting parameter to force fresh data
+      const response = await fetch(`/api/content/copper-plating?t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
       if (response.ok) {
         const data = await response.json()
         setContent(data)
@@ -29,6 +37,20 @@ const CopperPlating = () => {
       setLoading(false)
     }
   }
+
+  // Force refresh function that can be called externally
+  const forceRefresh = () => {
+    console.log('CopperPlating: Force refresh triggered')
+    setLastUpdate(Date.now())
+  }
+
+  // Expose the refresh function globally for admin updates
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).refreshCopperPlating = forceRefresh
+      console.log('CopperPlating: Refresh function exposed globally')
+    }
+  }, [])
 
   const getDefaultContent = () => ({
     heroTitle: "Premium Copper Plating Services in India",
