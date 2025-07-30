@@ -4,6 +4,9 @@ const nextConfig = {
     domains: ['localhost', 'images.unsplash.com', 'res.cloudinary.com'],
     unoptimized: true,
   },
+  env: {
+    CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+  },
   webpack: (config) => {
     config.module.rules.push({
       test: /\.(png|jpe?g|gif|svg)$/i,
