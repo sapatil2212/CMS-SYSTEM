@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import path from 'path'
-import { v4 as uuidv4 } from 'uuid'
+import { uploadToCloudinary } from '@/lib/cloudinary'
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,26 +31,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads')
-    await mkdir(uploadsDir, { recursive: true })
-
-    // Generate unique filename
-    const fileExtension = path.extname(file.name)
-    const fileName = `${uuidv4()}${fileExtension}`
-    const filePath = path.join(uploadsDir, fileName)
-
-    // Convert file to buffer and save
+    // Convert file to buffer
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    await writeFile(filePath, buffer)
 
-    // Return the URL
-    const url = `/api/uploads/${fileName}`
+    // Upload to Cloudinary
+    const cloudinaryUrl = await uploadToCloudinary(buffer, 'cms-uploads')
+
+    if (!cloudinaryUrl) {
+      return NextResponse.json(
+        { error: 'Failed to upload to cloud storage' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({
-      url,
-      filename: fileName,
+      url: cloudinaryUrl,
+      filename: file.name,
       originalName: file.name,
       size: file.size,
       type: file.type

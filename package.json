@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Full-stack CMS system with Next.js and Vite",
   "private": true,
-"scripts": {
+  "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
@@ -27,6 +27,7 @@
     "@types/uuid": "^9.0.7",
     "autoprefixer": "^10.4.16",
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.7.0",
     "framer-motion": "^12.23.11",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.292.0",

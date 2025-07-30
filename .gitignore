@@ -95,3 +95,4 @@ public/uploads/*
 .Trashes
 ehthumbs.db
 Thumbs.db 
+.vercel
