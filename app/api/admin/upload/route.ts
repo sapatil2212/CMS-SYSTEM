@@ -45,6 +45,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    console.log('File uploaded successfully:', {
+      filename: file.name,
+      size: file.size,
+      type: file.type,
+      url: cloudinaryUrl
+    })
+
     return NextResponse.json({
       url: cloudinaryUrl,
       filename: file.name,

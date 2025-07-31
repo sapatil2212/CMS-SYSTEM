@@ -12,6 +12,11 @@ export default cloudinary;
 export const uploadToCloudinary = async (file: Buffer, folder: string = 'cms-uploads'): Promise<string> => {
   return new Promise((resolve, reject) => {
     if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+      console.error('Cloudinary credentials missing:', {
+        cloud_name: !!process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: !!process.env.CLOUDINARY_API_KEY,
+        api_secret: !!process.env.CLOUDINARY_API_SECRET
+      });
       reject(new Error('Cloudinary credentials not configured'));
       return;
     }
@@ -30,6 +35,11 @@ export const uploadToCloudinary = async (file: Buffer, folder: string = 'cms-upl
           console.error('Cloudinary upload error:', error);
           reject(error);
         } else {
+          console.log('Cloudinary upload successful:', {
+            public_id: result?.public_id,
+            secure_url: result?.secure_url,
+            folder
+          });
           resolve(result?.secure_url || '');
         }
       }

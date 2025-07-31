@@ -88,8 +88,13 @@ export default function ProcessEditModal({ process, isOpen, onClose, onSave }: P
       } else {
         updateContent(field, data.url)
       }
+
+      // Show success message
+      toast.success('Image uploaded successfully')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Upload failed')
+      const errorMessage = err instanceof Error ? err.message : 'Upload failed'
+      setError(errorMessage)
+      toast.error(errorMessage)
     } finally {
       setIsUploading(false)
       setUploadingFor('')

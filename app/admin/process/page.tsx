@@ -205,27 +205,19 @@ export default function ProcessContentPage() {
             : p
         ))
         
-        // Trigger frontend refresh for the specific process
-        if (typeof window !== 'undefined') {
-          const refreshFunction = (window as any)[`refresh${updatedProcess.slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('')}`]
-          console.log('Admin Process: Attempting to trigger refresh for', updatedProcess.slug, 'Function:', refreshFunction)
-          if (refreshFunction && typeof refreshFunction === 'function') {
-            refreshFunction()
-            console.log('Admin Process: Refresh function called successfully')
-          } else {
-            console.log('Admin Process: Refresh function not found')
-          }
-        }
+        // Refresh the processes list to get updated data
+        await fetchAllProcesses()
         
         toast.success(`${updatedProcess.name} updated successfully`)
         setIsEditModalOpen(false)
         setSelectedProcess(null)
       } else {
-        throw new Error('Failed to save process')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to save process')
       }
     } catch (error) {
       console.error('Failed to save process:', error)
-      toast.error('Failed to save process')
+      toast.error(error instanceof Error ? error.message : 'Failed to save process')
     }
   }
 
