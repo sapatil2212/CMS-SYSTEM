@@ -13,21 +13,21 @@ export async function GET() {
     const heroSlides = await prisma.heroSlider.findMany()
     console.log('Debug API: Hero slides query successful:', heroSlides.length)
     
-    // Test if process models exist
-    let processModelsStatus = {}
-    try {
-      const copperContent = await prisma.copperPlatingContent.findFirst()
-      processModelsStatus.copperPlatingContent = 'accessible'
-    } catch (error) {
-      processModelsStatus.copperPlatingContent = `error: ${error.message}`
-    }
-    
-    try {
-      const silverContent = await prisma.silverPlatingContent.findFirst()
-      processModelsStatus.silverPlatingContent = 'accessible'
-    } catch (error) {
-      processModelsStatus.silverPlatingContent = `error: ${error.message}`
-    }
+          // Test if process models exist
+      let processModelsStatus: any = {}
+      try {
+        const copperContent = await prisma.copperPlatingContent.findFirst()
+        processModelsStatus.copperPlatingContent = 'accessible'
+      } catch (error: any) {
+        processModelsStatus.copperPlatingContent = `error: ${error.message}`
+      }
+      
+      try {
+        const silverContent = await prisma.silverPlatingContent.findFirst()
+        processModelsStatus.silverPlatingContent = 'accessible'
+      } catch (error: any) {
+        processModelsStatus.silverPlatingContent = `error: ${error.message}`
+      }
     
     return NextResponse.json({
       status: 'success',
