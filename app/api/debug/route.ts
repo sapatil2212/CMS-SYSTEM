@@ -51,15 +51,22 @@ export async function GET() {
   } catch (error) {
     console.error('Debug API Error:', error)
     
+    const errorDetails = error instanceof Error ? {
+      message: error.message,
+      name: error.name,
+      code: (error as any).code || 'unknown',
+      stack: error.stack?.split('\n').slice(0, 5) // First 5 lines only
+    } : {
+      message: 'Unknown error',
+      name: 'UnknownError',
+      code: 'unknown',
+      stack: []
+    }
+    
     return NextResponse.json({
       status: 'error',
       timestamp: new Date().toISOString(),
-      error: {
-        message: error.message,
-        name: error.name,
-        code: error.code || 'unknown',
-        stack: error.stack?.split('\n').slice(0, 5) // First 5 lines only
-      },
+      error: errorDetails,
       environment: {
         NODE_ENV: process.env.NODE_ENV,
         DATABASE_URL: process.env.DATABASE_URL ? 'set' : 'missing',
