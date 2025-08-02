@@ -9,7 +9,7 @@ interface DashboardStats {
   totalPages: number
   totalServices: number
   totalUsers: number
-  recentActivity: Array<{u
+  recentActivity: Array<{
     id: string
     type: string
     title: string

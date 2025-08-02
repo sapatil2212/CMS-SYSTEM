@@ -88,7 +88,10 @@ export default function DashboardStats() {
       
       if (response.ok) {
         // Update local state immediately
-        setStats({ totalVisits: 0 })
+        setStats(prevStats => ({
+          ...prevStats,
+          totalVisits: 0
+        }))
         console.log('Visit count reset successfully')
       } else {
         console.error('Failed to reset visit count')

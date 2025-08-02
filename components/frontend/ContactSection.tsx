@@ -515,7 +515,7 @@ export default function ContactSection() {
                     </div>
                     <div className="ml-3">
                       <p className="text-xs font-medium text-gray-500">
-                        {item.label}
+                        {item.text}
                       </p>
                       <p className="text-sm text-gray-900">
                         <a
@@ -562,7 +562,7 @@ export default function ContactSection() {
                   required
                   tabIndex={1}
                   onKeyPress={(e) => handleKeyPress(e, "fullName")}
-                  error={touched.fullName && errors.fullName}
+                  error={touched.fullName && errors.fullName ? errors.fullName : undefined}
                 />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -578,7 +578,7 @@ export default function ContactSection() {
                     required
                     tabIndex={2}
                     onKeyPress={(e) => handleKeyPress(e, "email")}
-                    error={touched.email && errors.email}
+                    error={touched.email && errors.email ? errors.email : undefined}
                   />
                   <InputField
                     label="Mobile No."
@@ -592,7 +592,7 @@ export default function ContactSection() {
                     required
                     tabIndex={3}
                     onKeyPress={(e) => handleKeyPress(e, "mobile")}
-                    error={touched.mobile && errors.mobile}
+                    error={touched.mobile && errors.mobile ? errors.mobile : undefined}
                   />
                 </div>
 

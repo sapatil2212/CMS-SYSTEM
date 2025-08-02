@@ -105,12 +105,12 @@ export default function UserManagement() {
          const error = await response.json()
          throw new Error(error.error || 'Failed to save user')
        }
-         } catch (error) {
-       console.error('Error saving user:', error)
-       setSuccessMessage(error.message || 'Failed to save user')
-       setShowSuccessModal(true)
-       setTimeout(() => setShowSuccessModal(false), 3000)
-     }
+               } catch (error) {
+        console.error('Error saving user:', error)
+        setSuccessMessage(error instanceof Error ? error.message : 'Failed to save user')
+        setShowSuccessModal(true)
+        setTimeout(() => setShowSuccessModal(false), 3000)
+      }
   }
 
   const handleEdit = (user: User) => {
@@ -162,7 +162,7 @@ export default function UserManagement() {
       }
     } catch (error) {
       console.error('Error sending OTP:', error)
-      setSuccessMessage(error.message || 'Failed to send OTP')
+      setSuccessMessage(error instanceof Error ? error.message : 'Failed to send OTP')
       setShowSuccessModal(true)
       setTimeout(() => setShowSuccessModal(false), 3000)
     } finally {
@@ -209,7 +209,7 @@ export default function UserManagement() {
       }
     } catch (error) {
       console.error('Error deleting user:', error)
-      setSuccessMessage(error.message || 'Failed to delete user')
+      setSuccessMessage(error instanceof Error ? error.message : 'Failed to delete user')
       setShowSuccessModal(true)
       setTimeout(() => setShowSuccessModal(false), 3000)
     } finally {
@@ -250,7 +250,7 @@ export default function UserManagement() {
       }
     } catch (error) {
       console.error('Error sending OTP:', error)
-      setSuccessMessage(error.message || 'Failed to send OTP')
+      setSuccessMessage(error instanceof Error ? error.message : 'Failed to send OTP')
       setShowSuccessModal(true)
       setTimeout(() => setShowSuccessModal(false), 3000)
     } finally {
@@ -306,7 +306,7 @@ export default function UserManagement() {
       }
     } catch (error) {
       console.error('Error updating password:', error)
-      setSuccessMessage(error.message || 'Failed to update password')
+      setSuccessMessage(error instanceof Error ? error.message : 'Failed to update password')
       setShowSuccessModal(true)
       setTimeout(() => setShowSuccessModal(false), 3000)
     } finally {
