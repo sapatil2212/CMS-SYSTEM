@@ -1,9 +1,14 @@
 const fetch = require('node-fetch')
 
 async function testHeaderAPI() {
-  const baseUrl = 'http://localhost:3000'
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://your-production-url.vercel.app' 
+    : 'http://localhost:3000'
   
-  console.log('🧪 Testing Header API endpoints...\n')
+  console.log('🧪 Testing Header API endpoints...')
+  console.log('📍 Base URL:', baseUrl)
+  console.log('🌍 Environment:', process.env.NODE_ENV || 'development')
+  console.log('')
 
   try {
     // Test GET endpoint
@@ -16,6 +21,8 @@ async function testHeaderAPI() {
       console.log('📋 Header settings:', getData)
     } else {
       console.log('❌ GET request failed:', getData)
+      console.log('Status:', getResponse.status)
+      console.log('Status Text:', getResponse.statusText)
     }
 
     console.log('\n2. Testing PUT /api/content/header...')
@@ -25,6 +32,8 @@ async function testHeaderAPI() {
       phoneNumber: '+91 98765 43210',
       email: 'test@example.com'
     }
+
+    console.log('📤 Sending data:', updateData)
 
     const putResponse = await fetch(`${baseUrl}/api/content/header`, {
       method: 'PUT',
@@ -40,6 +49,8 @@ async function testHeaderAPI() {
       console.log('📋 Updated settings:', putData)
     } else {
       console.log('❌ PUT request failed:', putData)
+      console.log('Status:', putResponse.status)
+      console.log('Status Text:', putResponse.statusText)
     }
 
     // Test GET again to verify update
@@ -52,10 +63,13 @@ async function testHeaderAPI() {
       console.log('📋 Updated header settings:', getData2)
     } else {
       console.log('❌ GET request failed after update:', getData2)
+      console.log('Status:', getResponse2.status)
+      console.log('Status Text:', getResponse2.statusText)
     }
 
   } catch (error) {
     console.error('❌ Error testing header API:', error.message)
+    console.error('Stack trace:', error.stack)
   }
 }
 

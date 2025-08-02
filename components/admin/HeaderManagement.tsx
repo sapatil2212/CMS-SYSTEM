@@ -58,20 +58,25 @@ export default function HeaderManagement() {
         body: JSON.stringify(settings),
       })
 
-             if (response.ok) {
-         setShowSuccessModal(true)
-         // Auto-hide modal after 2 seconds
-         setTimeout(() => {
-           setShowSuccessModal(false)
-         }, 2000)
-         // Refresh the data
-         await fetchHeaderSettings()
-       } else {
-         throw new Error('Failed to update header settings')
-       }
+                   if (response.ok) {
+        const result = await response.json()
+        console.log('Header settings updated successfully:', result)
+        setShowSuccessModal(true)
+        // Auto-hide modal after 2 seconds
+        setTimeout(() => {
+          setShowSuccessModal(false)
+        }, 2000)
+        // Refresh the data
+        await fetchHeaderSettings()
+      } else {
+        const errorData = await response.json()
+        console.error('Server error response:', errorData)
+        throw new Error(errorData.error || errorData.details || 'Failed to update header settings')
+      }
     } catch (error) {
       console.error('Error updating header settings:', error)
-      setMessage({ type: 'error', text: 'Failed to update header settings' })
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update header settings'
+      setMessage({ type: 'error', text: errorMessage })
     } finally {
       setSaving(false)
     }
