@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run vercel-build",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "installCommand": "npm install",
@@ -8,6 +8,10 @@
     "app/api/**/*.ts": {
       "maxDuration": 30
     }
+  },
+  "crons": [],
+  "env": {
+    "PRISMA_GENERATE_DATAPROXY": "true"
   },
   "headers": [
     {

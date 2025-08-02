@@ -49,7 +49,7 @@ const nextConfig = {
   trailingSlash: false,
   // Performance optimizations
   experimental: {
-    optimizePackageImports: ['@prisma/client'],
+    serverComponentsExternalPackages: ['@prisma/client', 'prisma'],
   },
   webpack: (config, { dev, isServer }) => {
     // Optimize bundle for production
