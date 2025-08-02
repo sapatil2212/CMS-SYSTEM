@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-async function main() {
+export default async function seedHeaderMenuItems() {
   console.log('🌱 Seeding header menu items...')
 
   // Check if menu items already exist
@@ -137,11 +137,8 @@ async function main() {
   console.log('✅ Header menu items seeding completed!')
 }
 
+async function main() {
+  await seedHeaderMenuItems()
+}
+
 main()
-  .catch((e) => {
-    console.error('❌ Error seeding header menu items:', e)
-    process.exit(1)
-  })
-  .finally(async () => {
-    await prisma.$disconnect()
-  }) 

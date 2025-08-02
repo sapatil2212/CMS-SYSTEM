@@ -201,6 +201,21 @@ async function main() {
   await seedCarbonSteelContent()
 
   console.log('✅ All base metal content seeded successfully')
+
+  // Seed header menu items
+  console.log('🌱 Seeding header menu items...')
+  
+  // Check if header menu items already exist
+  const existingMenuItems = await prisma.headerMenuItem.findFirst()
+  if (!existingMenuItems) {
+    // Import and run header menu items seed
+    const { default: seedHeaderMenuItems } = await import('./seed-header-menu-items')
+    await seedHeaderMenuItems()
+  } else {
+    console.log('✅ Header menu items already exist, skipping...')
+  }
+
+  console.log('✅ Header menu items seeded successfully')
 }
 
 main()
