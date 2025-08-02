@@ -429,7 +429,7 @@ export default function BaseMetalsPage() {
            title="Delete Base Metal"
            message={`Are you sure you want to delete ${baseMetalToDelete.name} completely? This will remove it from the navigation and delete all its content. This action cannot be undone.`}
            confirmText="Delete Base Metal"
-           type="danger"
+                       type="error"
         />
       )}
 
