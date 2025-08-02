@@ -89,11 +89,10 @@ class ProductionAPITester {
     
     // Try to create a test user
     const testUser = {
-      firstName: 'Test',
-      lastName: 'User',
+      name: 'Test User',
       email: 'test@production.com',
       password: 'TestPassword123!',
-      phoneNumber: '+1234567890'
+      otp: '123456' // This will fail without proper OTP, but we'll handle it
     };
 
     // Register test user
@@ -202,10 +201,10 @@ class ProductionAPITester {
     
     // Test contact form submission
     const contactData = {
-      name: 'Test Contact',
+      fullName: 'Test Contact',
       email: 'test@example.com',
-      phone: '+1234567890',
-      company: 'Test Company',
+      mobile: '+1234567890',
+      processType: 'Gold Plating',
       message: 'This is a test message for production API testing.'
     };
 

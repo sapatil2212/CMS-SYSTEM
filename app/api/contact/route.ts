@@ -1,4 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/db'
+
+// GET method to fetch contact information
+export async function GET(request: NextRequest) {
+  try {
+    const contactContent = await prisma.contactContent.findFirst({
+      where: { isActive: true }
+    });
+
+    if (!contactContent) {
+      return NextResponse.json({
+        address: 'Address not configured',
+        email: 'Email not configured',
+        phone: 'Phone not configured',
+        workingHours: 'Working hours not configured'
+      });
+    }
+
+    return NextResponse.json({
+      address: contactContent.address || 'Address not configured',
+      email: contactContent.email || 'Email not configured',
+      phone: contactContent.phone || 'Phone not configured',
+      workingHours: contactContent.workingHours || 'Working hours not configured'
+    });
+  } catch (error) {
+    console.error('Error fetching contact info:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch contact information' },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
