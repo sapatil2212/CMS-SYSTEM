@@ -1,0 +1,5 @@
+[33m0e4b342[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Fix TypeScript 'unknown' error handling in db-test route
+[33mf06e989[m Fix TypeScript 'unknown' error handling in db-test route
+[33mca51abe[m Force redeploy to fix API caching issues
+[33m120382e[m Fix debug endpoint: Add comprehensive database diagnostics and seeding functionality
+[33m5874d1e[m Fix API errors: Add database diagnostic and seeding endpoints for production

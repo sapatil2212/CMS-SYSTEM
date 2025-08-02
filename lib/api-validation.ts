@@ -121,7 +121,7 @@ export function validateRequest<T>(schema: z.ZodSchema<T>) {
       return schema.parse(data);
     } catch (error) {
       if (error instanceof ZodError) {
-        const details = error.errors.map(err => ({
+        const details = error.issues.map(err => ({
           path: err.path.join('.'),
           message: err.message,
           code: err.code
