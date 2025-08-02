@@ -38,16 +38,29 @@ export default function HeaderMenuManagement() {
   const fetchMenuItems = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/content/header-menu')
+      console.log('Fetching menu items from:', '/api/content/header-menu')
+      
+      const response = await fetch('/api/content/header-menu', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      console.log('Response status:', response.status)
+      
       if (response.ok) {
         const data = await response.json()
+        console.log('Menu items fetched:', data)
         setMenuItems(data)
       } else {
-        throw new Error('Failed to fetch menu items')
+        const errorText = await response.text()
+        console.error('Failed to fetch menu items:', errorText)
+        throw new Error(`Failed to fetch menu items: ${response.status} ${errorText}`)
       }
     } catch (error) {
       console.error('Error fetching menu items:', error)
-      setMessage({ type: 'error', text: 'Failed to load menu items' })
+      setMessage({ type: 'error', text: `Failed to load menu items: ${error instanceof Error ? error.message : 'Unknown error'}` })
     } finally {
       setLoading(false)
     }
@@ -58,6 +71,8 @@ export default function HeaderMenuManagement() {
       setLoading(true)
       setMessage(null)
 
+      console.log('Creating default menu items...')
+
       const response = await fetch('/api/admin/header-menu/create-default', {
         method: 'POST',
         headers: {
@@ -65,15 +80,21 @@ export default function HeaderMenuManagement() {
         },
       })
 
+      console.log('Create default response status:', response.status)
+
       if (response.ok) {
+        const result = await response.json()
+        console.log('Default menu items created:', result)
         setMessage({ type: 'success', text: 'Default menu items created successfully!' })
         await fetchMenuItems()
       } else {
-        throw new Error('Failed to create default menu items')
+        const errorText = await response.text()
+        console.error('Failed to create default menu items:', errorText)
+        throw new Error(`Failed to create default menu items: ${response.status} ${errorText}`)
       }
     } catch (error) {
       console.error('Error creating default menu items:', error)
-      setMessage({ type: 'error', text: 'Failed to create default menu items' })
+      setMessage({ type: 'error', text: `Failed to create default menu items: ${error instanceof Error ? error.message : 'Unknown error'}` })
     } finally {
       setLoading(false)
     }
@@ -84,7 +105,10 @@ export default function HeaderMenuManagement() {
       setUpdating(menuItemId)
       setMessage(null)
 
-      const response = await fetch('/api/content/header-menu', {
+      console.log('Toggling menu item:', menuItemId, 'isActive:', isActive)
+
+      // Try PUT method first
+      let response = await fetch('/api/content/header-menu', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -92,15 +116,33 @@ export default function HeaderMenuManagement() {
         body: JSON.stringify({ menuItemId, isActive }),
       })
 
+      // If PUT fails, try POST as fallback
+      if (!response.ok) {
+        console.log('PUT failed, trying POST fallback')
+        response = await fetch('/api/content/header-menu', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ menuItemId, isActive }),
+        })
+      }
+
+      console.log('Response status:', response.status)
+
       if (response.ok) {
+        const result = await response.json()
+        console.log('Menu item updated successfully:', result)
         setMessage({ type: 'success', text: 'Menu item updated successfully!' })
         await fetchMenuItems()
       } else {
-        throw new Error('Failed to update menu item')
+        const errorText = await response.text()
+        console.error('Failed to update menu item:', errorText)
+        throw new Error(`Failed to update menu item: ${response.status} ${errorText}`)
       }
     } catch (error) {
       console.error('Error updating menu item:', error)
-      setMessage({ type: 'error', text: 'Failed to update menu item' })
+      setMessage({ type: 'error', text: `Failed to update menu item: ${error instanceof Error ? error.message : 'Unknown error'}` })
     } finally {
       setUpdating(null)
     }
@@ -111,7 +153,10 @@ export default function HeaderMenuManagement() {
       setUpdating(dropdownItemId)
       setMessage(null)
 
-      const response = await fetch('/api/content/header-menu', {
+      console.log('Toggling dropdown item:', dropdownItemId, 'isActive:', isActive)
+
+      // Try PUT method first
+      let response = await fetch('/api/content/header-menu', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -119,15 +164,33 @@ export default function HeaderMenuManagement() {
         body: JSON.stringify({ dropdownItemId, isActive }),
       })
 
+      // If PUT fails, try POST as fallback
+      if (!response.ok) {
+        console.log('PUT failed, trying POST fallback')
+        response = await fetch('/api/content/header-menu', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ dropdownItemId, isActive }),
+        })
+      }
+
+      console.log('Response status:', response.status)
+
       if (response.ok) {
+        const result = await response.json()
+        console.log('Dropdown item updated successfully:', result)
         setMessage({ type: 'success', text: 'Dropdown item updated successfully!' })
         await fetchMenuItems()
       } else {
-        throw new Error('Failed to update dropdown item')
+        const errorText = await response.text()
+        console.error('Failed to update dropdown item:', errorText)
+        throw new Error(`Failed to update dropdown item: ${response.status} ${errorText}`)
       }
     } catch (error) {
       console.error('Error updating dropdown item:', error)
-      setMessage({ type: 'error', text: 'Failed to update dropdown item' })
+      setMessage({ type: 'error', text: `Failed to update dropdown item: ${error instanceof Error ? error.message : 'Unknown error'}` })
     } finally {
       setUpdating(null)
     }

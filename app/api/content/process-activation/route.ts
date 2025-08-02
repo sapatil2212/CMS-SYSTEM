@@ -3,8 +3,22 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+// Add OPTIONS method for CORS
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  })
+}
+
 export async function GET() {
   try {
+    console.log('Process activation GET request received')
+    
     // Get all process content with their activation status
     const processes = await Promise.all([
       prisma.copperPlatingContent.findFirst().then(content => ({
@@ -93,6 +107,7 @@ export async function GET() {
       }))
     ])
 
+    console.log('Processes fetched successfully:', processes.length)
     return NextResponse.json(processes)
   } catch (error) {
     console.error('Error fetching process activation status:', error)
@@ -105,15 +120,24 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
+    console.log('Process activation PUT request received')
+    console.log('Request method:', request.method)
+    console.log('Request URL:', request.url)
+    
     const body = await request.json()
+    console.log('Request body:', body)
+    
     const { processSlug, isMenuActive } = body
 
     if (!processSlug || typeof isMenuActive !== 'boolean') {
+      console.error('Invalid request data:', { processSlug, isMenuActive })
       return NextResponse.json(
         { error: 'Invalid request data' },
         { status: 400 }
       )
     }
+
+    console.log('Processing request for:', processSlug, 'isMenuActive:', isMenuActive)
 
     // Map process slugs to their respective Prisma models
     const processModelMap: { [key: string]: any } = {
@@ -133,11 +157,14 @@ export async function PUT(request: NextRequest) {
 
     const model = processModelMap[processSlug]
     if (!model) {
+      console.error('Invalid process slug:', processSlug)
       return NextResponse.json(
         { error: 'Invalid process slug' },
         { status: 400 }
       )
     }
+
+    console.log('Found model for process:', processSlug)
 
     // Update the first record (there should only be one per process)
     const updatedProcess = await model.updateMany({
@@ -145,6 +172,73 @@ export async function PUT(request: NextRequest) {
       data: { isMenuActive }
     })
 
+    console.log('Process updated successfully:', updatedProcess)
+    return NextResponse.json({ success: true, updatedProcess })
+  } catch (error) {
+    console.error('Error updating process activation status:', error)
+    return NextResponse.json(
+      { error: 'Failed to update process activation status' },
+      { status: 500 }
+    )
+  }
+}
+
+// Add POST method as fallback for debugging
+export async function POST(request: NextRequest) {
+  try {
+    console.log('Process activation POST request received (fallback)')
+    console.log('Request method:', request.method)
+    console.log('Request URL:', request.url)
+    
+    const body = await request.json()
+    console.log('Request body:', body)
+    
+    const { processSlug, isMenuActive } = body
+
+    if (!processSlug || typeof isMenuActive !== 'boolean') {
+      console.error('Invalid request data:', { processSlug, isMenuActive })
+      return NextResponse.json(
+        { error: 'Invalid request data' },
+        { status: 400 }
+      )
+    }
+
+    console.log('Processing request for:', processSlug, 'isMenuActive:', isMenuActive)
+
+    // Map process slugs to their respective Prisma models
+    const processModelMap: { [key: string]: any } = {
+      'copper-plating': prisma.copperPlatingContent,
+      'silver-plating': prisma.silverPlatingContent,
+      'gold-plating': prisma.goldPlatingContent,
+      'busbar-plating': prisma.busbarPlatingContent,
+      'zinc-plating': prisma.zincPlatingContent,
+      'nickel-plating': prisma.nickelPlatingContent,
+      'electroless-nickel-plating': prisma.electrolessNickelPlatingContent,
+      'bright-tin-plating': prisma.brightTinPlatingContent,
+      'dull-tin-plating': prisma.dullTinPlatingContent,
+      'rack-barrel-plating': prisma.rackBarrelPlatingContent,
+      'zinc-flake-coating': prisma.zincFlakeCoatingContent,
+      'molykote': prisma.molykoteContent
+    }
+
+    const model = processModelMap[processSlug]
+    if (!model) {
+      console.error('Invalid process slug:', processSlug)
+      return NextResponse.json(
+        { error: 'Invalid process slug' },
+        { status: 400 }
+      )
+    }
+
+    console.log('Found model for process:', processSlug)
+
+    // Update the first record (there should only be one per process)
+    const updatedProcess = await model.updateMany({
+      where: {},
+      data: { isMenuActive }
+    })
+
+    console.log('Process updated successfully:', updatedProcess)
     return NextResponse.json({ success: true, updatedProcess })
   } catch (error) {
     console.error('Error updating process activation status:', error)

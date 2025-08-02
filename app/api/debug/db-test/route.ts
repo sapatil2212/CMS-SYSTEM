@@ -1,76 +1,65 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
-// Helper function to safely get error message
-function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message
-  return String(error)
-}
-
 export async function GET() {
   try {
-    console.log('Testing database connection...')
+    console.log('Database connection test started')
     
-    // Test basic connection
-    await prisma.$connect()
-    console.log('Database connected successfully')
+    // Test basic database connection
+    const result = await prisma.$queryRaw`SELECT 1 as test`
+    console.log('Basic connection test passed:', result)
     
-    // Test if critical tables exist
-    const tests = []
+    // Test header menu items table
+    const menuItemsCount = await prisma.headerMenuItem.count()
+    console.log('Header menu items count:', menuItemsCount)
     
-    try {
-      const userCount = await prisma.user.count()
-      tests.push({ table: 'User', count: userCount, status: 'OK' })
-    } catch (error) {
-      tests.push({ table: 'User', error: getErrorMessage(error), status: 'ERROR' })
-    }
+    // Test process activation tables
+    const copperPlatingCount = await prisma.copperPlatingContent.count()
+    const silverPlatingCount = await prisma.silverPlatingContent.count()
+    const goldPlatingCount = await prisma.goldPlatingContent.count()
     
-    try {
-      const aboutContentCount = await prisma.aboutContent.count()
-      tests.push({ table: 'AboutContent', count: aboutContentCount, status: 'OK' })
-    } catch (error) {
-      tests.push({ table: 'AboutContent', error: getErrorMessage(error), status: 'ERROR' })
-    }
-    
-    try {
-      const aboutValueCount = await prisma.aboutValue.count()
-      tests.push({ table: 'AboutValue', count: aboutValueCount, status: 'OK' })
-    } catch (error) {
-      tests.push({ table: 'AboutValue', error: getErrorMessage(error), status: 'ERROR' })
-    }
-    
-    try {
-      const copperCount = await prisma.copperPlatingContent.count()
-      tests.push({ table: 'CopperPlatingContent', count: copperCount, status: 'OK' })
-    } catch (error) {
-      tests.push({ table: 'CopperPlatingContent', error: getErrorMessage(error), status: 'ERROR' })
-    }
-    
-    try {
-      const zincCount = await prisma.zincPlatingContent.count()
-      tests.push({ table: 'ZincPlatingContent', count: zincCount, status: 'OK' })
-    } catch (error) {
-      tests.push({ table: 'ZincPlatingContent', error: getErrorMessage(error), status: 'ERROR' })
-    }
-    
-    await prisma.$disconnect()
-    
-    return NextResponse.json({
-      status: 'success',
-      message: 'Database diagnostic complete',
-      tests,
-      databaseUrl: process.env.DATABASE_URL ? 'Set' : 'Not set',
-      environment: process.env.NODE_ENV
+    console.log('Process content counts:', {
+      copperPlating: copperPlatingCount,
+      silverPlating: silverPlatingCount,
+      goldPlating: goldPlatingCount
     })
     
-  } catch (error) {
-    console.error('Database test failed:', error)
+    // Test a simple query from header menu items
+    const menuItems = await prisma.headerMenuItem.findMany({
+      take: 5,
+      select: {
+        id: true,
+        name: true,
+        href: true,
+        isActive: true
+      }
+    })
+    
+    console.log('Sample menu items:', menuItems)
     
     return NextResponse.json({
-      status: 'error',
-      message: 'Database test failed',
-      error: getErrorMessage(error),
-      databaseUrl: process.env.DATABASE_URL ? 'Set' : 'Not set'
-    }, { status: 500 })
+      success: true,
+      message: 'Database connection test passed',
+      data: {
+        basicConnection: 'OK',
+        menuItemsCount,
+        processCounts: {
+          copperPlating: copperPlatingCount,
+          silverPlating: silverPlatingCount,
+          goldPlating: goldPlatingCount
+        },
+        sampleMenuItems: menuItems
+      }
+    })
+  } catch (error) {
+    console.error('Database connection test failed:', error)
+    return NextResponse.json(
+      { 
+        success: false,
+        error: 'Database connection test failed',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    )
   }
 }

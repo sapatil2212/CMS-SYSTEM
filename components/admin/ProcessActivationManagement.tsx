@@ -34,16 +34,29 @@ export default function ProcessActivationManagement() {
   const fetchProcesses = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/content/process-activation')
+      console.log('Fetching processes from:', '/api/content/process-activation')
+      
+      const response = await fetch('/api/content/process-activation', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      console.log('Response status:', response.status)
+      
       if (response.ok) {
         const data = await response.json()
+        console.log('Processes fetched:', data)
         setProcesses(data)
       } else {
-        throw new Error('Failed to fetch processes')
+        const errorText = await response.text()
+        console.error('Failed to fetch processes:', errorText)
+        throw new Error(`Failed to fetch processes: ${response.status} ${errorText}`)
       }
     } catch (error) {
       console.error('Error fetching processes:', error)
-      setMessage({ type: 'error', text: 'Failed to load processes' })
+      setMessage({ type: 'error', text: `Failed to load processes: ${error instanceof Error ? error.message : 'Unknown error'}` })
     } finally {
       setLoading(false)
     }
@@ -54,7 +67,10 @@ export default function ProcessActivationManagement() {
       setUpdating(processSlug)
       setMessage(null)
 
-      const response = await fetch('/api/content/process-activation', {
+      console.log('Toggling process:', processSlug, 'isMenuActive:', isMenuActive)
+
+      // Try PUT method first
+      let response = await fetch('/api/content/process-activation', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -62,16 +78,34 @@ export default function ProcessActivationManagement() {
         body: JSON.stringify({ processSlug, isMenuActive }),
       })
 
+      // If PUT fails, try POST as fallback
+      if (!response.ok) {
+        console.log('PUT failed, trying POST fallback')
+        response = await fetch('/api/content/process-activation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ processSlug, isMenuActive }),
+        })
+      }
+
+      console.log('Response status:', response.status)
+
       if (response.ok) {
+        const result = await response.json()
+        console.log('Process updated successfully:', result)
         setMessage({ type: 'success', text: 'Process activation updated successfully!' })
         // Refresh the data
         await fetchProcesses()
       } else {
-        throw new Error('Failed to update process activation')
+        const errorText = await response.text()
+        console.error('Failed to update process:', errorText)
+        throw new Error(`Failed to update process activation: ${response.status} ${errorText}`)
       }
     } catch (error) {
       console.error('Error updating process activation:', error)
-      setMessage({ type: 'error', text: 'Failed to update process activation' })
+      setMessage({ type: 'error', text: `Failed to update process activation: ${error instanceof Error ? error.message : 'Unknown error'}` })
     } finally {
       setUpdating(null)
     }
@@ -133,49 +167,65 @@ export default function ProcessActivationManagement() {
 
       {/* Processes Grid */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {processes.map((process) => (
-            <div key={process.id} className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-2">
-                  <Settings className="h-4 w-4 text-blue-600" />
-                  <h3 className="text-sm font-semibold text-gray-900">{process.name}</h3>
+        {processes.length === 0 ? (
+          <div className="text-center py-8">
+            <AlertCircle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Processes Found</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              No process pages were found. This might be due to a database connection issue.
+            </p>
+            <button
+              onClick={fetchProcesses}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Retry Loading
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {processes.map((process) => (
+              <div key={process.id} className="border border-gray-200 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    <Settings className="h-4 w-4 text-blue-600" />
+                    <h3 className="text-sm font-semibold text-gray-900">{process.name}</h3>
+                  </div>
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    process.isMenuActive 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {process.isMenuActive ? 'Active' : 'Inactive'}
+                  </span>
                 </div>
-                <span className={`text-xs px-2 py-1 rounded-full ${
-                  process.isMenuActive 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-red-100 text-red-800'
-                }`}>
-                  {process.isMenuActive ? 'Active' : 'Inactive'}
-                </span>
+                
+                <p className="text-xs text-gray-500 mb-3">{process.href}</p>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600">Menu Status:</span>
+                  <button
+                    onClick={() => handleToggleProcess(process.slug, !process.isMenuActive)}
+                    disabled={updating === process.slug}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                      process.isMenuActive ? 'bg-blue-600' : 'bg-gray-200'
+                    } ${updating === process.slug ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        process.isMenuActive ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                    {updating === process.slug && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                      </div>
+                    )}
+                  </button>
+                </div>
               </div>
-              
-              <p className="text-xs text-gray-500 mb-3">{process.href}</p>
-              
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-600">Menu Status:</span>
-                <button
-                  onClick={() => handleToggleProcess(process.slug, !process.isMenuActive)}
-                  disabled={updating === process.slug}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                    process.isMenuActive ? 'bg-blue-600' : 'bg-gray-200'
-                  } ${updating === process.slug ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      process.isMenuActive ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                  {updating === process.slug && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
-                    </div>
-                  )}
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Instructions */}
