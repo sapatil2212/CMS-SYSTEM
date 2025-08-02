@@ -94,7 +94,6 @@ export default function HeaderMenuManagement() {
 
       if (response.ok) {
         setMessage({ type: 'success', text: 'Menu item updated successfully!' })
-        // Refresh the data
         await fetchMenuItems()
       } else {
         throw new Error('Failed to update menu item')
@@ -122,7 +121,6 @@ export default function HeaderMenuManagement() {
 
       if (response.ok) {
         setMessage({ type: 'success', text: 'Dropdown item updated successfully!' })
-        // Refresh the data
         await fetchMenuItems()
       } else {
         throw new Error('Failed to update dropdown item')
@@ -260,100 +258,101 @@ export default function HeaderMenuManagement() {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
               <div className="space-y-3">
                 {menuItems.map((menuItem) => (
-                <div key={menuItem.id} className="border border-gray-200 rounded-lg p-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      {menuItem.hasDropdown && (
+                  <div key={menuItem.id} className="border border-gray-200 rounded-lg p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        {menuItem.hasDropdown && (
+                          <button
+                            onClick={() => toggleExpanded(menuItem.id)}
+                            className="text-gray-500 hover:text-gray-700"
+                          >
+                            {expandedItems.has(menuItem.id) ? (
+                              <ChevronDown className="h-4 w-4" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4" />
+                            )}
+                          </button>
+                        )}
+                        <div>
+                          <h3 className="text-sm font-semibold text-gray-900">{menuItem.name}</h3>
+                          <p className="text-xs text-gray-500">{menuItem.href}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <span className={`text-xs px-2 py-1 rounded-full ${
+                          menuItem.isActive 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {menuItem.isActive ? 'Active' : 'Inactive'}
+                        </span>
                         <button
-                          onClick={() => toggleExpanded(menuItem.id)}
-                          className="text-gray-500 hover:text-gray-700"
+                          onClick={() => handleToggleMenuItem(menuItem.id, !menuItem.isActive)}
+                          disabled={updating === menuItem.id}
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                            menuItem.isActive ? 'bg-blue-600' : 'bg-gray-200'
+                          } ${updating === menuItem.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                         >
-                          {expandedItems.has(menuItem.id) ? (
-                            <ChevronDown className="h-4 w-4" />
-                          ) : (
-                            <ChevronRight className="h-4 w-4" />
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                              menuItem.isActive ? 'translate-x-6' : 'translate-x-1'
+                            }`}
+                          />
+                          {updating === menuItem.id && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                            </div>
                           )}
                         </button>
-                      )}
-                      <div>
-                        <h3 className="text-sm font-semibold text-gray-900">{menuItem.name}</h3>
-                        <p className="text-xs text-gray-500">{menuItem.href}</p>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        menuItem.isActive 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {menuItem.isActive ? 'Active' : 'Inactive'}
-                      </span>
-                      <button
-                        onClick={() => handleToggleMenuItem(menuItem.id, !menuItem.isActive)}
-                        disabled={updating === menuItem.id}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                          menuItem.isActive ? 'bg-blue-600' : 'bg-gray-200'
-                        } ${updating === menuItem.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                      >
-                        <span
-                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                            menuItem.isActive ? 'translate-x-6' : 'translate-x-1'
-                          }`}
-                        />
-                        {updating === menuItem.id && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
-                          </div>
-                        )}
-                      </button>
-                    </div>
-                  </div>
 
-                  {/* Dropdown Items */}
-                  {menuItem.hasDropdown && expandedItems.has(menuItem.id) && (
-                    <div className="mt-3 pl-6 space-y-2">
-                      <div className="text-xs font-medium text-gray-700 mb-2">Dropdown Items:</div>
-                      {menuItem.dropdownItems.map((dropdownItem) => (
-                        <div key={dropdownItem.id} className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-md">
-                          <div>
-                            <span className="text-xs text-gray-600">{dropdownItem.name}</span>
-                            <span className="text-xs text-gray-400 ml-2">({dropdownItem.href})</span>
+                    {/* Dropdown Items */}
+                    {menuItem.hasDropdown && expandedItems.has(menuItem.id) && (
+                      <div className="mt-3 pl-6 space-y-2">
+                        <div className="text-xs font-medium text-gray-700 mb-2">Dropdown Items:</div>
+                        {menuItem.dropdownItems.map((dropdownItem) => (
+                          <div key={dropdownItem.id} className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-md">
+                            <div>
+                              <span className="text-xs text-gray-600">{dropdownItem.name}</span>
+                              <span className="text-xs text-gray-400 ml-2">({dropdownItem.href})</span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                dropdownItem.isActive 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-red-100 text-red-800'
+                              }`}>
+                                {dropdownItem.isActive ? 'Active' : 'Inactive'}
+                              </span>
+                              <button
+                                onClick={() => handleToggleDropdownItem(dropdownItem.id, !dropdownItem.isActive)}
+                                disabled={updating === dropdownItem.id}
+                                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                                  dropdownItem.isActive ? 'bg-blue-600' : 'bg-gray-200'
+                                } ${updating === dropdownItem.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                              >
+                                <span
+                                  className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                                    dropdownItem.isActive ? 'translate-x-5' : 'translate-x-0.5'
+                                  }`}
+                                />
+                                {updating === dropdownItem.id && (
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="animate-spin rounded-full h-2 w-2 border-b-2 border-white"></div>
+                                  </div>
+                                )}
+                              </button>
+                            </div>
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <span className={`text-xs px-2 py-0.5 rounded-full ${
-                              dropdownItem.isActive 
-                                ? 'bg-green-100 text-green-800' 
-                                : 'bg-red-100 text-red-800'
-                            }`}>
-                              {dropdownItem.isActive ? 'Active' : 'Inactive'}
-                            </span>
-                            <button
-                              onClick={() => handleToggleDropdownItem(dropdownItem.id, !dropdownItem.isActive)}
-                              disabled={updating === dropdownItem.id}
-                              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                                dropdownItem.isActive ? 'bg-blue-600' : 'bg-gray-200'
-                              } ${updating === dropdownItem.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                            >
-                              <span
-                                className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
-                                  dropdownItem.isActive ? 'translate-x-5' : 'translate-x-0.5'
-                                }`}
-                              />
-                              {updating === dropdownItem.id && (
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                  <div className="animate-spin rounded-full h-2 w-2 border-b-2 border-white"></div>
-                                </div>
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Instructions */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
