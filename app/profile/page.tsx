@@ -220,7 +220,7 @@ const OTPModal = ({
 }
 
 export default function ProfilePage() {
-  const { user, loading } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const router = useRouter()
   const [profileData, setProfileData] = useState<ProfileData | null>(null)
   const [editing, setEditing] = useState(false)
@@ -243,10 +243,10 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       router.push('/login')
     }
-  }, [user, loading, router])
+  }, [user, authLoading, router])
 
   useEffect(() => {
     if (user) {
