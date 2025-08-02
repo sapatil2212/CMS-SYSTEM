@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
+// Helper function to safely get error message
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message
+  return String(error)
+}
+
 export async function POST() {
   try {
     console.log('🌱 Starting production database seed...')
@@ -71,7 +77,7 @@ export async function POST() {
     return NextResponse.json({
       status: 'error',
       message: 'Failed to seed production database',
-      error: error.message
+      error: getErrorMessage(error)
     }, { status: 500 })
   }
 }

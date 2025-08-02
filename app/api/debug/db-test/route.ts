@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
+// Helper function to safely get error message
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message
+  return String(error)
+}
+
 export async function GET() {
   try {
     console.log('Testing database connection...')
@@ -16,35 +22,35 @@ export async function GET() {
       const userCount = await prisma.user.count()
       tests.push({ table: 'User', count: userCount, status: 'OK' })
     } catch (error) {
-      tests.push({ table: 'User', error: error.message, status: 'ERROR' })
+      tests.push({ table: 'User', error: getErrorMessage(error), status: 'ERROR' })
     }
     
     try {
       const aboutContentCount = await prisma.aboutContent.count()
       tests.push({ table: 'AboutContent', count: aboutContentCount, status: 'OK' })
     } catch (error) {
-      tests.push({ table: 'AboutContent', error: error.message, status: 'ERROR' })
+      tests.push({ table: 'AboutContent', error: getErrorMessage(error), status: 'ERROR' })
     }
     
     try {
       const aboutValueCount = await prisma.aboutValue.count()
       tests.push({ table: 'AboutValue', count: aboutValueCount, status: 'OK' })
     } catch (error) {
-      tests.push({ table: 'AboutValue', error: error.message, status: 'ERROR' })
+      tests.push({ table: 'AboutValue', error: getErrorMessage(error), status: 'ERROR' })
     }
     
     try {
       const copperCount = await prisma.copperPlatingContent.count()
       tests.push({ table: 'CopperPlatingContent', count: copperCount, status: 'OK' })
     } catch (error) {
-      tests.push({ table: 'CopperPlatingContent', error: error.message, status: 'ERROR' })
+      tests.push({ table: 'CopperPlatingContent', error: getErrorMessage(error), status: 'ERROR' })
     }
     
     try {
       const zincCount = await prisma.zincPlatingContent.count()
       tests.push({ table: 'ZincPlatingContent', count: zincCount, status: 'OK' })
     } catch (error) {
-      tests.push({ table: 'ZincPlatingContent', error: error.message, status: 'ERROR' })
+      tests.push({ table: 'ZincPlatingContent', error: getErrorMessage(error), status: 'ERROR' })
     }
     
     await prisma.$disconnect()
@@ -63,7 +69,7 @@ export async function GET() {
     return NextResponse.json({
       status: 'error',
       message: 'Database test failed',
-      error: error.message,
+      error: getErrorMessage(error),
       databaseUrl: process.env.DATABASE_URL ? 'Set' : 'Not set'
     }, { status: 500 })
   }

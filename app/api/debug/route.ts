@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
+// Helper function to safely get error message
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message
+  return String(error)
+}
+
 export async function GET() {
   try {
     console.log('Debug API: Starting database connection test...')
@@ -25,21 +31,21 @@ export async function GET() {
       const copperContent = await prisma.copperPlatingContent.count()
       processModelsStatus.copperPlatingContent = `${copperContent} records`
     } catch (error: any) {
-      processModelsStatus.copperPlatingContent = `error: ${error.message}`
+      processModelsStatus.copperPlatingContent = `error: ${getErrorMessage(error)}`
     }
     
     try {
       const silverContent = await prisma.silverPlatingContent.count()
       processModelsStatus.silverPlatingContent = `${silverContent} records`
     } catch (error: any) {
-      processModelsStatus.silverPlatingContent = `error: ${error.message}`
+      processModelsStatus.silverPlatingContent = `error: ${getErrorMessage(error)}`
     }
     
     try {
       const zincContent = await prisma.zincPlatingContent.count()
       processModelsStatus.zincPlatingContent = `${zincContent} records`
     } catch (error: any) {
-      processModelsStatus.zincPlatingContent = `error: ${error.message}`
+      processModelsStatus.zincPlatingContent = `error: ${getErrorMessage(error)}`
     }
     
     return NextResponse.json({
@@ -67,7 +73,7 @@ export async function GET() {
     console.error('Debug API Error:', error)
     
     const errorDetails = error instanceof Error ? {
-      message: error.message,
+      message: getErrorMessage(error),
       name: error.name,
       code: (error as any).code || 'unknown',
       stack: error.stack?.split('\n').slice(0, 5) // First 5 lines only
@@ -163,7 +169,7 @@ export async function POST() {
     return NextResponse.json({
       status: 'error',
       message: 'Failed to seed production database',
-      error: error.message
+      error: getErrorMessage(error)
     }, { status: 500 })
   } finally {
     await prisma.$disconnect()
