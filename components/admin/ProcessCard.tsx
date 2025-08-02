@@ -91,6 +91,9 @@ export default function ProcessCard({ process, onEdit, onDelete, onToggleActive 
               {hasContent ? 'Content Added' : 'No Content'}
             </div>
           </div>
+          <div className="text-xs text-gray-500">
+            {process.isActive ? 'Shows in dropdown' : 'Hidden from dropdown'}
+          </div>
         </div>
       </div>
 
@@ -137,7 +140,12 @@ export default function ProcessCard({ process, onEdit, onDelete, onToggleActive 
               <span>Edit</span>
             </button>
             <button
-              onClick={() => window.open(`/processes/${process.slug}`, '_blank')}
+              onClick={() => {
+                // Check if it's a base metal or process and open the correct URL
+                const isBaseMetal = ['aluminium', 'copper', 'brass', 'stainless-steel', 'carbon-steel'].includes(process.slug)
+                const url = isBaseMetal ? `/basemetals/${process.slug}` : `/processes/${process.slug}`
+                window.open(url, '_blank')
+              }}
               className="flex items-center space-x-1 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
             >
               <Eye className="h-4 w-4" />

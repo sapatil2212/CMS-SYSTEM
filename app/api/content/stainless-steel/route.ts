@@ -3,7 +3,7 @@ import { prisma } from '@/lib/db'
 
 export async function GET() {
   try {
-    const content = await prisma.steelContent.findFirst({
+    const content = await prisma.stainlessSteelContent.findFirst({
       include: {
         benefits: { orderBy: { order: 'asc' } },
         processSteps: { orderBy: { order: 'asc' } },
@@ -32,7 +32,7 @@ export async function GET() {
 
     return NextResponse.json(parsedContent)
   } catch (error) {
-    console.error('Error fetching steel content:', error)
+    console.error('Error fetching stainless steel content:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -42,36 +42,36 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     
     // Check if content exists
-    const existingContent = await prisma.steelContent.findFirst()
+    const existingContent = await prisma.stainlessSteelContent.findFirst()
     
     if (existingContent) {
       // Update existing content
-      const updatedContent = await prisma.steelContent.update({
+      const updatedContent = await prisma.stainlessSteelContent.update({
         where: { id: existingContent.id },
         data: {
-          heroTitle: body.heroTitle,
-          heroSubtitle: body.heroSubtitle,
-          heroDescription: body.heroDescription,
-          heroImage: body.heroImage,
-          whatIsTitle: body.whatIsTitle,
-          whatIsDescription: body.whatIsDescription,
-          whatIsImage: body.whatIsImage,
-          whatIsBestFor: body.whatIsBestFor,
-          whatIsMaterials: body.whatIsMaterials,
-          whatIsAlkalineOffers: body.whatIsAlkalineOffers,
-          benefitsTitle: body.benefitsTitle,
-          benefitsSubtitle: body.benefitsSubtitle,
-          processTitle: body.processTitle,
-          processSubtitle: body.processSubtitle,
-          applicationsTitle: body.applicationsTitle,
-          applicationsSubtitle: body.applicationsSubtitle,
-          industriesTitle: body.industriesTitle,
-          industriesSubtitle: body.industriesSubtitle,
-          qualityTitle: body.qualityTitle,
-          qualityDescription: body.qualityDescription,
+          heroTitle: body.heroTitle || '',
+          heroSubtitle: body.heroSubtitle || '',
+          heroDescription: body.heroDescription || '',
+          heroImage: body.heroImage || '',
+          whatIsTitle: body.whatIsTitle || '',
+          whatIsDescription: body.whatIsDescription || '',
+          whatIsImage: body.whatIsImage || '',
+          whatIsBestFor: body.whatIsBestFor || '',
+          whatIsMaterials: body.whatIsMaterials || '',
+          whatIsAlkalineOffers: body.whatIsAlkalineOffers || '',
+          benefitsTitle: body.benefitsTitle || '',
+          benefitsSubtitle: body.benefitsSubtitle || '',
+          processTitle: body.processTitle || '',
+          processSubtitle: body.processSubtitle || '',
+          applicationsTitle: body.applicationsTitle || '',
+          applicationsSubtitle: body.applicationsSubtitle || '',
+          industriesTitle: body.industriesTitle || '',
+          industriesSubtitle: body.industriesSubtitle || '',
+          qualityTitle: body.qualityTitle || '',
+          qualityDescription: body.qualityDescription || '',
           qualityImage: body.qualityImage,
-          ctaTitle: body.ctaTitle,
-          ctaDescription: body.ctaDescription,
+          ctaTitle: body.ctaTitle || '',
+          ctaDescription: body.ctaDescription || '',
           benefits: {
             deleteMany: {},
             create: (body.benefits || []).map((benefit: any, index: number) => ({
@@ -130,31 +130,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(updatedContent)
     } else {
       // Create new content
-      const newContent = await prisma.steelContent.create({
+      const newContent = await prisma.stainlessSteelContent.create({
         data: {
-          heroTitle: body.heroTitle,
-          heroSubtitle: body.heroSubtitle,
-          heroDescription: body.heroDescription,
-          heroImage: body.heroImage,
-          whatIsTitle: body.whatIsTitle,
-          whatIsDescription: body.whatIsDescription,
-          whatIsImage: body.whatIsImage,
-          whatIsBestFor: body.whatIsBestFor,
-          whatIsMaterials: body.whatIsMaterials,
-          whatIsAlkalineOffers: body.whatIsAlkalineOffers,
-          benefitsTitle: body.benefitsTitle,
-          benefitsSubtitle: body.benefitsSubtitle,
-          processTitle: body.processTitle,
-          processSubtitle: body.processSubtitle,
-          applicationsTitle: body.applicationsTitle,
-          applicationsSubtitle: body.applicationsSubtitle,
-          industriesTitle: body.industriesTitle,
-          industriesSubtitle: body.industriesSubtitle,
-          qualityTitle: body.qualityTitle,
-          qualityDescription: body.qualityDescription,
+          heroTitle: body.heroTitle || '',
+          heroSubtitle: body.heroSubtitle || '',
+          heroDescription: body.heroDescription || '',
+          heroImage: body.heroImage || '',
+          whatIsTitle: body.whatIsTitle || '',
+          whatIsDescription: body.whatIsDescription || '',
+          whatIsImage: body.whatIsImage || '',
+          whatIsBestFor: body.whatIsBestFor || '',
+          whatIsMaterials: body.whatIsMaterials || '',
+          whatIsAlkalineOffers: body.whatIsAlkalineOffers || '',
+          benefitsTitle: body.benefitsTitle || '',
+          benefitsSubtitle: body.benefitsSubtitle || '',
+          processTitle: body.processTitle || '',
+          processSubtitle: body.processSubtitle || '',
+          applicationsTitle: body.applicationsTitle || '',
+          applicationsSubtitle: body.applicationsSubtitle || '',
+          industriesTitle: body.industriesTitle || '',
+          industriesSubtitle: body.industriesSubtitle || '',
+          qualityTitle: body.qualityTitle || '',
+          qualityDescription: body.qualityDescription || '',
           qualityImage: body.qualityImage,
-          ctaTitle: body.ctaTitle,
-          ctaDescription: body.ctaDescription,
+          ctaTitle: body.ctaTitle || '',
+          ctaDescription: body.ctaDescription || '',
           benefits: {
             create: (body.benefits || []).map((benefit: any, index: number) => ({
               icon: benefit.icon || '',
@@ -208,7 +208,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(newContent)
     }
   } catch (error) {
-    console.error('Error saving steel content:', error)
+    console.error('Error saving stainless steel content:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
-} 
+}

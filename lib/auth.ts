@@ -53,7 +53,7 @@ export async function createUser(name: string, email: string, password: string) 
       name,
       email,
       password: hashedPassword,
-      role: 'ADMIN', // Set default role as ADMIN for new registrations
+      role: 'USER', // Set default role as USER for new registrations
     },
   })
 

@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/auth-provider'
 import { useRouter } from 'next/navigation'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import AdminHeader from '@/components/admin/AdminHeader'
+import HeaderManagement from '@/components/admin/HeaderManagement'
 
 export default function HeaderContent() {
   const { user, loading } = useAuth()
@@ -41,16 +42,7 @@ export default function HeaderContent() {
         
         <main className="py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Header Content</h1>
-              <p className="mt-2 text-gray-600">
-                Manage your header content and navigation
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg shadow p-6">
-              <p className="text-gray-600">Header content management coming soon...</p>
-            </div>
+            <HeaderManagement />
           </div>
         </main>
       </div>

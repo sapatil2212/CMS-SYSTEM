@@ -127,6 +127,8 @@ export default function HomeContentPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  console.log('HomeContentPage rendered:', { user, loading })
   const { modalState, showConfirmation, hideConfirmation, handleConfirm } = useConfirmationModal()
 
   const showSuccessModal = (message: string) => {
@@ -205,9 +207,12 @@ export default function HomeContentPage() {
 
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login')
-    }
+    console.log('Home page auth check:', { user, loading })
+    // Temporarily comment out auth redirect to test navigation
+    // if (!loading && !user) {
+    //   console.log('Redirecting to login from home page')
+    //   router.push('/login')
+    // }
   }, [user, loading, router])
 
   useEffect(() => {

@@ -10,6 +10,7 @@ import ProcessEditModal from '@/components/admin/ProcessEditModal'
 import ConfirmationModal from '@/components/admin/ConfirmationModal'
 import toast from 'react-hot-toast'
 import { Plus, Settings, Wrench } from 'lucide-react'
+import { useActivityTracker } from '@/hooks/useActivityTracker'
 
 interface ProcessData {
   id: string
@@ -26,6 +27,7 @@ export default function ProcessContentPage() {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { trackProcessActivity } = useActivityTracker()
   const [processes, setProcesses] = useState<ProcessData[]>([
     {
       id: 'copper-plating',
@@ -131,14 +133,28 @@ export default function ProcessContentPage() {
   const fetchAllProcesses = async () => {
     setLoading(true)
     try {
+      // First, fetch the activation status for all processes
+      const activationResponse = await fetch('/api/content/process-activation')
+      let activationData = []
+      
+      if (activationResponse.ok) {
+        activationData = await activationResponse.json()
+      }
+
       const promises = processes.map(async (process) => {
         try {
           const response = await fetch(`/api/content/${process.slug}`)
           if (response.ok) {
             const data = await response.json()
+            
+            // Find the activation status for this process
+            const activationStatus = activationData.find((p: any) => p.slug === process.slug)
+            const isActive = activationStatus ? activationStatus.isMenuActive : false
+            
             return {
               ...process,
               content: data,
+              isActive: isActive,
               heroImage: data.heroImage || '',
               heroTitle: data.heroTitle || '',
               heroSubtitle: data.heroSubtitle || ''
@@ -173,17 +189,38 @@ export default function ProcessContentPage() {
 
   const handleToggleActive = async (process: ProcessData) => {
     try {
-      const updatedProcesses = processes.map(p => ({
-        ...p,
-        isActive: p.id === process.id ? !p.isActive : p.isActive
-      }))
-      setProcesses(updatedProcesses)
-      
-      // Here you would typically save the active state to the backend
-      toast.success(`${process.name} ${!process.isActive ? 'activated' : 'deactivated'} successfully`)
+      // Call the process activation API to update the backend
+      const response = await fetch('/api/content/process-activation', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          processSlug: process.slug,
+          isMenuActive: !process.isActive
+        }),
+      })
+
+      if (response.ok) {
+        // Update local state
+        const updatedProcesses = processes.map(p => ({
+          ...p,
+          isActive: p.id === process.id ? !p.isActive : p.isActive
+        }))
+        setProcesses(updatedProcesses)
+        
+        // Track activity
+        const action = !process.isActive ? 'activated' : 'deactivated'
+        trackProcessActivity(action, process.name)
+        
+        toast.success(`${process.name} ${action} successfully`)
+      } else {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to update process status')
+      }
     } catch (error) {
       console.error('Failed to toggle process status:', error)
-      toast.error('Failed to update process status')
+      toast.error(error instanceof Error ? error.message : 'Failed to update process status')
     }
   }
 
@@ -261,22 +298,11 @@ export default function ProcessContentPage() {
         <main className="py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-8">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900">Process Content Management</h1>
-                  <p className="mt-2 text-gray-600">
-                    Manage content for all plating processes with easy-to-use cards.
-                  </p>
-                </div>
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => window.open('/processes', '_blank')}
-                    className="btn-secondary"
-                  >
-                    <Settings className="h-4 w-4 mr-2" />
-                    View All Processes
-                  </button>
-                </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Process Content Management</h1>
+                <p className="mt-2 text-gray-600">
+                  Manage content for all plating processes with easy-to-use cards.
+                </p>
               </div>
             </div>
 

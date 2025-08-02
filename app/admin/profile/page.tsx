@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/auth-provider'
 import { useRouter } from 'next/navigation'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import AdminHeader from '@/components/admin/AdminHeader'
+import ProfileManagement from '@/components/admin/ProfileManagement'
 
 export default function Profile() {
   const { user, loading } = useAuth()
@@ -48,27 +49,7 @@ export default function Profile() {
               </p>
             </div>
 
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Account Information</h3>
-                  <div className="grid grid-cols-1 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Name</label>
-                      <p className="mt-1 text-sm text-gray-900">{user.name}</p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Email</label>
-                      <p className="mt-1 text-sm text-gray-900">{user.email}</p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Role</label>
-                      <p className="mt-1 text-sm text-gray-900">{user.role}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ProfileManagement />
           </div>
         </main>
       </div>

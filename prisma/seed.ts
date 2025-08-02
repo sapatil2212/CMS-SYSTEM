@@ -186,14 +186,21 @@ async function main() {
   // Seed base metals content
   console.log('🌱 Seeding base metals content...')
   
-  // Seed aluminium content
-  const existingAluminiumContent = await prisma.aluminiumContent.findFirst()
-  if (!existingAluminiumContent) {
-    const { default: seedAluminium } = await import('./seed-aluminium')
-    await seedAluminium()
-  } else {
-    console.log('✅ Aluminium content already exists, skipping...')
-  }
+  // Import all base metal seeding functions
+  const { seedAluminiumContent } = await import('./seed-aluminium-content')
+  const { seedCopperContent } = await import('./seed-copper-content')
+  const { seedBrassContent } = await import('./seed-brass-content')
+  const { seedStainlessSteelContent } = await import('./seed-stainless-steel-content')
+  const { seedCarbonSteelContent } = await import('./seed-carbon-steel-content')
+
+  // Seed all base metal content
+  await seedAluminiumContent()
+  await seedCopperContent()
+  await seedBrassContent()
+  await seedStainlessSteelContent()
+  await seedCarbonSteelContent()
+
+  console.log('✅ All base metal content seeded successfully')
 }
 
 main()

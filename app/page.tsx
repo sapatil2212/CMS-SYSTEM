@@ -9,6 +9,7 @@ import Testimonials from '@/components/frontend/HomeComponents/Testimonials'
 import AboutSection from '@/components/frontend/AboutSection'
 import ServicesSection from '@/components/frontend/ServicesSection'
 import ContactSection from '@/components/frontend/ContactSection'
+import OfferPopup from '@/components/frontend/OfferPopup'
 
 export default function Home() {
   return (
@@ -34,6 +35,9 @@ export default function Home() {
       <Suspense fallback={<div className="py-20 bg-gray-100" />}>
         <Testimonials />
       </Suspense>
+      
+      {/* Offer Popup Modal */}
+      <OfferPopup />
     </main>
   )
 } 

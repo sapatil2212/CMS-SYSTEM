@@ -10,11 +10,17 @@ export async function GET(request: NextRequest) {
       prisma.user.count(),
     ])
 
+    // Mock data for pageViews and activeUsers since we don't have analytics tracking yet
+    const pageViews = Math.floor(Math.random() * 2000) + 500
+    const activeUsers = Math.floor(Math.random() * 200) + 50
+
     return NextResponse.json({
       pages,
       heroSlides,
       services,
       users,
+      pageViews,
+      activeUsers,
     })
   } catch (error) {
     console.error('Error fetching admin stats:', error)

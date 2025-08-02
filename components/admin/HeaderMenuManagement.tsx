@@ -1,0 +1,283 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { ToggleLeft, ToggleRight, ChevronDown, ChevronRight, CheckCircle, AlertCircle } from 'lucide-react'
+import ProcessActivationManagement from './ProcessActivationManagement'
+import BaseMetalActivationManagement from './BaseMetalActivationManagement'
+
+interface HeaderMenuDropdownItem {
+  id: string
+  name: string
+  href: string
+  order: number
+  isActive: boolean
+}
+
+interface HeaderMenuItem {
+  id: string
+  name: string
+  href: string
+  order: number
+  isActive: boolean
+  hasDropdown: boolean
+  dropdownItems: HeaderMenuDropdownItem[]
+}
+
+export default function HeaderMenuManagement() {
+  const [menuItems, setMenuItems] = useState<HeaderMenuItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [updating, setUpdating] = useState<string | null>(null)
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
+  const [activeSubSection, setActiveSubSection] = useState<'menu-items' | 'processes' | 'base-metals'>('menu-items')
+
+  useEffect(() => {
+    fetchMenuItems()
+  }, [])
+
+  const fetchMenuItems = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/content/header-menu')
+      if (response.ok) {
+        const data = await response.json()
+        setMenuItems(data)
+      } else {
+        throw new Error('Failed to fetch menu items')
+      }
+    } catch (error) {
+      console.error('Error fetching menu items:', error)
+      setMessage({ type: 'error', text: 'Failed to load menu items' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleToggleMenuItem = async (menuItemId: string, isActive: boolean) => {
+    try {
+      setUpdating(menuItemId)
+      setMessage(null)
+
+      const response = await fetch('/api/content/header-menu', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ menuItemId, isActive }),
+      })
+
+      if (response.ok) {
+        setMessage({ type: 'success', text: 'Menu item updated successfully!' })
+        // Refresh the data
+        await fetchMenuItems()
+      } else {
+        throw new Error('Failed to update menu item')
+      }
+    } catch (error) {
+      console.error('Error updating menu item:', error)
+      setMessage({ type: 'error', text: 'Failed to update menu item' })
+    } finally {
+      setUpdating(null)
+    }
+  }
+
+  const toggleExpanded = (menuItemId: string) => {
+    const newExpanded = new Set(expandedItems)
+    if (newExpanded.has(menuItemId)) {
+      newExpanded.delete(menuItemId)
+    } else {
+      newExpanded.add(menuItemId)
+    }
+    setExpandedItems(newExpanded)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <span className="ml-2 text-gray-600">Loading menu items...</span>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+
+
+      {/* Sub-section Toggle Menu */}
+      <div className="mb-6">
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-2 shadow-md">
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setActiveSubSection('menu-items')}
+              className={`group relative px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-300 transform hover:scale-105 ${
+                activeSubSection === 'menu-items'
+                  ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/30'
+                  : 'text-green-700 hover:bg-white/80 hover:shadow-md'
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                  activeSubSection === 'menu-items' ? 'bg-white' : 'bg-green-400'
+                }`} />
+                Menu Items
+              </span>
+            </button>
+            
+            <button
+              onClick={() => setActiveSubSection('processes')}
+              className={`group relative px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-300 transform hover:scale-105 ${
+                activeSubSection === 'processes'
+                  ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/30'
+                  : 'text-green-700 hover:bg-white/80 hover:shadow-md'
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                  activeSubSection === 'processes' ? 'bg-white' : 'bg-green-400'
+                }`} />
+                Process Pages
+              </span>
+            </button>
+            
+            <button
+              onClick={() => setActiveSubSection('base-metals')}
+              className={`group relative px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-300 transform hover:scale-105 ${
+                activeSubSection === 'base-metals'
+                  ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg shadow-green-500/30'
+                  : 'text-green-700 hover:bg-white/80 hover:shadow-md'
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                  activeSubSection === 'base-metals' ? 'bg-white' : 'bg-green-400'
+                }`} />
+                Base Metal Pages
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Message */}
+      {message && (
+        <div className={`p-3 rounded-md flex items-center space-x-2 ${
+          message.type === 'success' 
+            ? 'bg-green-50 text-green-800 border border-green-200' 
+            : 'bg-red-50 text-red-800 border border-red-200'
+        }`}>
+          {message.type === 'success' ? (
+            <CheckCircle className="h-4 w-4 text-green-600" />
+          ) : (
+            <AlertCircle className="h-4 w-4 text-red-600" />
+          )}
+          <span className="text-xs font-medium">{message.text}</span>
+        </div>
+      )}
+
+      {/* Menu Items Section */}
+      {activeSubSection === 'menu-items' && (
+        <>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div className="space-y-3">
+              {menuItems.map((menuItem) => (
+                <div key={menuItem.id} className="border border-gray-200 rounded-lg p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      {menuItem.hasDropdown && (
+                        <button
+                          onClick={() => toggleExpanded(menuItem.id)}
+                          className="text-gray-500 hover:text-gray-700"
+                        >
+                          {expandedItems.has(menuItem.id) ? (
+                            <ChevronDown className="h-4 w-4" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4" />
+                          )}
+                        </button>
+                      )}
+                      <div>
+                        <h3 className="text-sm font-semibold text-gray-900">{menuItem.name}</h3>
+                        <p className="text-xs text-gray-500">{menuItem.href}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        menuItem.isActive 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {menuItem.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                      <button
+                        onClick={() => handleToggleMenuItem(menuItem.id, !menuItem.isActive)}
+                        disabled={updating === menuItem.id}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                          menuItem.isActive ? 'bg-blue-600' : 'bg-gray-200'
+                        } ${updating === menuItem.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                            menuItem.isActive ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                        {updating === menuItem.id && (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                          </div>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Dropdown Items */}
+                  {menuItem.hasDropdown && expandedItems.has(menuItem.id) && (
+                    <div className="mt-3 pl-6 space-y-2">
+                      <div className="text-xs font-medium text-gray-700 mb-2">Dropdown Items:</div>
+                      {menuItem.dropdownItems.map((dropdownItem) => (
+                        <div key={dropdownItem.id} className="flex items-center justify-between py-1">
+                          <div>
+                            <span className="text-xs text-gray-600">{dropdownItem.name}</span>
+                            <span className="text-xs text-gray-400 ml-2">({dropdownItem.href})</span>
+                          </div>
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${
+                            dropdownItem.isActive 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {dropdownItem.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Instructions */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <h4 className="text-xs font-medium text-blue-900 mb-1">Instructions</h4>
+            <ul className="text-xs text-blue-800 space-y-0.5">
+              <li>• Toggle menu items on/off to show/hide them on the frontend</li>
+              <li>• Click the chevron icon to expand dropdown items</li>
+              <li>• Deactivated items will be completely hidden from the header navigation</li>
+              <li>• Changes are applied immediately to the frontend</li>
+            </ul>
+          </div>
+        </>
+      )}
+
+      {/* Process Pages Section */}
+      {activeSubSection === 'processes' && (
+        <ProcessActivationManagement />
+      )}
+
+      {/* Base Metal Pages Section */}
+      {activeSubSection === 'base-metals' && (
+        <BaseMetalActivationManagement />
+      )}
+    </div>
+  )
+} 

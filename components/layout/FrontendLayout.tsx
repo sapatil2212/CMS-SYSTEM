@@ -14,13 +14,19 @@ export default function FrontendLayout({ children }: FrontendLayoutProps) {
   // Check if this is an admin page
   const isAdminPage = pathname.startsWith('/admin')
   
+  // Check if this is login or signup page
+  const isAuthPage = pathname === '/login' || pathname === '/signup'
+  
+  // Hide header and footer for admin pages and auth pages
+  const shouldHideHeaderFooter = isAdminPage || isAuthPage
+  
   return (
     <>
-      {!isAdminPage && <Header />}
+      {!shouldHideHeaderFooter && <Header />}
       <main>
         {children}
       </main>
-      {!isAdminPage && <Footer />}
+      {!shouldHideHeaderFooter && <Footer />}
     </>
   )
 } 

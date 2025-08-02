@@ -4,6 +4,7 @@ import './globals.css'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from '@/lib/auth-provider'
 import FrontendLayout from '@/components/layout/FrontendLayout'
+import VisitorTracker from '@/components/VisitorTracker'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,6 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
+          <VisitorTracker />
           <FrontendLayout>
             {children}
           </FrontendLayout>

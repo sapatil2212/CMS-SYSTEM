@@ -6,10 +6,54 @@ import { useAuth } from '@/lib/auth-provider'
 import { Menu, X, Phone, ChevronDown, LogOut } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
+interface BaseMetal {
+  slug: string
+  name: string
+  href: string
+  isActive: boolean
+}
+
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const [activeBaseMetals, setActiveBaseMetals] = useState<BaseMetal[]>([])
+  const [loadingBaseMetals, setLoadingBaseMetals] = useState(true)
+  const [headerSettings, setHeaderSettings] = useState<{
+    logoUrl?: string
+    logoAlt?: string
+    phoneNumber?: string
+    email?: string
+  } | null>(null)
+  const [menuItems, setMenuItems] = useState<Array<{
+    id: string
+    name: string
+    href: string
+    order: number
+    isActive: boolean
+    hasDropdown: boolean
+    dropdownItems: Array<{
+      id: string
+      name: string
+      href: string
+      order: number
+      isActive: boolean
+    }>
+  }>>([])
+  const [menuActiveProcesses, setMenuActiveProcesses] = useState<Array<{
+    id: string
+    name: string
+    slug: string
+    href: string
+    isMenuActive: boolean
+  }>>([])
+  const [menuActiveBaseMetals, setMenuActiveBaseMetals] = useState<Array<{
+    id: string
+    name: string
+    slug: string
+    href: string
+    isMenuActive: boolean
+  }>>([])
   const { user, logout } = useAuth()
 
   useEffect(() => {
@@ -21,6 +65,93 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  useEffect(() => {
+    fetchActiveBaseMetals()
+    fetchHeaderSettings()
+    fetchMenuItems()
+    fetchMenuActiveProcesses()
+    fetchMenuActiveBaseMetals()
+  }, [])
+
+  const fetchHeaderSettings = async () => {
+    try {
+      const response = await fetch('/api/content/header')
+      if (response.ok) {
+        const data = await response.json()
+        setHeaderSettings(data)
+      }
+    } catch (error) {
+      console.error('Error fetching header settings:', error)
+    }
+  }
+
+  const fetchMenuItems = async () => {
+    try {
+      const response = await fetch('/api/content/header-menu')
+      if (response.ok) {
+        const data = await response.json()
+        setMenuItems(data)
+      }
+    } catch (error) {
+      console.error('Error fetching menu items:', error)
+    }
+  }
+
+  const fetchMenuActiveProcesses = async () => {
+    try {
+      const response = await fetch('/api/content/process-activation')
+      if (response.ok) {
+        const data = await response.json()
+        setMenuActiveProcesses(data)
+      }
+    } catch (error) {
+      console.error('Error fetching menu active processes:', error)
+    }
+  }
+
+  const fetchMenuActiveBaseMetals = async () => {
+    try {
+      const response = await fetch('/api/content/base-metal-activation')
+      if (response.ok) {
+        const data = await response.json()
+        setMenuActiveBaseMetals(data)
+      }
+    } catch (error) {
+      console.error('Error fetching menu active base metals:', error)
+    }
+  }
+
+  const fetchActiveBaseMetals = async () => {
+    try {
+      const response = await fetch('/api/content/active-base-metals')
+      if (response.ok) {
+        const data = await response.json()
+        setActiveBaseMetals(data)
+      } else {
+        // Fallback to default base metals if API fails
+        setActiveBaseMetals([
+          { slug: 'aluminium', name: 'Aluminium', href: '/basemetals/aluminium', isActive: true },
+          { slug: 'copper', name: 'Copper', href: '/basemetals/copper', isActive: true },
+          { slug: 'stainless-steel', name: 'Stainless Steel', href: '/basemetals/stainless-steel', isActive: true },
+          { slug: 'carbon-steel', name: 'Carbon Steel', href: '/basemetals/carbon-steel', isActive: true },
+          { slug: 'brass', name: 'Brass', href: '/basemetals/brass', isActive: true }
+        ])
+      }
+    } catch (error) {
+      console.error('Error fetching active base metals:', error)
+      // Fallback to default base metals
+      setActiveBaseMetals([
+        { slug: 'aluminium', name: 'Aluminium', href: '/basemetals/aluminium', isActive: true },
+        { slug: 'copper', name: 'Copper', href: '/basemetals/copper', isActive: true },
+        { slug: 'stainless-steel', name: 'Stainless Steel', href: '/basemetals/stainless-steel', isActive: true },
+        { slug: 'carbon-steel', name: 'Carbon Steel', href: '/basemetals/carbon-steel', isActive: true },
+        { slug: 'brass', name: 'Brass', href: '/basemetals/brass', isActive: true }
+      ])
+    } finally {
+      setLoadingBaseMetals(false)
+    }
+  }
+
   const toggleDropdown = (name: string) => {
     setOpenDropdown(openDropdown === name ? null : name)
   }
@@ -30,48 +161,56 @@ export default function Header() {
     return fullName.split(' ')[0]
   }
 
-  const navigation = [
-    { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
-    { 
-      name: 'Processes', 
-      dropdown: true,
-      items: [
-        { name: 'Silver Plating', href: '/processes/silver-plating' },
-        { name: 'Busbar Plating', href: '/processes/busbar-plating' },
-        { name: 'Zinc Plating & Colour Passivates', href: '/processes/zinc-plating' },
-        { name: 'Gold Plating', href: '/processes/gold-plating' },
-        { name: 'Copper Plating', href: '/processes/copper-plating' },
-        { name: 'Nickel Plating', href: '/processes/nickel-plating' },
-        { name: 'Electroless Nickel Plating', href: '/processes/electroless-nickel-plating' },
-        { name: 'Bright Tin Plating', href: '/processes/bright-tin-plating' },
-        { name: 'Dull Tin Plating', href: '/processes/dull-tin-plating' },
-        { name: 'Rack & Barrel Plating', href: '/processes/rack-barrel-plating' },
-        { name: 'Zinc Flake Coating', href: '/processes/zinc-flake-coating' },
-        { name: 'Molykote', href: '/processes/molykote' },
-      ]
-    },
-    { 
-      name: 'Base Metals', 
-      dropdown: true,
-      items: [
-        { name: 'Aluminium', href: '/base-metals/aluminium' },
-        { name: 'Copper', href: '/base-metals/copper' },
-        { name: 'Stainless Steel', href: '/base-metals/stainless-steel' },
-        { name: 'Carbon Steel', href: '/base-metals/carbon-steel' },
-        { name: 'Brass', href: '/base-metals/brass' },
-      ]
-    },
-    { 
-      name: 'Sectors', 
-      dropdown: true,
-      items: [
-        { name: 'Sectors Overview', href: '/sectors' }
-      ]
-    },
-    { name: 'Quality Testing', href: '/quality-testing' },
-    { name: 'Contact', href: '/contact' },
-  ]
+  const navigation = menuItems
+    .filter(item => item.isActive)
+    .map(item => {
+      // For Processes dropdown, filter based on menuActiveProcesses
+      if (item.name === 'Processes' && item.hasDropdown) {
+        const activeProcessItems = menuActiveProcesses
+          .filter(process => process.isMenuActive)
+          .map(process => ({
+            name: process.name,
+            href: process.href
+          }))
+        
+        return {
+          name: item.name,
+          href: item.href,
+          dropdown: item.hasDropdown,
+          items: activeProcessItems
+        }
+      }
+      
+      // For Base Metals dropdown, filter based on menuActiveBaseMetals
+      if (item.name === 'Base Metals' && item.hasDropdown) {
+        const activeBaseMetalItems = menuActiveBaseMetals
+          .filter(baseMetal => baseMetal.isMenuActive)
+          .map(baseMetal => ({
+            name: baseMetal.name,
+            href: baseMetal.href
+          }))
+        
+        return {
+          name: item.name,
+          href: item.href,
+          dropdown: item.hasDropdown,
+          items: activeBaseMetalItems
+        }
+      }
+      
+      // For other items, use the original logic
+      return {
+        name: item.name,
+        href: item.href,
+        dropdown: item.hasDropdown,
+        items: item.hasDropdown ? item.dropdownItems
+          .filter(dropdownItem => dropdownItem.isActive)
+          .map(dropdownItem => ({
+            name: dropdownItem.name,
+            href: dropdownItem.href
+          })) : []
+      }
+    })
 
   const headerVariants = {
     scrolled: {
@@ -134,8 +273,8 @@ export default function Header() {
           >
             <Link href="/" className="flex items-center">
               <img 
-                src="/logo/logo.png" 
-                alt="CMS System Logo" 
+                src={headerSettings?.logoUrl || "/logo/logo.svg"} 
+                alt={headerSettings?.logoAlt || "CMS System Logo"} 
                 className="h-10 w-auto hidden sm:block" 
                 onError={(e) => {
                   // Fallback to text if image fails to load
@@ -146,8 +285,8 @@ export default function Header() {
                 }}
               />
               <img 
-                src="/logo/logo.png" 
-                alt="CMS System Logo" 
+                src={headerSettings?.logoUrl || "/logo/logo.svg"} 
+                alt={headerSettings?.logoAlt || "CMS System Logo"} 
                 className="h-8 w-auto sm:hidden" 
                 onError={(e) => {
                   // Fallback to text if image fails to load
@@ -223,7 +362,7 @@ export default function Header() {
 
             {/* Phone Number Button */}
             <motion.a
-              href="tel:+919373102887"
+              href={`tel:${headerSettings?.phoneNumber || '+919373102887'}`}
               className="relative overflow-hidden px-5 py-2 bg-gradient-to-r from-blue-600 to-blue-900 rounded-full font-medium text-white text-sm tracking-wide flex items-center gap-2"
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
@@ -235,7 +374,7 @@ export default function Header() {
               transition={{ type: 'spring', stiffness: 400, damping: 10 }}
             >
               <Phone className="h-4 w-4" />
-              <span className="font-medium">+91 93731 02887</span>
+              <span className="font-medium">{headerSettings?.phoneNumber || '+91 93731 02887'}</span>
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12"
                 initial={{ x: '-100%' }}

@@ -5,8 +5,9 @@ import { useAuth } from '@/lib/auth-provider'
 import { useRouter } from 'next/navigation'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import AdminHeader from '@/components/admin/AdminHeader'
+import OfferPopupManagement from '@/components/admin/OfferPopupManagement'
 
-export default function BaseMetalsContent() {
+export default function OfferPopupContent() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -41,16 +42,7 @@ export default function BaseMetalsContent() {
         
         <main className="py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Base Metals Content</h1>
-              <p className="mt-2 text-gray-600">
-                Manage your base metals content and information
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg shadow p-6">
-              <p className="text-gray-600">Base Metals content management coming soon...</p>
-            </div>
+            <OfferPopupManagement />
           </div>
         </main>
       </div>
