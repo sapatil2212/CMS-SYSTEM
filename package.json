@@ -1,6 +1,6 @@
 {
   "name": "cms-system",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Full-stack CMS system with Next.js and Vite",
   "private": true,
   "scripts": {

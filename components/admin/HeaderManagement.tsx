@@ -50,13 +50,26 @@ export default function HeaderManagement() {
       setSaving(true)
       setMessage(null)
 
-      const response = await fetch('/api/content/header', {
+      // Try PUT first, fallback to POST if PUT fails
+      let response = await fetch('/api/content/header', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(settings),
       })
+
+      // If PUT fails, try POST as fallback
+      if (!response.ok && response.status === 405) {
+        console.log('PUT method not allowed, trying POST as fallback...')
+        response = await fetch('/api/content/header', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(settings),
+        })
+      }
 
                    if (response.ok) {
         const result = await response.json()
