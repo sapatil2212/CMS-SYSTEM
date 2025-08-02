@@ -13,7 +13,10 @@ export async function GET(request: NextRequest) {
         address: 'Address not configured',
         email: 'Email not configured',
         phone: 'Phone not configured',
-        workingHours: 'Working hours not configured'
+        title: 'Contact Us',
+        subtitle: '',
+        description: '',
+        mapLink: ''
       });
     }
 
@@ -21,7 +24,10 @@ export async function GET(request: NextRequest) {
       address: contactContent.address || 'Address not configured',
       email: contactContent.email || 'Email not configured',
       phone: contactContent.phone || 'Phone not configured',
-      workingHours: contactContent.workingHours || 'Working hours not configured'
+      title: contactContent.title || 'Contact Us',
+      subtitle: contactContent.subtitle || '',
+      description: contactContent.description || '',
+      mapLink: contactContent.mapLink || ''
     });
   } catch (error) {
     console.error('Error fetching contact info:', error);
