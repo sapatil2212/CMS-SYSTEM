@@ -6,7 +6,6 @@ export async function GET() {
     const menuItems = await prisma.headerMenuItem.findMany({
       include: {
         dropdownItems: {
-          where: { isActive: true },
           orderBy: { order: 'asc' }
         }
       },
@@ -26,8 +25,26 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
-    const { menuItemId, isActive } = body
+    const { menuItemId, dropdownItemId, isActive } = body
 
+    // If dropdownItemId is provided, update dropdown item
+    if (dropdownItemId) {
+      if (!dropdownItemId || typeof isActive !== 'boolean') {
+        return NextResponse.json(
+          { error: 'Invalid request data for dropdown item' },
+          { status: 400 }
+        )
+      }
+
+      const updatedDropdownItem = await prisma.headerMenuDropdownItem.update({
+        where: { id: dropdownItemId },
+        data: { isActive }
+      })
+
+      return NextResponse.json(updatedDropdownItem)
+    }
+
+    // Otherwise, update menu item
     if (!menuItemId || typeof isActive !== 'boolean') {
       return NextResponse.json(
         { error: 'Invalid request data' },
@@ -40,7 +57,6 @@ export async function PUT(request: NextRequest) {
       data: { isActive },
       include: {
         dropdownItems: {
-          where: { isActive: true },
           orderBy: { order: 'asc' }
         }
       }

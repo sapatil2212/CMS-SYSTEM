@@ -81,6 +81,34 @@ export default function HeaderMenuManagement() {
     }
   }
 
+  const handleToggleDropdownItem = async (dropdownItemId: string, isActive: boolean) => {
+    try {
+      setUpdating(dropdownItemId)
+      setMessage(null)
+
+      const response = await fetch('/api/content/header-menu', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ dropdownItemId, isActive }),
+      })
+
+      if (response.ok) {
+        setMessage({ type: 'success', text: 'Dropdown item updated successfully!' })
+        // Refresh the data
+        await fetchMenuItems()
+      } else {
+        throw new Error('Failed to update dropdown item')
+      }
+    } catch (error) {
+      console.error('Error updating dropdown item:', error)
+      setMessage({ type: 'error', text: 'Failed to update dropdown item' })
+    } finally {
+      setUpdating(null)
+    }
+  }
+
   const toggleExpanded = (menuItemId: string) => {
     const newExpanded = new Set(expandedItems)
     if (newExpanded.has(menuItemId)) {
@@ -102,8 +130,6 @@ export default function HeaderMenuManagement() {
 
   return (
     <div className="space-y-4">
-
-
       {/* Sub-section Toggle Menu */}
       <div className="mb-6">
         <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-2 shadow-md">
@@ -235,18 +261,38 @@ export default function HeaderMenuManagement() {
                     <div className="mt-3 pl-6 space-y-2">
                       <div className="text-xs font-medium text-gray-700 mb-2">Dropdown Items:</div>
                       {menuItem.dropdownItems.map((dropdownItem) => (
-                        <div key={dropdownItem.id} className="flex items-center justify-between py-1">
+                        <div key={dropdownItem.id} className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-md">
                           <div>
                             <span className="text-xs text-gray-600">{dropdownItem.name}</span>
                             <span className="text-xs text-gray-400 ml-2">({dropdownItem.href})</span>
                           </div>
-                          <span className={`text-xs px-2 py-0.5 rounded-full ${
-                            dropdownItem.isActive 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {dropdownItem.isActive ? 'Active' : 'Inactive'}
-                          </span>
+                          <div className="flex items-center space-x-2">
+                            <span className={`text-xs px-2 py-0.5 rounded-full ${
+                              dropdownItem.isActive 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {dropdownItem.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                            <button
+                              onClick={() => handleToggleDropdownItem(dropdownItem.id, !dropdownItem.isActive)}
+                              disabled={updating === dropdownItem.id}
+                              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                                dropdownItem.isActive ? 'bg-blue-600' : 'bg-gray-200'
+                              } ${updating === dropdownItem.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                            >
+                              <span
+                                className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                                  dropdownItem.isActive ? 'translate-x-5' : 'translate-x-0.5'
+                                }`}
+                              />
+                              {updating === dropdownItem.id && (
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <div className="animate-spin rounded-full h-2 w-2 border-b-2 border-white"></div>
+                                </div>
+                              )}
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -262,6 +308,7 @@ export default function HeaderMenuManagement() {
             <ul className="text-xs text-blue-800 space-y-0.5">
               <li>• Toggle menu items on/off to show/hide them on the frontend</li>
               <li>• Click the chevron icon to expand dropdown items</li>
+              <li>• Toggle individual dropdown items to control their visibility</li>
               <li>• Deactivated items will be completely hidden from the header navigation</li>
               <li>• Changes are applied immediately to the frontend</li>
             </ul>
