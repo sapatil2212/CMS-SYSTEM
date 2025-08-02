@@ -366,7 +366,6 @@ export default function HeaderMenuManagement() {
               <li>• Changes are applied immediately to the frontend</li>
             </ul>
           </div>
-          )}
         </>
       )}
 
