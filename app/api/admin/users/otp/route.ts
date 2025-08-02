@@ -236,7 +236,7 @@ export async function POST(request: NextRequest) {
         message: 'OTP generated but email failed to send',
         expiresIn: '10 minutes',
         otp: otp, // Provide OTP for manual entry
-        error: emailError.message
+        error: emailError instanceof Error ? emailError.message : 'Unknown email error'
       })
     }
 
