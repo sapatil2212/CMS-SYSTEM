@@ -161,9 +161,78 @@ export default function Header() {
     return fullName.split(' ')[0]
   }
 
-  const navigation = menuItems
-    .filter(item => item.isActive)
-    .map(item => {
+  // Default menu items to show when database is empty
+  const defaultMenuItems = [
+    {
+      name: 'Home',
+      href: '/',
+      dropdown: false,
+      items: []
+    },
+    {
+      name: 'About',
+      href: '/about',
+      dropdown: false,
+      items: []
+    },
+    {
+      name: 'Processes',
+      href: '#',
+      dropdown: true,
+      items: [
+        { name: 'Silver Plating', href: '/processes/silver-plating' },
+        { name: 'Busbar Plating', href: '/processes/busbar-plating' },
+        { name: 'Zinc Plating & Colour Passivates', href: '/processes/zinc-plating' },
+        { name: 'Gold Plating', href: '/processes/gold-plating' },
+        { name: 'Copper Plating', href: '/processes/copper-plating' },
+        { name: 'Nickel Plating', href: '/processes/nickel-plating' },
+        { name: 'Electroless Nickel Plating', href: '/processes/electroless-nickel-plating' },
+        { name: 'Bright Tin Plating', href: '/processes/bright-tin-plating' },
+        { name: 'Dull Tin Plating', href: '/processes/dull-tin-plating' },
+        { name: 'Rack & Barrel Plating', href: '/processes/rack-barrel-plating' },
+        { name: 'Zinc Flake Coating', href: '/processes/zinc-flake-coating' },
+        { name: 'Molykote', href: '/processes/molykote' }
+      ]
+    },
+    {
+      name: 'Base Metals',
+      href: '#',
+      dropdown: true,
+      items: [
+        { name: 'Aluminium', href: '/basemetals/aluminium' },
+        { name: 'Copper', href: '/basemetals/copper' },
+        { name: 'Stainless Steel', href: '/basemetals/stainless-steel' },
+        { name: 'Carbon Steel', href: '/basemetals/carbon-steel' },
+        { name: 'Brass', href: '/basemetals/brass' }
+      ]
+    },
+    {
+      name: 'Sectors',
+      href: '#',
+      dropdown: true,
+      items: [
+        { name: 'Sectors Overview', href: '/sectors' }
+      ]
+    },
+    {
+      name: 'Quality Testing',
+      href: '/quality-testing',
+      dropdown: false,
+      items: []
+    },
+    {
+      name: 'Contact',
+      href: '/contact',
+      dropdown: false,
+      items: []
+    }
+  ]
+
+  // Use database menu items if available, otherwise use defaults
+  const navigation = menuItems.length > 0 
+    ? menuItems
+        .filter(item => item.isActive)
+        .map(item => {
       // For Processes dropdown, filter based on menuActiveProcesses
       if (item.name === 'Processes' && item.hasDropdown) {
         const activeProcessItems = menuActiveProcesses
@@ -211,6 +280,7 @@ export default function Header() {
           })) : []
       }
     })
+    : defaultMenuItems
 
   const headerVariants = {
     scrolled: {

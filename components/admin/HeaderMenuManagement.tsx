@@ -53,6 +53,32 @@ export default function HeaderMenuManagement() {
     }
   }
 
+  const createDefaultMenuItems = async () => {
+    try {
+      setLoading(true)
+      setMessage(null)
+
+      const response = await fetch('/api/admin/header-menu/create-default', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (response.ok) {
+        setMessage({ type: 'success', text: 'Default menu items created successfully!' })
+        await fetchMenuItems()
+      } else {
+        throw new Error('Failed to create default menu items')
+      }
+    } catch (error) {
+      console.error('Error creating default menu items:', error)
+      setMessage({ type: 'error', text: 'Failed to create default menu items' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleToggleMenuItem = async (menuItemId: string, isActive: boolean) => {
     try {
       setUpdating(menuItemId)
@@ -204,9 +230,36 @@ export default function HeaderMenuManagement() {
       {/* Menu Items Section */}
       {activeSubSection === 'menu-items' && (
         <>
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div className="space-y-3">
-              {menuItems.map((menuItem) => (
+          {menuItems.length === 0 ? (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="text-center">
+                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 mb-4">
+                  <AlertCircle className="h-6 w-6 text-yellow-600" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No Menu Items Found</h3>
+                <p className="text-sm text-gray-500 mb-4">
+                  No header menu items have been created yet. Click the button below to create default menu items.
+                </p>
+                <button
+                  onClick={createDefaultMenuItems}
+                  disabled={loading}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Creating...
+                    </>
+                  ) : (
+                    'Create Default Menu Items'
+                  )}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+              <div className="space-y-3">
+                {menuItems.map((menuItem) => (
                 <div key={menuItem.id} className="border border-gray-200 rounded-lg p-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
@@ -313,6 +366,7 @@ export default function HeaderMenuManagement() {
               <li>• Changes are applied immediately to the frontend</li>
             </ul>
           </div>
+          )}
         </>
       )}
 
