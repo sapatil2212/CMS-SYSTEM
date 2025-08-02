@@ -21,7 +21,7 @@ export async function GET() {
       prisma.molykoteContent.findFirst().then(content => content?.isMenuActive ? 1 : 0)
     ])
 
-    const totalActiveProcesses = processesCount.reduce((sum, count) => sum + count, 0)
+    const totalActiveProcesses = processesCount.reduce((sum: number, count: number) => sum + count, 0)
 
     return NextResponse.json({
       count: totalActiveProcesses
