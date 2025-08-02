@@ -45,9 +45,10 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   generateEtags: true,
+  // Disable static generation for dynamic routes
+  trailingSlash: false,
   // Performance optimizations
   experimental: {
-    optimizeCss: true,
     optimizePackageImports: ['@prisma/client'],
   },
   webpack: (config, { dev, isServer }) => {
