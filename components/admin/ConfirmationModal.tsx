@@ -2,6 +2,8 @@
 
 import { AlertTriangle, X } from 'lucide-react'
 
+export type ModalType = 'danger' | 'warning' | 'info'
+
 interface ConfirmationModalProps {
   isOpen: boolean
   onClose: () => void
@@ -10,7 +12,7 @@ interface ConfirmationModalProps {
   message: string
   confirmText?: string
   cancelText?: string
-  type?: 'danger' | 'warning' | 'info'
+  type?: ModalType
 }
 
 export default function ConfirmationModal({
