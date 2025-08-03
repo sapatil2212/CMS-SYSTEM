@@ -143,6 +143,7 @@ export default function HomeProcesses() {
                          src={process.image} 
                          alt={process.title}
                          className="w-full h-full object-cover"
+                         key={`${process.id}-${process.image}`}
                          onError={(e) => {
                            // Fallback to placeholder if image fails to load
                            const target = e.target as HTMLImageElement

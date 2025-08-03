@@ -290,6 +290,8 @@ export default function HomeContentPage() {
       order: parseInt(formDataObj.get('order') as string) || 0,
       isActive: formDataObj.get('isActive') === 'on',
     }
+    
+    console.log('Submitting process data:', processData)
 
     try {
       const url = '/api/content/home-processes'
@@ -2756,10 +2758,12 @@ export default function HomeContentPage() {
                             if (imageInput) {
                               imageInput.value = ''
                             }
-                            // Clear the image preview by hiding this section
-                            const currentImageSection = document.querySelector('.current-image-section') as HTMLElement
-                            if (currentImageSection) {
-                              currentImageSection.style.display = 'none'
+                            // Update the editingProcess state to remove the image
+                            if (editingProcess) {
+                              setEditingProcess({
+                                ...editingProcess,
+                                image: ''
+                              })
                             }
                           }}
                           className="text-red-600 hover:text-red-800 text-sm font-medium flex items-center gap-1"
@@ -2774,6 +2778,7 @@ export default function HomeContentPage() {
                           src={editingProcess.image} 
                           alt="Current process image"
                           className="w-40 h-32 object-cover rounded-lg border border-gray-300"
+                          key={editingProcess.image} // Force re-render when image changes
                           />
                         </div>
                       </div>
@@ -2805,10 +2810,20 @@ export default function HomeContentPage() {
                         <div className="flex items-center justify-center">
                           <ProcessImageUpload
                             onChange={(url) => {
+                              console.log('Image uploaded:', url)
                               // Update the form value
                               const imageInput = document.querySelector('input[name="image"]') as HTMLInputElement
                               if (imageInput) {
                                 imageInput.value = url
+                                console.log('Form input updated with:', url)
+                              }
+                              // Update the editingProcess state to reflect the new image
+                              if (editingProcess) {
+                                setEditingProcess({
+                                  ...editingProcess,
+                                  image: url
+                                })
+                                console.log('EditingProcess state updated with image:', url)
                               }
                               // Show success message
                               showSuccessModal('Image uploaded successfully!')
@@ -2824,7 +2839,7 @@ export default function HomeContentPage() {
                   <input
                     type="hidden"
                     name="image"
-                    defaultValue={editingProcess?.image || ''}
+                    value={editingProcess?.image || ''}
                   />
                 </div>
 
