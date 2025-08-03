@@ -37,7 +37,6 @@ const navigation = [
   { name: 'Users', href: '/admin/users', icon: UserGroupIcon },
   { name: 'Contact Submissions', href: '/admin/contact-submissions', icon: ChatBubbleLeftRightIcon },
   { name: 'Profile', href: '/admin/profile', icon: UserGroupIcon },
-  { name: 'Settings', href: '/admin/settings', icon: CogIcon },
 ]
 
 interface AdminSidebarProps {
