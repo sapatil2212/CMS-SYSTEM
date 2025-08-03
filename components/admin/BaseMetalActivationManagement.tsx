@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ToggleLeft, ToggleRight, CheckCircle, AlertCircle, Package, XCircle } from 'lucide-react'
+import { ToggleLeft, ToggleRight, CheckCircle, AlertCircle, Package, XCircle, RefreshCw } from 'lucide-react'
 
 interface BaseMetal {
   id: string
@@ -16,8 +16,10 @@ export default function BaseMetalActivationManagement() {
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState<string | null>(null)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    console.log('BaseMetalActivationManagement component mounted')
     fetchBaseMetals()
   }, [])
 
@@ -34,15 +36,24 @@ export default function BaseMetalActivationManagement() {
   const fetchBaseMetals = async () => {
     try {
       setLoading(true)
+      setError(null)
+      console.log('Fetching base metals from API...')
+      
       const response = await fetch('/api/content/base-metal-activation')
+      console.log('API response status:', response.status)
+      
       if (response.ok) {
         const data = await response.json()
+        console.log('Base metals data received:', data)
         setBaseMetals(data)
       } else {
-        throw new Error('Failed to fetch base metals')
+        const errorText = await response.text()
+        console.error('API error:', errorText)
+        throw new Error(`Failed to fetch base metals: ${response.status} ${errorText}`)
       }
     } catch (error) {
       console.error('Error fetching base metals:', error)
+      setError(error instanceof Error ? error.message : 'Failed to load base metals')
       setMessage({ type: 'error', text: 'Failed to load base metals' })
     } finally {
       setLoading(false)
@@ -53,6 +64,9 @@ export default function BaseMetalActivationManagement() {
     try {
       setUpdating(baseMetalSlug)
       setMessage(null)
+      setError(null)
+
+      console.log('Toggling base metal:', baseMetalSlug, 'to:', isMenuActive)
 
       const response = await fetch('/api/content/base-metal-activation', {
         method: 'PUT',
@@ -62,26 +76,68 @@ export default function BaseMetalActivationManagement() {
         body: JSON.stringify({ baseMetalSlug, isMenuActive }),
       })
 
+      console.log('Toggle API response status:', response.status)
+
       if (response.ok) {
+        const result = await response.json()
+        console.log('Toggle API response:', result)
         setMessage({ type: 'success', text: 'Base metal activation updated successfully!' })
         // Refresh the data
         await fetchBaseMetals()
       } else {
-        throw new Error('Failed to update base metal activation')
+        const errorText = await response.text()
+        throw new Error(`Failed to update base metal activation: ${response.status} ${errorText}`)
       }
     } catch (error) {
       console.error('Error updating base metal activation:', error)
+      setError(error instanceof Error ? error.message : 'Failed to update base metal activation')
       setMessage({ type: 'error', text: 'Failed to update base metal activation' })
     } finally {
       setUpdating(null)
     }
   }
 
+  const handleRefresh = () => {
+    fetchBaseMetals()
+  }
+
+  console.log('BaseMetalActivationManagement render - loading:', loading, 'baseMetals count:', baseMetals.length, 'error:', error)
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         <span className="ml-2 text-gray-600">Loading base metals...</span>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <div className="border-b border-gray-200 pb-3">
+          <h2 className="text-xl font-bold text-gray-900">Base Metal Pages Management</h2>
+          <p className="mt-1 text-xs text-gray-600">
+            Activate or deactivate individual base metal pages in the header menu. Deactivated pages will be hidden from the navigation.
+          </p>
+        </div>
+
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-center space-x-3">
+            <AlertCircle className="h-6 w-6 text-red-600" />
+            <div>
+              <h3 className="text-sm font-semibold text-red-900">Error Loading Data</h3>
+              <p className="text-xs text-red-800 mt-1">{error}</p>
+            </div>
+          </div>
+          <button
+            onClick={handleRefresh}
+            className="mt-3 inline-flex items-center px-3 py-1.5 text-xs bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+          >
+            <RefreshCw className="h-3 w-3 mr-1.5" />
+            Retry
+          </button>
+        </div>
       </div>
     )
   }
@@ -94,6 +150,21 @@ export default function BaseMetalActivationManagement() {
         <p className="mt-1 text-xs text-gray-600">
           Activate or deactivate individual base metal pages in the header menu. Deactivated pages will be hidden from the navigation.
         </p>
+      </div>
+
+      {/* Debug Info */}
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+        <h4 className="text-xs font-medium text-yellow-900 mb-1">Debug Information</h4>
+        <p className="text-xs text-yellow-800">Base metals loaded: {baseMetals.length}</p>
+        <p className="text-xs text-yellow-800">Active metals: {baseMetals.filter(bm => bm.isMenuActive).length}</p>
+        <p className="text-xs text-yellow-800">Inactive metals: {baseMetals.filter(bm => !bm.isMenuActive).length}</p>
+        <button
+          onClick={handleRefresh}
+          className="mt-2 inline-flex items-center px-2 py-1 text-xs bg-yellow-600 text-white rounded hover:bg-yellow-700"
+        >
+          <RefreshCw className="h-3 w-3 mr-1" />
+          Refresh
+        </button>
       </div>
 
       {/* Pop-up Modal */}
@@ -133,49 +204,65 @@ export default function BaseMetalActivationManagement() {
 
       {/* Base Metals Grid */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {baseMetals.map((baseMetal) => (
-            <div key={baseMetal.id} className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-2">
-                  <Package className="h-4 w-4 text-blue-600" />
-                  <h3 className="text-sm font-semibold text-gray-900">{baseMetal.name}</h3>
+        {baseMetals.length === 0 ? (
+          <div className="text-center py-8">
+            <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Base Metals Found</h3>
+            <p className="text-sm text-gray-500 mb-4">No base metal content has been created yet.</p>
+            <button
+              onClick={handleRefresh}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {baseMetals.map((baseMetal) => (
+              <div key={baseMetal.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    <Package className="h-4 w-4 text-blue-600" />
+                    <h3 className="text-sm font-semibold text-gray-900">{baseMetal.name}</h3>
+                  </div>
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    baseMetal.isMenuActive 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {baseMetal.isMenuActive ? 'Active' : 'Inactive'}
+                  </span>
                 </div>
-                <span className={`text-xs px-2 py-1 rounded-full ${
-                  baseMetal.isMenuActive 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-red-100 text-red-800'
-                }`}>
-                  {baseMetal.isMenuActive ? 'Active' : 'Inactive'}
-                </span>
+                
+                <p className="text-xs text-gray-500 mb-3">{baseMetal.href}</p>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600">Menu Status:</span>
+                  <button
+                    onClick={() => handleToggleBaseMetal(baseMetal.slug, !baseMetal.isMenuActive)}
+                    disabled={updating === baseMetal.slug}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                      baseMetal.isMenuActive ? 'bg-blue-600' : 'bg-gray-200'
+                    } ${updating === baseMetal.slug ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-opacity-80'}`}
+                    title={`Click to ${baseMetal.isMenuActive ? 'deactivate' : 'activate'} ${baseMetal.name}`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        baseMetal.isMenuActive ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                    {updating === baseMetal.slug && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                      </div>
+                    )}
+                  </button>
+                </div>
               </div>
-              
-              <p className="text-xs text-gray-500 mb-3">{baseMetal.href}</p>
-              
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-600">Menu Status:</span>
-                <button
-                  onClick={() => handleToggleBaseMetal(baseMetal.slug, !baseMetal.isMenuActive)}
-                  disabled={updating === baseMetal.slug}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                    baseMetal.isMenuActive ? 'bg-blue-600' : 'bg-gray-200'
-                  } ${updating === baseMetal.slug ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      baseMetal.isMenuActive ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                  {updating === baseMetal.slug && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
-                    </div>
-                  )}
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Instructions */}
@@ -186,6 +273,7 @@ export default function BaseMetalActivationManagement() {
           <li>• Deactivated pages will be completely hidden from the navigation</li>
           <li>• Changes are applied immediately to the frontend</li>
           <li>• This only affects menu visibility, not the actual page content</li>
+          <li>• If you don't see the toggle buttons, try refreshing the page</li>
         </ul>
       </div>
     </div>
