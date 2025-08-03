@@ -333,7 +333,7 @@ export default function Header() {
       variants={headerVariants}
       className="sticky top-0 z-50"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-5">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <motion.div

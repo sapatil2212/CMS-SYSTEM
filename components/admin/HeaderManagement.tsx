@@ -19,7 +19,7 @@ export default function HeaderManagement() {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
-  const [activeSection, setActiveSection] = useState<'logo-settings' | 'menu-management'>('logo-settings')
+  const [activeSection, setActiveSection] = useState<'logo-settings' | 'menu-management'>('menu-management')
 
   useEffect(() => {
     fetchHeaderSettings()

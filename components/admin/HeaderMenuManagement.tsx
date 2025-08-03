@@ -35,6 +35,13 @@ export default function HeaderMenuManagement() {
     fetchMenuItems()
   }, [])
 
+  useEffect(() => {
+    console.log('MenuItems state changed:', menuItems.length, 'items')
+    if (menuItems.length > 0) {
+      console.log('First menu item in state:', menuItems[0])
+    }
+  }, [menuItems])
+
   const fetchMenuItems = async () => {
     try {
       setLoading(true)
@@ -52,7 +59,17 @@ export default function HeaderMenuManagement() {
       if (response.ok) {
         const data = await response.json()
         console.log('Menu items fetched:', data)
+        console.log('Number of menu items:', data.length)
+        console.log('First menu item:', data[0])
         setMenuItems(data)
+        console.log('Menu items state set with:', data.length, 'items')
+        
+        // Show success message if items were loaded
+        if (data.length > 0) {
+          setMessage({ type: 'success', text: `Successfully loaded ${data.length} menu items` })
+          // Clear success message after 3 seconds
+          setTimeout(() => setMessage(null), 3000)
+        }
       } else {
         const errorText = await response.text()
         console.error('Failed to fetch menu items:', errorText)
@@ -291,6 +308,7 @@ export default function HeaderMenuManagement() {
       {/* Menu Items Section */}
       {activeSubSection === 'menu-items' && (
         <>
+          {console.log('Rendering menu items section, menuItems.length:', menuItems.length)}
           {menuItems.length === 0 ? (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="text-center">
@@ -419,7 +437,7 @@ export default function HeaderMenuManagement() {
 
           {/* Instructions */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <h4 className="text-xs font-medium text-blue-900 mb-1">Instructions</h4>
+            <h4 className="text-xs font-medium text-blue-900 mb-1">Menu Management Instructions</h4>
             <ul className="text-xs text-blue-800 space-y-0.5">
               <li>• Toggle menu items on/off to show/hide them on the frontend</li>
               <li>• Click the chevron icon to expand dropdown items</li>
@@ -427,6 +445,12 @@ export default function HeaderMenuManagement() {
               <li>• Deactivated items will be completely hidden from the header navigation</li>
               <li>• Changes are applied immediately to the frontend</li>
             </ul>
+            <div className="mt-2 p-2 bg-white rounded border border-blue-200">
+              <p className="text-xs text-blue-700 font-medium">Current Menu Summary:</p>
+              <p className="text-xs text-blue-600">• {menuItems.filter(item => item.isActive).length} active menu items</p>
+              <p className="text-xs text-blue-600">• {menuItems.filter(item => !item.isActive).length} inactive menu items</p>
+              <p className="text-xs text-blue-600">• Total dropdown items: {menuItems.reduce((sum, item) => sum + item.dropdownItems.length, 0)}</p>
+            </div>
           </div>
         </>
       )}
