@@ -16,7 +16,7 @@ export async function GET() {
       headerSettings = await prisma.headerSettings.create({
         data: {
           logoUrl: '/logo/logo.svg', // Default logo path
-          logoAlt: 'CMS System Logo',
+          logoAlt: 'company_logo',
           phoneNumber: '+91 93731 02887',
           email: 'info@example.com'
         }
@@ -78,7 +78,7 @@ export async function PUT(request: NextRequest) {
       // Create new settings
       const createData = {
         logoUrl: logoUrl || '/logo/logo.svg',
-        logoAlt: logoAlt || 'CMS System Logo',
+        logoAlt: logoAlt || 'company_logo',
         phoneNumber: phoneNumber || '+91 93731 02887',
         email: email || 'info@example.com'
       }
@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
       // Create new settings
       const createData = {
         logoUrl: logoUrl || '/logo/logo.svg',
-        logoAlt: logoAlt || 'CMS System Logo',
+        logoAlt: logoAlt || 'company_logo',
         phoneNumber: phoneNumber || '+91 93731 02887',
         email: email || 'info@example.com'
       }

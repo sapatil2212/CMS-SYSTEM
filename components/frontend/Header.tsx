@@ -344,29 +344,14 @@ export default function Header() {
             <Link href="/" className="flex items-center">
               <img 
                 src={headerSettings?.logoUrl || "/logo/logo.svg"} 
-                alt={headerSettings?.logoAlt || "CMS System Logo"} 
+                alt="company_logo" 
                 className="h-10 w-auto hidden sm:block" 
-                onError={(e) => {
-                  // Fallback to text if image fails to load
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const fallback = target.nextElementSibling as HTMLElement;
-                  if (fallback) fallback.style.display = 'block';
-                }}
               />
               <img 
                 src={headerSettings?.logoUrl || "/logo/logo.svg"} 
-                alt={headerSettings?.logoAlt || "CMS System Logo"} 
+                alt="company_logo" 
                 className="h-8 w-auto sm:hidden" 
-                onError={(e) => {
-                  // Fallback to text if image fails to load
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const fallback = target.nextElementSibling as HTMLElement;
-                  if (fallback) fallback.style.display = 'block';
-                }}
               />
-             
             </Link>
           </motion.div>
 

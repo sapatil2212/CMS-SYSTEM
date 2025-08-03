@@ -101,43 +101,11 @@ export default function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
               <Dialog.Panel className="relative mr-16 flex w-full max-w-xs flex-1">
                 <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
                   <div className="flex h-16 shrink-0 items-center">
-                    {headerSettings?.logoUrl ? (
-                      <>
-                        <img 
-                          src={headerSettings.logoUrl} 
-                          alt={headerSettings.logoAlt || "CMS System Logo"} 
-                          className="h-8 w-auto" 
-                          onError={(e) => {
-                            // Fallback to text if image fails to load
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            const fallback = target.nextElementSibling as HTMLElement;
-                            if (fallback) fallback.style.display = 'flex';
-                          }}
-                        />
-                        <div className="hidden text-2xl font-bold text-primary-600 items-center">
-                          {headerSettings.logoAlt || "CMS"}
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <img 
-                          src="/logo/logo.svg" 
-                          alt="CMS System Logo" 
-                          className="h-10 w-auto" 
-                          onError={(e) => {
-                            // Fallback to text if image fails to load
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            const fallback = target.nextElementSibling as HTMLElement;
-                            if (fallback) fallback.style.display = 'flex';
-                          }}
-                        />
-                        <div className="hidden text-2xl font-bold text-primary-600 items-center">
-                          CMS
-                        </div>
-                      </>
-                    )}
+                    <img 
+                      src={headerSettings?.logoUrl || "/logo/logo.svg"} 
+                      alt="company_logo" 
+                      className="h-8 w-auto" 
+                    />
                   </div>
                   <nav className="flex flex-1 flex-col">
                     <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -208,43 +176,11 @@ export default function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
         <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
           <div className="flex h-16 shrink-0 items-center">
-            {headerSettings?.logoUrl ? (
-              <>
-                <img 
-                  src={headerSettings.logoUrl} 
-                  alt={headerSettings.logoAlt || "CMS System Logo"} 
-                  className="h-8 w-auto" 
-                  onError={(e) => {
-                    // Fallback to text if image fails to load
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    const fallback = target.nextElementSibling as HTMLElement;
-                    if (fallback) fallback.style.display = 'flex';
-                  }}
-                />
-                <div className="hidden text-2xl font-bold text-primary-600 items-center">
-                  {headerSettings.logoAlt || "CMS"}
-                </div>
-              </>
-            ) : (
-              <>
-                                        <img 
-                          src="/logo/logo.svg" 
-                          alt="CMS System Logo" 
-                          className="h-8 w-auto" 
-                          onError={(e) => {
-                            // Fallback to text if image fails to load
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            const fallback = target.nextElementSibling as HTMLElement;
-                            if (fallback) fallback.style.display = 'flex';
-                          }}
-                        />
-                <div className="hidden text-2xl font-bold text-primary-600 items-center">
-                  CMS
-                </div>
-              </>
-            )}
+            <img 
+              src={headerSettings?.logoUrl || "/logo/logo.svg"} 
+              alt="company_logo" 
+              className="h-8 w-auto" 
+            />
           </div>
           <nav className="flex flex-1 flex-col">
             <ul role="list" className="flex flex-1 flex-col gap-y-7">

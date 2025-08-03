@@ -143,12 +143,12 @@ const Footer: React.FC = () => {
             <div className="flex items-center space-x-2">
               <img 
                 src={settings?.logoUrl || "/logo/logo.png"} 
-                alt={settings?.logoAlt || "Alkalyne Logo"} 
+                alt="company_logo" 
                 className="h-12 w-auto hidden sm:block"
               />
               <img 
                 src={settings?.logoUrl || "/logo/logo.png"} 
-                alt={settings?.logoAlt || "Alkalyne Mobile Logo"} 
+                alt="company_logo" 
                 className="h-12 w-auto sm:hidden"
               />
             </div>
