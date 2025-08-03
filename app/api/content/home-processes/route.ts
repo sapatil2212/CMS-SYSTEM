@@ -55,8 +55,6 @@ export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
     const { id, title, description, content, image, link, order, isActive } = body
-    
-    console.log('Updating process with data:', { id, title, description, content, image, link, order, isActive })
 
     const result = await prisma.homeProcess.update({
       where: { id },
@@ -74,7 +72,6 @@ export async function PUT(request: NextRequest) {
     // Revalidate home page to ensure frontend updates
     revalidatePath('/')
     revalidatePath('/admin/home')
-    revalidatePath('/api/content/home-processes')
 
     return NextResponse.json(result)
   } catch (error) {
