@@ -204,6 +204,23 @@ export default function HomeContentPage() {
   const [savingTestimonial, setSavingTestimonial] = useState(false)
   const [savingTestimonialContent, setSavingTestimonialContent] = useState(false)
   const [successModal, setSuccessModal] = useState({ isOpen: false, message: '' })
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string>('')
+
+  // Update hidden input when uploaded image URL changes
+  useEffect(() => {
+    const imageInput = document.querySelector('input[name="image"]') as HTMLInputElement
+    if (imageInput && uploadedImageUrl) {
+      imageInput.value = uploadedImageUrl
+      console.log('useEffect: Updated hidden input value to:', uploadedImageUrl)
+    }
+  }, [uploadedImageUrl])
+
+  // Reset uploaded image URL when editing process changes
+  useEffect(() => {
+    if (editingProcess) {
+      setUploadedImageUrl('')
+    }
+  }, [editingProcess?.id])
 
 
   useEffect(() => {
@@ -281,11 +298,29 @@ export default function HomeContentPage() {
     setSavingProcess(true)
 
     const formDataObj = new FormData(e.currentTarget)
+    
+    // Get the current image value from the hidden input or uploaded image URL
+    const imageInput = document.querySelector('input[name="image"]') as HTMLInputElement
+    let currentImageValue = uploadedImageUrl || (imageInput ? imageInput.value : formDataObj.get('image') as string)
+    
+    // Fallback: if no image value found, try to get from the editing process
+    if (!currentImageValue && editingProcess?.image) {
+      currentImageValue = editingProcess.image
+    }
+    
+    console.log('Process submission data:', {
+      uploadedImageUrl,
+      imageInputValue: imageInput?.value,
+      formDataImage: formDataObj.get('image'),
+      editingProcessImage: editingProcess?.image,
+      currentImageValue
+    })
+    
     const processData = {
       title: formDataObj.get('title') as string,
       description: formDataObj.get('description') as string,
       content: formDataObj.get('content') as string,
-      image: formDataObj.get('image') as string,
+      image: currentImageValue,
       link: formDataObj.get('link') as string,
       order: parseInt(formDataObj.get('order') as string) || 0,
       isActive: formDataObj.get('isActive') === 'on',
@@ -307,8 +342,12 @@ export default function HomeContentPage() {
       })
 
       if (response.ok) {
+        const result = await response.json()
+        console.log('Process saved successfully:', result)
+        
         setIsProcessModalOpen(false)
         setEditingProcess(null)
+        setUploadedImageUrl('') // Reset uploaded image URL
         fetchProcesses()
         
         // Trigger frontend refresh for home processes
@@ -321,7 +360,9 @@ export default function HomeContentPage() {
         
         showSuccessModal(editingProcess ? 'Process updated successfully!' : 'Process created successfully!')
       } else {
-        toast.error('Failed to save process')
+        const errorData = await response.json()
+        console.error('Failed to save process:', errorData)
+        toast.error(errorData.error || 'Failed to save process')
       }
     } catch (error) {
       toast.error('Error saving process')
@@ -332,6 +373,7 @@ export default function HomeContentPage() {
 
   const handleEditProcess = (process: HomeProcess) => {
     setEditingProcess(process)
+    setUploadedImageUrl('') // Reset uploaded image URL
     setIsProcessModalOpen(true)
   }
 
@@ -1434,6 +1476,7 @@ export default function HomeContentPage() {
                   <button
                     onClick={() => {
                       setEditingProcess(null)
+                      setUploadedImageUrl('') // Reset uploaded image URL
                       setIsProcessModalOpen(true)
                     }}
                     className="btn-primary flex items-center gap-2"
@@ -1516,6 +1559,7 @@ export default function HomeContentPage() {
                     <button
                       onClick={() => {
                         setEditingProcess(null)
+                        setUploadedImageUrl('') // Reset uploaded image URL
                         setIsProcessModalOpen(true)
                       }}
                       className="btn-primary"
@@ -2805,11 +2849,21 @@ export default function HomeContentPage() {
                         <div className="flex items-center justify-center">
                           <ProcessImageUpload
                             onChange={(url) => {
+                              console.log('Image upload callback triggered with URL:', url)
+                              
                               // Update the form value
                               const imageInput = document.querySelector('input[name="image"]') as HTMLInputElement
                               if (imageInput) {
                                 imageInput.value = url
+                                console.log('Updated hidden input value to:', url)
+                              } else {
+                                console.warn('Image input not found')
                               }
+                              
+                              // Update the state
+                              setUploadedImageUrl(url)
+                              console.log('Updated uploadedImageUrl state to:', url)
+                              
                               // Show success message
                               showSuccessModal('Image uploaded successfully!')
                             }}
@@ -2841,11 +2895,12 @@ export default function HomeContentPage() {
                 </div>
 
                 <div className="flex justify-end gap-4 pt-4">
-              <button
+                                <button
                     type="button"
                     onClick={() => {
                       setIsProcessModalOpen(false)
                       setEditingProcess(null)
+                      setUploadedImageUrl('') // Reset uploaded image URL
                     }}
                     className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
                   >

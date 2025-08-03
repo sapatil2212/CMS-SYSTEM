@@ -25,6 +25,16 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { title, description, content, image, link, order, isActive } = body
 
+    console.log('Creating home process:', {
+      title,
+      description,
+      content,
+      image,
+      link,
+      order,
+      isActive
+    })
+
     const result = await prisma.homeProcess.create({
       data: {
         title,
@@ -36,6 +46,8 @@ export async function POST(request: NextRequest) {
         isActive: isActive !== undefined ? isActive : true
       }
     })
+
+    console.log('Home process created successfully:', result)
 
     // Revalidate home page to ensure frontend updates
     revalidatePath('/')
@@ -56,6 +68,17 @@ export async function PUT(request: NextRequest) {
     const body = await request.json()
     const { id, title, description, content, image, link, order, isActive } = body
 
+    console.log('Updating home process:', {
+      id,
+      title,
+      description,
+      content,
+      image,
+      link,
+      order,
+      isActive
+    })
+
     const result = await prisma.homeProcess.update({
       where: { id },
       data: {
@@ -68,6 +91,8 @@ export async function PUT(request: NextRequest) {
         isActive: isActive !== undefined ? isActive : true
       }
     })
+
+    console.log('Home process updated successfully:', result)
 
     // Revalidate home page to ensure frontend updates
     revalidatePath('/')

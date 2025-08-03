@@ -52,13 +52,17 @@ export async function POST(request: NextRequest) {
       url: cloudinaryUrl
     })
 
-    return NextResponse.json({
+    const responseData = {
       url: cloudinaryUrl,
       filename: file.name,
       originalName: file.name,
       size: file.size,
       type: file.type
-    })
+    }
+
+    console.log('Returning upload response:', responseData)
+
+    return NextResponse.json(responseData)
   } catch (error) {
     console.error('Error uploading file:', error)
     return NextResponse.json(
