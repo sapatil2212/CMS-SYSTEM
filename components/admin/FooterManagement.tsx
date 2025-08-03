@@ -142,14 +142,30 @@ export default function FooterManagement() {
   // Settings functions
   const handleSaveSettings = async () => {
     try {
-      const response = await fetch('/api/content/footer-settings', {
+      console.log('Saving footer settings:', settingsForm)
+      
+      // Try PUT method first
+      let response = await fetch('/api/content/footer-settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settingsForm)
       })
       
+      // If PUT fails, try POST as fallback
+      if (!response.ok) {
+        console.log('PUT failed, trying POST fallback')
+        response = await fetch('/api/content/footer-settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(settingsForm)
+        })
+      }
+      
+      console.log('Response status:', response.status)
+      
       if (response.ok) {
         const updatedSettings = await response.json()
+        console.log('Footer settings updated successfully:', updatedSettings)
         setSettings(updatedSettings)
         setEditingSettings(false)
         setSuccessMessage('Footer settings updated successfully!')
@@ -158,11 +174,13 @@ export default function FooterManagement() {
           setShowSuccessModal(false)
         }, 3000)
       } else {
-        throw new Error('Failed to update settings')
+        const errorText = await response.text()
+        console.error('Failed to update footer settings:', errorText)
+        throw new Error(`Failed to update settings: ${response.status} ${errorText}`)
       }
     } catch (error) {
       console.error('Error updating settings:', error)
-      setMessage({ type: 'error', text: 'Failed to update settings' })
+      setMessage({ type: 'error', text: `Failed to update settings: ${error instanceof Error ? error.message : 'Unknown error'}` })
     }
   }
 
