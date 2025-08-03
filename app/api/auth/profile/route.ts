@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
 export const dynamic = 'force-dynamic'
-
-const prisma = new PrismaClient()
 
 // Helper function to verify JWT token
 async function verifyToken(token: string) {

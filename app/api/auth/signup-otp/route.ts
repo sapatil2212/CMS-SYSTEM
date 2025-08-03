@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/db'
 import nodemailer from 'nodemailer'
-
-const prisma = new PrismaClient()
 
 // Generate 6-digit OTP
 function generateOTP(): string {

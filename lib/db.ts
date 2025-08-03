@@ -10,14 +10,31 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient({
       url: process.env.DATABASE_URL,
     },
   },
-  // Add connection pooling configuration
+  // Add connection pooling configuration for serverless
   log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  // Connection pool settings for serverless environments
+  __internal: {
+    engine: {
+      connectionLimit: 1,
+    },
+  },
 })
 
 // Add connection cleanup on process termination
 if (typeof window === 'undefined') {
   process.on('beforeExit', async () => {
     await prisma.$disconnect()
+  })
+  
+  // Handle SIGTERM for serverless environments
+  process.on('SIGTERM', async () => {
+    await prisma.$disconnect()
+  })
+  
+  // Handle SIGINT for graceful shutdown
+  process.on('SIGINT', async () => {
+    await prisma.$disconnect()
+    process.exit(0)
   })
 }
 
