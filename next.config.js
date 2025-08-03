@@ -1,83 +1,49 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Enable static exports if needed
+  // output: 'export',
+  
+  // Ensure images work properly
   images: {
-    domains: ['localhost', 'images.unsplash.com', 'res.cloudinary.com'],
-    unoptimized: true,
+    domains: ['res.cloudinary.com', 'localhost'],
+    unoptimized: true
   },
+  
+  // Ensure API routes work
+  experimental: {
+    appDir: true
+  },
+  
+  // Production optimizations
+  compress: true,
+  
+  // Environment variables
   env: {
-    CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+    CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
-  // Security Headers for Production
+  
+  // Headers for security
   async headers() {
     return [
       {
-        source: '/(.*)',
+        source: '/api/(.*)',
         headers: [
           {
-            key: 'X-Frame-Options',
-            value: 'DENY',
+            key: 'Access-Control-Allow-Origin',
+            value: '*'
           },
           {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, OPTIONS'
           },
           {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
-          },
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
-          {
-            key: 'Strict-Transport-Security',
-            value: 'max-age=31536000; includeSubDomains',
-          },
-        ],
-      },
-    ];
-  },
-  // Production optimizations
-  compress: true,
-  poweredByHeader: false,
-  generateEtags: true,
-  // Disable static generation for dynamic routes
-  trailingSlash: false,
-  // Performance optimizations
-  experimental: {
-    serverComponentsExternalPackages: ['@prisma/client', 'prisma'],
-  },
-  webpack: (config, { dev, isServer }) => {
-    // Optimize bundle for production
-    if (!dev && !isServer) {
-      config.optimization.splitChunks.cacheGroups = {
-        ...config.optimization.splitChunks.cacheGroups,
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all',
-        },
-      };
-    }
-    
-    config.module.rules.push({
-      test: /\.(png|jpe?g|gif|svg)$/i,
-      use: [
-        {
-          loader: 'file-loader',
-          options: {
-            publicPath: '/_next',
-            name: 'static/media/[name].[hash].[ext]',
-          },
-        },
-      ],
-    });
-    return config;
-  },
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type, Authorization'
+          }
+        ]
+      }
+    ]
+  }
 }
 
 module.exports = nextConfig 

@@ -3,10 +3,18 @@ import { uploadToCloudinary } from '@/lib/cloudinary'
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('Upload request received')
     const formData = await request.formData()
     const file = formData.get('image') as File
 
+    console.log('File details:', {
+      name: file?.name,
+      size: file?.size,
+      type: file?.type
+    })
+
     if (!file) {
+      console.error('No file provided in upload request')
       return NextResponse.json(
         { error: 'No file provided' },
         { status: 400 }
@@ -36,9 +44,11 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes)
 
     // Upload to Cloudinary
+    console.log('Uploading to Cloudinary...')
     const cloudinaryUrl = await uploadToCloudinary(buffer, 'cms-uploads')
 
     if (!cloudinaryUrl) {
+      console.error('Cloudinary upload failed - no URL returned')
       return NextResponse.json(
         { error: 'Failed to upload to cloud storage' },
         { status: 500 }
