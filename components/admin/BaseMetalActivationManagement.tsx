@@ -172,21 +172,6 @@ export default function BaseMetalActivationManagement() {
         </p>
       </div>
 
-      {/* Debug Info */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-        <h4 className="text-xs font-medium text-yellow-900 mb-1">Debug Information</h4>
-        <p className="text-xs text-yellow-800">Base metals loaded: {baseMetals.length}</p>
-        <p className="text-xs text-yellow-800">Active metals: {baseMetals.filter(bm => bm.isMenuActive).length}</p>
-        <p className="text-xs text-yellow-800">Inactive metals: {baseMetals.filter(bm => !bm.isMenuActive).length}</p>
-        <button
-          onClick={handleRefresh}
-          className="mt-2 inline-flex items-center px-2 py-1 text-xs bg-yellow-600 text-white rounded hover:bg-yellow-700"
-        >
-          <RefreshCw className="h-3 w-3 mr-1" />
-          Refresh
-        </button>
-      </div>
-
       {/* Pop-up Modal */}
       {message && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
