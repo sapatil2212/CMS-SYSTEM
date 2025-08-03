@@ -5,7 +5,7 @@ import { useAuth } from '@/lib/auth-provider'
 import { useRouter } from 'next/navigation'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import AdminHeader from '@/components/admin/AdminHeader'
-import { Plus, Edit, Trash2, Eye, EyeOff, Upload, X, Save, Star } from 'lucide-react'
+import { Plus, Edit, Trash2, Eye, EyeOff, Upload, X, Save, Star, Loader2 } from 'lucide-react'
 import ImageUpload from '@/components/admin/ImageUpload'
 import ImagePreview from '@/components/admin/ImagePreview'
 import ProcessImageUpload from '@/components/admin/ProcessImageUpload'
@@ -187,6 +187,7 @@ export default function HomeContentPage() {
   const [editingGalleryImage, setEditingGalleryImage] = useState<GalleryImage | null>(null)
   const [savingGalleryImage, setSavingGalleryImage] = useState(false)
   const [savingGalleryContent, setSavingGalleryContent] = useState(false)
+  const [togglingGalleryImage, setTogglingGalleryImage] = useState<string | null>(null)
   const [testimonialContent, setTestimonialContent] = useState<TestimonialContent>({
     id: '',
     title: '',
@@ -939,6 +940,7 @@ export default function HomeContentPage() {
   }
 
   const handleToggleGalleryImageActive = async (image: GalleryImage) => {
+    setTogglingGalleryImage(image.id)
     try {
       const response = await fetch('/api/content/gallery-images', {
         method: 'PUT',
@@ -957,6 +959,8 @@ export default function HomeContentPage() {
       }
     } catch (error) {
       toast.error('Error updating image status')
+    } finally {
+      setTogglingGalleryImage(null)
     }
   }
 
@@ -2025,14 +2029,19 @@ export default function HomeContentPage() {
                         <div className="absolute top-2 right-2 flex gap-2">
                           <button
                             onClick={() => handleToggleGalleryImageActive(image)}
-                            className={`p-2 rounded-full ${
+                            disabled={togglingGalleryImage === image.id}
+                            className={`p-2 rounded-full transition-all duration-200 ${
                               image.isActive 
-                                ? 'bg-green-500 text-white' 
-                                : 'bg-gray-500 text-white'
-                            }`}
+                                ? 'bg-green-500 text-white hover:bg-green-600' 
+                                : 'bg-gray-500 text-white hover:bg-gray-600'
+                            } ${togglingGalleryImage === image.id ? 'opacity-50 cursor-not-allowed' : ''}`}
                             title={image.isActive ? 'Active' : 'Inactive'}
                           >
-                            {image.isActive ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                            {togglingGalleryImage === image.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              image.isActive ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />
+                            )}
                           </button>
                         </div>
                       </div>

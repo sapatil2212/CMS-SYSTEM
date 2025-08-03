@@ -216,6 +216,21 @@ async function main() {
   }
 
   console.log('✅ Header menu items seeded successfully')
+
+  // Seed gallery content and images
+  console.log('🌱 Seeding gallery content and images...')
+  
+  // Check if gallery content already exists
+  const existingGalleryContent = await prisma.galleryContent.findFirst()
+  if (!existingGalleryContent) {
+    // Import and run gallery seed
+    const { default: seedGallery } = await import('./seed-gallery')
+    await seedGallery()
+  } else {
+    console.log('✅ Gallery content already exists, skipping...')
+  }
+
+  console.log('✅ Gallery content and images seeded successfully')
 }
 
 main()

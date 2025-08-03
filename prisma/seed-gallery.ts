@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-async function main() {
+export default async function seedGallery() {
   console.log('🌱 Seeding gallery content and images...')
 
   // Seed content
@@ -72,13 +72,4 @@ async function main() {
   }
 
   console.log('🎉 All gallery content and images seeded successfully!')
-}
-
-main()
-  .catch((e) => {
-    console.error('❌ Error seeding gallery data:', e)
-    process.exit(1)
-  })
-  .finally(async () => {
-    await prisma.$disconnect()
-  }) 
+} 
