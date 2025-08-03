@@ -149,7 +149,6 @@ export default function HomeContentPage() {
   const [isProcessModalOpen, setIsProcessModalOpen] = useState(false)
   const [editingProcess, setEditingProcess] = useState<HomeProcess | null>(null)
   const [savingProcess, setSavingProcess] = useState(false)
-  const [uploadedImageUrl, setUploadedImageUrl] = useState<string>('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingSlide, setEditingSlide] = useState<HeroSlide | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -282,16 +281,11 @@ export default function HomeContentPage() {
     setSavingProcess(true)
 
     const formDataObj = new FormData(e.currentTarget)
-    
-    // Get the image URL from the hidden input or state
-    const imageInput = e.currentTarget.querySelector('input[name="image"]') as HTMLInputElement
-    const imageUrl = uploadedImageUrl || (imageInput ? imageInput.value : formDataObj.get('image') as string)
-    
     const processData = {
       title: formDataObj.get('title') as string,
       description: formDataObj.get('description') as string,
       content: formDataObj.get('content') as string,
-      image: imageUrl,
+      image: formDataObj.get('image') as string,
       link: formDataObj.get('link') as string,
       order: parseInt(formDataObj.get('order') as string) || 0,
       isActive: formDataObj.get('isActive') === 'on',
@@ -304,9 +298,6 @@ export default function HomeContentPage() {
         ? { ...processData, id: editingProcess.id }
         : processData
 
-      // Debug logging
-      console.log('Submitting process data:', processData)
-
       const response = await fetch(url, {
         method,
         headers: {
@@ -318,7 +309,6 @@ export default function HomeContentPage() {
       if (response.ok) {
         setIsProcessModalOpen(false)
         setEditingProcess(null)
-        setUploadedImageUrl('') // Reset uploaded image URL
         fetchProcesses()
         
         // Trigger frontend refresh for home processes
@@ -331,9 +321,7 @@ export default function HomeContentPage() {
         
         showSuccessModal(editingProcess ? 'Process updated successfully!' : 'Process created successfully!')
       } else {
-        const errorData = await response.json().catch(() => ({}))
-        console.error('Process save failed:', errorData)
-        toast.error(errorData.error || 'Failed to save process')
+        toast.error('Failed to save process')
       }
     } catch (error) {
       toast.error('Error saving process')
@@ -344,7 +332,6 @@ export default function HomeContentPage() {
 
   const handleEditProcess = (process: HomeProcess) => {
     setEditingProcess(process)
-    setUploadedImageUrl('') // Reset uploaded image URL
     setIsProcessModalOpen(true)
   }
 
@@ -2818,15 +2805,11 @@ export default function HomeContentPage() {
                         <div className="flex items-center justify-center">
                           <ProcessImageUpload
                             onChange={(url) => {
-                              // Update the form value using a more reliable method
+                              // Update the form value
                               const imageInput = document.querySelector('input[name="image"]') as HTMLInputElement
                               if (imageInput) {
                                 imageInput.value = url
-                                // Trigger change event to ensure form state is updated
-                                imageInput.dispatchEvent(new Event('change', { bubbles: true }))
                               }
-                              // Update state for reliable form submission
-                              setUploadedImageUrl(url)
                               // Show success message
                               showSuccessModal('Image uploaded successfully!')
                             }}
@@ -2834,20 +2817,6 @@ export default function HomeContentPage() {
                             className="w-full"
                           />
                         </div>
-                        
-                        {/* Show uploaded image preview */}
-                        {uploadedImageUrl && !editingProcess?.image && (
-                          <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
-                            <p className="text-sm text-green-800 mb-2">
-                              ✅ Image uploaded successfully! Ready to save.
-                            </p>
-                            <img 
-                              src={uploadedImageUrl} 
-                              alt="Uploaded image preview"
-                              className="w-32 h-24 object-cover rounded border"
-                            />
-                          </div>
-                        )}
                 </div>
               </div>
             </div>
@@ -2877,7 +2846,6 @@ export default function HomeContentPage() {
                     onClick={() => {
                       setIsProcessModalOpen(false)
                       setEditingProcess(null)
-                      setUploadedImageUrl('') // Reset uploaded image URL
                     }}
                     className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
                   >

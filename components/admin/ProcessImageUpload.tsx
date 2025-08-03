@@ -48,10 +48,8 @@ export default function ProcessImageUpload({
       }
 
       const data = await response.json()
-      console.log('Image upload successful:', data)
       onChange(data.url)
     } catch (err) {
-      console.error('Image upload failed:', err)
       setError(err instanceof Error ? err.message : 'Upload failed')
     } finally {
       setIsUploading(false)

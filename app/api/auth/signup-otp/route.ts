@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { withDatabaseConnection } from '@/lib/database-connection'
 import nodemailer from 'nodemailer'
 
 // Generate 6-digit OTP
@@ -40,60 +40,59 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Rate limiting check - prevent spam
-    const recentOTP = await prisma.oTP.findFirst({
-      where: {
-        userId: email,
-        type: 'SIGNUP_VERIFICATION',
-        createdAt: {
-          gt: new Date(Date.now() - 60 * 1000) // 1 minute ago
-        }
-      }
-    })
-
-    if (recentOTP) {
-      return NextResponse.json(
-        { error: 'Please wait 1 minute before requesting another OTP' },
-        { status: 429 }
-      )
-    }
-
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
-    })
-
-    if (existingUser) {
-      return NextResponse.json(
-        { error: 'An account with this email address already exists.' },
-        { status: 409 }
-      )
-    }
-
-    // Generate OTP
-    const otp = generateOTP()
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
-
-    // Store temporary OTP information using email as identifier
-    // Remove any existing signup verification OTPs for this email
-    await prisma.oTP.deleteMany({
+    // Use database connection wrapper
+    const result = await withDatabaseConnection(async (prisma) => {
+      // Rate limiting check - prevent spam
+      const recentOTP = await prisma.oTP.findFirst({
         where: {
-            userId: email, // Using email as a temporary identifier
-            type: 'SIGNUP_VERIFICATION'
+          userId: email,
+          type: 'SIGNUP_VERIFICATION',
+          createdAt: {
+            gt: new Date(Date.now() - 60 * 1000) // 1 minute ago
+          }
         }
-    })
+      })
 
-    // Create new OTP record
-    const otpRecord = await prisma.oTP.create({
-      data: {
-        userId: email, // Using email as a temporary identifier
-        otp,
-        expiresAt,
-        type: 'SIGNUP_VERIFICATION'
+      if (recentOTP) {
+        throw new Error('Please wait 1 minute before requesting another OTP')
       }
-    })
 
-    console.log('OTP created for signup:', { email, otp, expiresAt, otpId: otpRecord.id })
+      // Check if user already exists
+      const existingUser = await prisma.user.findUnique({
+        where: { email }
+      })
+
+      if (existingUser) {
+        throw new Error('An account with this email address already exists.')
+      }
+
+      // Generate OTP
+      const otp = generateOTP()
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+
+      // Store temporary OTP information using email as identifier
+      // Remove any existing signup verification OTPs for this email
+      await prisma.oTP.deleteMany({
+          where: {
+              userId: email, // Using email as a temporary identifier
+              type: 'SIGNUP_VERIFICATION'
+          }
+      })
+
+      // Create new OTP record
+      const otpRecord = await prisma.oTP.create({
+        data: {
+          userId: email, // Using email as a temporary identifier
+          otp,
+          expiresAt,
+          type: 'SIGNUP_VERIFICATION'
+        }
+      })
+
+      console.log('OTP created for signup:', { email, otp, expiresAt, otpId: otpRecord.id })
+
+      return { otp, otpRecord }
+    })
 
     // Enhanced email template for signup verification
     const emailHtml = `
@@ -164,7 +163,7 @@ export async function POST(request: NextRequest) {
           
           <p>Thank you for signing up! Please use the following OTP to verify your email address and complete your registration:</p>
           
-          <div class="otp-code">${otp}</div>
+          <div class="otp-code">${result.otp}</div>
           
           <div class="warning">
             <strong>Important:</strong> This OTP will expire in 10 minutes. If you didn't request this registration, please ignore this email.
@@ -194,8 +193,10 @@ export async function POST(request: NextRequest) {
     } catch (emailError) {
       console.error('Failed to send signup OTP email:', emailError)
       // Delete the OTP record since email failed
-      await prisma.oTP.delete({
-        where: { id: otpRecord.id }
+      await withDatabaseConnection(async (prisma) => {
+        await prisma.oTP.delete({
+          where: { id: result.otpRecord.id }
+        })
       })
       throw new Error('Failed to send verification email')
     }
@@ -206,8 +207,31 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Error sending signup OTP:', error)
+    
+    // Handle specific error types
+    if (error instanceof Error) {
+      if (error.message.includes('Please wait')) {
+        return NextResponse.json(
+          { error: error.message },
+          { status: 429 }
+        )
+      }
+      if (error.message.includes('already exists')) {
+        return NextResponse.json(
+          { error: error.message },
+          { status: 409 }
+        )
+      }
+      if (error.message.includes('Failed to send')) {
+        return NextResponse.json(
+          { error: 'Failed to send verification email. Please try again.' },
+          { status: 500 }
+        )
+      }
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to send OTP.' },
+      { error: 'Failed to send OTP. Please try again.' },
       { status: 500 }
     )
   }
