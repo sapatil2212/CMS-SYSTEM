@@ -68,25 +68,45 @@ export default function BaseMetalActivationManagement() {
 
       console.log('Toggling base metal:', baseMetalSlug, 'to:', isMenuActive)
 
-      const response = await fetch('/api/content/base-metal-activation', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ baseMetalSlug, isMenuActive }),
-      })
+      // Try multiple HTTP methods as fallbacks
+      const methods = ['PUT', 'POST', 'PATCH']
+      let response = null
+      let lastError = null
 
-      console.log('Toggle API response status:', response.status)
+      for (const method of methods) {
+        try {
+          console.log(`Trying ${method} method...`)
+          response = await fetch('/api/content/base-metal-activation', {
+            method,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ baseMetalSlug, isMenuActive }),
+          })
 
-      if (response.ok) {
+          console.log(`${method} response status:`, response.status)
+
+          if (response.ok) {
+            console.log(`${method} succeeded`)
+            break
+          } else {
+            lastError = `${method} failed with status ${response.status}`
+            console.log(lastError)
+          }
+        } catch (error) {
+          lastError = `${method} failed: ${error}`
+          console.log(lastError)
+        }
+      }
+
+      if (response && response.ok) {
         const result = await response.json()
         console.log('Toggle API response:', result)
         setMessage({ type: 'success', text: 'Base metal activation updated successfully!' })
         // Refresh the data
         await fetchBaseMetals()
       } else {
-        const errorText = await response.text()
-        throw new Error(`Failed to update base metal activation: ${response.status} ${errorText}`)
+        throw new Error(lastError || 'All HTTP methods failed')
       }
     } catch (error) {
       console.error('Error updating base metal activation:', error)
