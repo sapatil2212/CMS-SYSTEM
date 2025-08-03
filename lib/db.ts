@@ -12,12 +12,6 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient({
   },
   // Add connection pooling configuration for serverless
   log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  // Connection pool settings for serverless environments
-  __internal: {
-    engine: {
-      connectionLimit: 1,
-    },
-  },
 })
 
 // Add connection cleanup on process termination
