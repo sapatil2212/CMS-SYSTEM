@@ -1,19 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/db'
 
 export async function GET() {
   try {
-    const prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: process.env.DATABASE_URL,
-        },
-      },
-    })
-    
     const content = await prisma.galleryContent.findFirst()
-    
-    await prisma.$disconnect()
     
     if (!content) {
       // Return default content if none exists
@@ -39,14 +29,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { title, subtitle, description } = body
 
-    const prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: process.env.DATABASE_URL,
-        },
-      },
-    })
-
     // Delete existing content and create new one
     await prisma.galleryContent.deleteMany()
 
@@ -57,8 +39,6 @@ export async function POST(request: NextRequest) {
         description
       }
     })
-
-    await prisma.$disconnect()
 
     return NextResponse.json(result)
   } catch (error) {
@@ -75,14 +55,6 @@ export async function PUT(request: NextRequest) {
     const body = await request.json()
     const { id, title, subtitle, description } = body
 
-    const prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: process.env.DATABASE_URL,
-        },
-      },
-    })
-
     const result = await prisma.galleryContent.update({
       where: { id },
       data: {
@@ -91,8 +63,6 @@ export async function PUT(request: NextRequest) {
         description
       }
     })
-
-    await prisma.$disconnect()
 
     return NextResponse.json(result)
   } catch (error) {

@@ -1,24 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/db'
 
 export async function GET() {
   try {
-    // Create a new Prisma client with environment variable
-    const prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: process.env.DATABASE_URL,
-        },
-      },
-    })
-    
     const images = await prisma.galleryImage.findMany({
       orderBy: {
         order: 'asc'
       }
     })
-    
-    await prisma.$disconnect()
     
     return NextResponse.json(images)
   } catch (error) {
@@ -35,14 +24,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { title, description, image, order, isActive } = body
 
-    const prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: process.env.DATABASE_URL,
-        },
-      },
-    })
-
     const result = await prisma.galleryImage.create({
       data: {
         title,
@@ -52,8 +33,6 @@ export async function POST(request: NextRequest) {
         isActive: isActive !== undefined ? isActive : true
       }
     })
-
-    await prisma.$disconnect()
 
     return NextResponse.json(result)
   } catch (error) {
@@ -70,14 +49,6 @@ export async function PUT(request: NextRequest) {
     const body = await request.json()
     const { id, title, description, image, order, isActive } = body
 
-    const prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: process.env.DATABASE_URL,
-        },
-      },
-    })
-
     const result = await prisma.galleryImage.update({
       where: { id },
       data: {
@@ -88,8 +59,6 @@ export async function PUT(request: NextRequest) {
         isActive: isActive !== undefined ? isActive : true
       }
     })
-
-    await prisma.$disconnect()
 
     return NextResponse.json(result)
   } catch (error) {
@@ -113,19 +82,9 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    const prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: process.env.DATABASE_URL,
-        },
-      },
-    })
-
     await prisma.galleryImage.delete({
       where: { id }
     })
-
-    await prisma.$disconnect()
 
     return NextResponse.json({ success: true })
   } catch (error) {
