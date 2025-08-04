@@ -240,8 +240,190 @@ export async function POST(
     console.log(`Existing content found: ${!!existingContent}`)
 
     // Use Prisma transaction for better Railway database handling
-    const result = await prisma.$transaction(async (tx) => {
-      // Prepare main content data (without relationships)
+    let result
+    try {
+      result = await prisma.$transaction(async (tx) => {
+        // Prepare main content data (without relationships)
+        const mainContentData = {
+          heroTitle: body.heroTitle || '',
+          heroSubtitle: body.heroSubtitle || '',
+          heroDescription: body.heroDescription || '',
+          heroImage: body.heroImage || '',
+          whatIsTitle: body.whatIsTitle || '',
+          whatIsDescription: body.whatIsDescription || '',
+          whatIsImage: body.whatIsImage || '',
+          whatIsBestFor: body.whatIsBestFor || '',
+          whatIsMaterials: body.whatIsMaterials || '',
+          whatIsAlkalineOffers: body.whatIsAlkalineOffers || '',
+          benefitsTitle: body.benefitsTitle || '',
+          benefitsSubtitle: body.benefitsSubtitle || '',
+          processTitle: body.processTitle || '',
+          processSubtitle: body.processSubtitle || '',
+          applicationsTitle: body.applicationsTitle || '',
+          applicationsSubtitle: body.applicationsSubtitle || '',
+          industriesTitle: body.industriesTitle || '',
+          industriesSubtitle: body.industriesSubtitle || '',
+          qualityTitle: body.qualityTitle || '',
+          qualityDescription: body.qualityDescription || '',
+          qualityImage: body.qualityImage || '',
+          ctaTitle: body.ctaTitle || '',
+          ctaDescription: body.ctaDescription || ''
+        }
+
+        let content
+        if (existingContent) {
+          // Update main content first
+          content = await (tx as any)[modelName].update({
+            where: { id: existingContent.id },
+            data: mainContentData
+          })
+          console.log(`Updated existing content for ${process}`)
+        } else {
+          // Create main content first
+          content = await (tx as any)[modelName].create({
+            data: mainContentData
+          })
+          console.log(`Created new content for ${process}`)
+        }
+
+        // Handle related data in batches to avoid timeout
+        if (body.benefits && body.benefits.length > 0) {
+          // Delete existing benefits
+          await (tx as any)[`${modelName.replace('Content', 'Benefit')}`].deleteMany({
+            where: { contentId: content.id }
+          })
+          
+          // Create new benefits in batches
+          const benefitModel = `${modelName.replace('Content', 'Benefit')}`
+          const benefitBatchSize = 5
+          for (let i = 0; i < body.benefits.length; i += benefitBatchSize) {
+            const batch = body.benefits.slice(i, i + benefitBatchSize)
+            await Promise.all(batch.map((benefit: any, batchIndex: number) => 
+              (tx as any)[benefitModel].create({
+                data: {
+                  contentId: content.id,
+                  icon: benefit.icon || '',
+                  title: benefit.title || '',
+                  description: benefit.description || '',
+                  order: i + batchIndex
+                }
+              })
+            ))
+          }
+          console.log(`Updated ${body.benefits.length} benefits`)
+        }
+
+        // Handle process steps
+        if (body.processSteps && body.processSteps.length > 0) {
+          await (tx as any)[`${modelName.replace('Content', 'ProcessStep')}`].deleteMany({
+            where: { contentId: content.id }
+          })
+          
+          const stepModel = `${modelName.replace('Content', 'ProcessStep')}`
+          const stepBatchSize = 5
+          for (let i = 0; i < body.processSteps.length; i += stepBatchSize) {
+            const batch = body.processSteps.slice(i, i + stepBatchSize)
+            await Promise.all(batch.map((step: any, batchIndex: number) => 
+              (tx as any)[stepModel].create({
+                data: {
+                  contentId: content.id,
+                  step: step.step || '',
+                  title: step.title || '',
+                  description: step.description || '',
+                  icon: step.icon || '',
+                  order: i + batchIndex
+                }
+              })
+            ))
+          }
+          console.log(`Updated ${body.processSteps.length} process steps`)
+        }
+
+        // Handle applications
+        if (body.applications && body.applications.length > 0) {
+          await (tx as any)[`${modelName.replace('Content', 'Application')}`].deleteMany({
+            where: { contentId: content.id }
+          })
+          
+          const appModel = `${modelName.replace('Content', 'Application')}`
+          const appBatchSize = 3 // Smaller batch size for applications due to more data
+          for (let i = 0; i < body.applications.length; i += appBatchSize) {
+            const batch = body.applications.slice(i, i + appBatchSize)
+            await Promise.all(batch.map((app: any, batchIndex: number) => 
+              (tx as any)[appModel].create({
+                data: {
+                  contentId: content.id,
+                  title: app.title || '',
+                  image: app.image || '',
+                  description: app.description || '',
+                  items: JSON.stringify(app.items || []),
+                  order: i + batchIndex
+                }
+              })
+            ))
+          }
+          console.log(`Updated ${body.applications.length} applications`)
+        }
+
+        // Handle industries
+        if (body.industries && body.industries.length > 0) {
+          await (tx as any)[`${modelName.replace('Content', 'Industry')}`].deleteMany({
+            where: { contentId: content.id }
+          })
+          
+          const industryModel = `${modelName.replace('Content', 'Industry')}`
+          const industryBatchSize = 3
+          for (let i = 0; i < body.industries.length; i += industryBatchSize) {
+            const batch = body.industries.slice(i, i + industryBatchSize)
+            await Promise.all(batch.map((industry: any, batchIndex: number) => 
+              (tx as any)[industryModel].create({
+                data: {
+                  contentId: content.id,
+                  name: industry.name || '',
+                  icon: industry.icon || '',
+                  examples: JSON.stringify(industry.examples || []),
+                  image: industry.image || '',
+                  order: i + batchIndex
+                }
+              })
+            ))
+          }
+          console.log(`Updated ${body.industries.length} industries`)
+        }
+
+        // Handle quality checks
+        if (body.qualityChecks && body.qualityChecks.length > 0) {
+          await (tx as any)[`${modelName.replace('Content', 'QualityCheck')}`].deleteMany({
+            where: { contentId: content.id }
+          })
+          
+          const qualityModel = `${modelName.replace('Content', 'QualityCheck')}`
+          const qualityBatchSize = 5
+          for (let i = 0; i < body.qualityChecks.length; i += qualityBatchSize) {
+            const batch = body.qualityChecks.slice(i, i + qualityBatchSize)
+            await Promise.all(batch.map((check: any, batchIndex: number) => 
+              (tx as any)[qualityModel].create({
+                data: {
+                  contentId: content.id,
+                  title: check.title || '',
+                  description: check.description || '',
+                  order: i + batchIndex
+                }
+              })
+            ))
+          }
+          console.log(`Updated ${body.qualityChecks.length} quality checks`)
+        }
+
+        return content
+      }, {
+        maxWait: 20000, // 20 seconds
+        timeout: 60000, // 60 seconds - increased significantly
+      })
+    } catch (transactionError) {
+      console.error('Transaction failed, falling back to individual operations:', transactionError)
+      
+      // Fallback: Handle operations individually without transaction
       const mainContentData = {
         heroTitle: body.heroTitle || '',
         heroSubtitle: body.heroSubtitle || '',
@@ -268,35 +450,28 @@ export async function POST(
         ctaDescription: body.ctaDescription || ''
       }
 
-      let content
       if (existingContent) {
-        // Update main content first
-        content = await (tx as any)[modelName].update({
+        result = await (prisma as any)[modelName].update({
           where: { id: existingContent.id },
           data: mainContentData
         })
-        console.log(`Updated existing content for ${process}`)
       } else {
-        // Create main content first
-        content = await (tx as any)[modelName].create({
+        result = await (prisma as any)[modelName].create({
           data: mainContentData
         })
-        console.log(`Created new content for ${process}`)
       }
 
-      // Handle related data separately to avoid Railway connection issues
+      // Handle related data individually
       if (body.benefits && body.benefits.length > 0) {
-        // Delete existing benefits
-        await (tx as any)[`${modelName.replace('Content', 'Benefit')}`].deleteMany({
-          where: { contentId: content.id }
+        await (prisma as any)[`${modelName.replace('Content', 'Benefit')}`].deleteMany({
+          where: { contentId: result.id }
         })
         
-        // Create new benefits
         const benefitModel = `${modelName.replace('Content', 'Benefit')}`
         for (const [index, benefit] of body.benefits.entries()) {
-          await (tx as any)[benefitModel].create({
+          await (prisma as any)[benefitModel].create({
             data: {
-              contentId: content.id,
+              contentId: result.id,
               icon: benefit.icon || '',
               title: benefit.title || '',
               description: benefit.description || '',
@@ -304,20 +479,18 @@ export async function POST(
             }
           })
         }
-        console.log(`Updated ${body.benefits.length} benefits`)
       }
 
-      // Handle process steps
       if (body.processSteps && body.processSteps.length > 0) {
-        await (tx as any)[`${modelName.replace('Content', 'ProcessStep')}`].deleteMany({
-          where: { contentId: content.id }
+        await (prisma as any)[`${modelName.replace('Content', 'ProcessStep')}`].deleteMany({
+          where: { contentId: result.id }
         })
         
         const stepModel = `${modelName.replace('Content', 'ProcessStep')}`
         for (const [index, step] of body.processSteps.entries()) {
-          await (tx as any)[stepModel].create({
+          await (prisma as any)[stepModel].create({
             data: {
-              contentId: content.id,
+              contentId: result.id,
               step: step.step || '',
               title: step.title || '',
               description: step.description || '',
@@ -326,41 +499,38 @@ export async function POST(
             }
           })
         }
-        console.log(`Updated ${body.processSteps.length} process steps`)
       }
 
-      // Handle applications
       if (body.applications && body.applications.length > 0) {
-        await (tx as any)[`${modelName.replace('Content', 'Application')}`].deleteMany({
-          where: { contentId: content.id }
+        await (prisma as any)[`${modelName.replace('Content', 'Application')}`].deleteMany({
+          where: { contentId: result.id }
         })
         
         const appModel = `${modelName.replace('Content', 'Application')}`
         for (const [index, app] of body.applications.entries()) {
-          await (tx as any)[appModel].create({
+          await (prisma as any)[appModel].create({
             data: {
-              contentId: content.id,
+              contentId: result.id,
               title: app.title || '',
               image: app.image || '',
+              description: app.description || '',
               items: JSON.stringify(app.items || []),
               order: index
             }
           })
         }
-        console.log(`Updated ${body.applications.length} applications`)
       }
 
-      // Handle industries
       if (body.industries && body.industries.length > 0) {
-        await (tx as any)[`${modelName.replace('Content', 'Industry')}`].deleteMany({
-          where: { contentId: content.id }
+        await (prisma as any)[`${modelName.replace('Content', 'Industry')}`].deleteMany({
+          where: { contentId: result.id }
         })
         
         const industryModel = `${modelName.replace('Content', 'Industry')}`
         for (const [index, industry] of body.industries.entries()) {
-          await (tx as any)[industryModel].create({
+          await (prisma as any)[industryModel].create({
             data: {
-              contentId: content.id,
+              contentId: result.id,
               name: industry.name || '',
               icon: industry.icon || '',
               examples: JSON.stringify(industry.examples || []),
@@ -369,34 +539,26 @@ export async function POST(
             }
           })
         }
-        console.log(`Updated ${body.industries.length} industries`)
       }
 
-      // Handle quality checks
       if (body.qualityChecks && body.qualityChecks.length > 0) {
-        await (tx as any)[`${modelName.replace('Content', 'QualityCheck')}`].deleteMany({
-          where: { contentId: content.id }
+        await (prisma as any)[`${modelName.replace('Content', 'QualityCheck')}`].deleteMany({
+          where: { contentId: result.id }
         })
         
         const qualityModel = `${modelName.replace('Content', 'QualityCheck')}`
         for (const [index, check] of body.qualityChecks.entries()) {
-          await (tx as any)[qualityModel].create({
+          await (prisma as any)[qualityModel].create({
             data: {
-              contentId: content.id,
+              contentId: result.id,
               title: check.title || '',
               description: check.description || '',
               order: index
             }
           })
         }
-        console.log(`Updated ${body.qualityChecks.length} quality checks`)
       }
-
-      return content
-    }, {
-      maxWait: 10000, // 10 seconds
-      timeout: 15000, // 15 seconds
-    })
+    }
 
     // Fetch complete content with relationships for response
     const finalContent = await (prisma as any)[modelName].findFirst({

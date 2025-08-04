@@ -22,6 +22,8 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
   ChatBubbleLeftRightIcon,
+  BuildingOfficeIcon,
+  BeakerIcon,
 } from '@heroicons/react/24/outline'
 
 const navigation = [
@@ -30,6 +32,8 @@ const navigation = [
   { name: 'About Us Content', href: '/admin/about', icon: InformationCircleIcon },
   { name: 'Process Content', href: '/admin/process', icon: CogIcon },
   { name: 'Base Metals Content', href: '/admin/basemetals', icon: CubeIcon },
+  { name: 'Sectors Management', href: '/admin/sectors', icon: BuildingOfficeIcon },
+  { name: 'Quality Testing', href: '/admin/quality-testing', icon: BeakerIcon },
   { name: 'Header Content', href: '/admin/header', icon: DocumentTextIcon },
   { name: 'Footer Content', href: '/admin/footer', icon: PhotoIcon },
   { name: 'Contact Content', href: '/admin/contact-content', icon: EnvelopeIcon },

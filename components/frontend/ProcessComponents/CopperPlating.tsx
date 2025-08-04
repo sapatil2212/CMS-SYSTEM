@@ -317,7 +317,10 @@ const CopperPlating = () => {
                 />
               </div>
               <div className="p-6">
-                <h3 className="font-semibold text-gray-900 text-lg mb-4">{app.title}</h3>
+                <h3 className="font-semibold text-gray-900 text-lg mb-3">{app.title}</h3>
+                {app.description && (
+                  <p className="text-gray-600 mb-4 text-sm leading-relaxed">{app.description}</p>
+                )}
                 <ul className="space-y-2">
                   {parseJsonSafely(app.items).map((item: string, i: number) => (
                     <li key={i} className="flex items-start">

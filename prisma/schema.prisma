@@ -340,6 +340,7 @@ model CopperPlatingApplication {
   content     CopperPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -438,6 +439,7 @@ model SilverPlatingApplication {
   content     SilverPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -536,6 +538,7 @@ model GoldPlatingApplication {
   content     GoldPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -634,6 +637,7 @@ model BusbarPlatingApplication {
   content     BusbarPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -733,6 +737,7 @@ model ZincPlatingApplication {
   content     ZincPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -832,6 +837,7 @@ model NickelPlatingApplication {
   content     NickelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -931,6 +937,7 @@ model ElectrolessNickelPlatingApplication {
   content     ElectrolessNickelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -1030,6 +1037,7 @@ model BrightTinPlatingApplication {
   content     BrightTinPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -1129,6 +1137,7 @@ model DullTinPlatingApplication {
   content     DullTinPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -1227,6 +1236,7 @@ model RackBarrelPlatingApplication {
   content     RackBarrelPlatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -1325,6 +1335,7 @@ model ZincFlakeCoatingApplication {
   content     ZincFlakeCoatingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -1424,6 +1435,7 @@ model MolykoteApplication {
   content     MolykoteContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -1522,6 +1534,7 @@ model AluminiumApplication {
   content     AluminiumContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -1619,6 +1632,7 @@ model SteelApplication {
   content     SteelContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -1717,6 +1731,7 @@ model CopperApplication {
   content     CopperContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -1815,6 +1830,7 @@ model BrassApplication {
   content     BrassContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -1914,6 +1930,7 @@ model StainlessSteelApplication {
   content     StainlessSteelContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -2013,6 +2030,7 @@ model CarbonSteelApplication {
   content     CarbonSteelContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
   title       String
   image       String
+  description String? @db.Text
   items       String @db.Text // JSON stringified array
   order       Int      @default(0)
   createdAt   DateTime @default(now())
@@ -2200,6 +2218,128 @@ model ContactSubmission {
   message     String?
   status      String   @default("new") // new, contacted, completed, archived
   notes       String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SectorsOverviewContent {
+  id          String   @id @default(cuid())
+  title       String   @default("Industries We Serve")
+  subtitle    String   @default("Choose the Best Coatings Based on Your Application Needs")
+  description String   @db.Text
+  whyChooseTitle String @default("Why Choose Alkalyne?")
+  whyChooseDescription String @db.Text
+  whyChooseFeatures String @db.Text // JSON array as string
+  ctaText     String   @default("Get Free Consultation")
+  ctaLink     String   @default("/contact")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Sector {
+  id          String   @id @default(cuid())
+  name        String
+  description String   @db.Text
+  details     String   @db.Text
+  image       String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Quality Testing Models
+model QualityTestingContent {
+  id          String   @id @default(cuid())
+  heroTitle   String
+  heroSubtitle String
+  heroDescription String @db.Text
+  commitmentTitle String
+  commitmentDescription String @db.Text
+  capabilitiesTitle String
+  capabilitiesDescription String @db.Text
+  statisticsTitle String
+  statisticsDescription String @db.Text
+  standardsTitle String
+  standardsDescription String @db.Text
+  labTitle String
+  labDescription String @db.Text
+  trustedTitle String
+  trustedDescription String @db.Text
+  ctaTitle String
+  ctaDescription String @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  capabilities QualityTestingCapability[]
+  standards   QualityTestingStandard[]
+  statistics  QualityTestingStatistic[]
+  industries  QualityTestingIndustry[]
+  labImages   QualityTestingLabImage[]
+}
+
+model QualityTestingCapability {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     QualityTestingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String   @db.Text
+  details     String   @db.Text
+  icon        String
+  order       Int
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model QualityTestingStandard {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     QualityTestingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  description String   @db.Text
+  category    String
+  order       Int
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model QualityTestingStatistic {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     QualityTestingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  number      String
+  label       String
+  icon        String
+  order       Int
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model QualityTestingIndustry {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     QualityTestingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  name        String
+  description String   @db.Text
+  icon        String
+  order       Int
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model QualityTestingLabImage {
+  id          String   @id @default(cuid())
+  contentId   String
+  content     QualityTestingContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  title       String
+  description String   @db.Text
+  imagePath   String
+  order       Int
+  isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

@@ -32,4 +32,20 @@ if (typeof window === 'undefined') {
   })
 }
 
+// Add error handling for connection issues
+prisma.$use(async (params, next) => {
+  try {
+    return await next(params)
+  } catch (error: any) {
+    // Handle connection closed errors
+    if (error?.code === 'P1017' || error?.message?.includes('Server has closed the connection')) {
+      console.log('Database connection closed, attempting to reconnect...')
+      // Force disconnect and reconnect
+      await prisma.$disconnect()
+      // The next query will automatically reconnect
+    }
+    throw error
+  }
+})
+
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma 

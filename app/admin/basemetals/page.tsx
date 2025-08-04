@@ -9,7 +9,7 @@ import ProcessCard from '@/components/admin/ProcessCard'
 import ProcessEditModal from '@/components/admin/ProcessEditModal'
 import ConfirmationModal from '@/components/admin/ConfirmationModal'
 import toast from 'react-hot-toast'
-import { Settings, Wrench, Plus } from 'lucide-react'
+import { Wrench, Plus } from 'lucide-react'
 
 interface BaseMetalData {
   id: string
@@ -360,20 +360,13 @@ export default function BaseMetalsPage() {
                     Manage content for all base metal pages with easy-to-use cards. Deactivated base metals will be hidden from the navigation menu.
                   </p>
                 </div>
-                <div className="flex gap-4">
+                <div>
                   <button
                     onClick={() => setIsAddModalOpen(true)}
                     className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add New Base Metal
-                  </button>
-                  <button
-                    onClick={() => window.open('/basemetals', '_blank')}
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    <Settings className="h-4 w-4 mr-2" />
-                    View All Base Metals
                   </button>
                 </div>
               </div>

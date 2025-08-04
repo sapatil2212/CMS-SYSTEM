@@ -864,14 +864,14 @@ export default function ProcessEditModal({ process, isOpen, onClose, onSave }: P
                               </div>
                               <div>
                                 <label className="block text-xs font-medium text-gray-700 mb-1">
-                                  Image URL
+                                  Description
                                 </label>
-                                <input
-                                  type="text"
-                                  value={app.image || ''}
-                                  onChange={(e) => updateApplication(appIndex, 'image', e.target.value)}
+                                <textarea
+                                  value={app.description || ''}
+                                  onChange={(e) => updateApplication(appIndex, 'description', e.target.value)}
                                   className="w-full px-3 py-2 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                  placeholder="Enter image URL"
+                                  placeholder="Enter application description"
+                                  rows={3}
                                 />
                               </div>
                             </div>
