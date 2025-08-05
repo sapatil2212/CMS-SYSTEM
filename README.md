@@ -1,5 +1,7 @@
 # CMS System
 
+> **Latest Update**: Environment variables updated for TiDB Cloud database - $(date)
+
 A full-stack CMS system built with Next.js, Prisma ORM, and MySQL database. Features include user authentication, content management, file uploads, and an admin panel.
 
 ## Features

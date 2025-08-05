@@ -1,0 +1,30 @@
+require('dotenv').config()
+
+console.log('🔧 TiDB Database Setup Script')
+console.log('==============================')
+
+// TiDB Cloud connection string with SSL
+const tidbConnectionString = 'mysql://3C5Z7raHFNZYPVu.root:hMrrBsxuXoYJbK7G@gateway01.us-west-2.prod.aws.tidbcloud.com:4000/alkalyne_db?ssl=true'
+
+console.log('📝 Steps to set up TiDB database:')
+console.log('')
+console.log('1. Create a .env file in your project root with:')
+console.log(`   DATABASE_URL="${tidbConnectionString}"`)
+console.log('')
+console.log('2. Run the following commands:')
+console.log('   npm run db:push')
+console.log('   npm run db:seed')
+console.log('')
+console.log('3. Update Vercel environment variables with the same DATABASE_URL')
+console.log('')
+console.log('4. Redeploy your application')
+console.log('')
+console.log('📋 Commands to run:')
+console.log('   # Create .env file')
+console.log('   echo "DATABASE_URL=\\"' + tidbConnectionString + '\\"" > .env')
+console.log('')
+console.log('   # Push schema to database')
+console.log('   npm run db:push')
+console.log('')
+console.log('   # Seed the database')
+console.log('   npm run db:seed') 
