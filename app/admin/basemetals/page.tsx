@@ -8,6 +8,8 @@ import AdminHeader from '@/components/admin/AdminHeader'
 import ProcessCard from '@/components/admin/ProcessCard'
 import ProcessEditModal from '@/components/admin/ProcessEditModal'
 import ConfirmationModal from '@/components/admin/ConfirmationModal'
+import SuccessModal from '@/components/ui/SuccessModal'
+import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
 import toast from 'react-hot-toast'
 import { Wrench, Plus } from 'lucide-react'
 
@@ -45,6 +47,9 @@ export default function BaseMetalsPage() {
     isActive: true
   })
   const [addingBaseMetal, setAddingBaseMetal] = useState(false)
+  const [deletingBaseMetal, setDeletingBaseMetal] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [successMessage, setSuccessMessage] = useState({ title: '', message: '' })
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -69,16 +74,16 @@ export default function BaseMetalsPage() {
       // Fetch content for each base metal
       const promises = settings.map(async (setting: any) => {
         try {
-          // First try the regular process route
-          let response = await fetch(`/api/content/${setting.slug}`)
+          // For base metals, always use the base-metal specific route first
+          let response = await fetch(`/api/content/base-metal/${setting.slug}`)
           let data = null
           
           if (response.ok) {
             data = await response.json()
           } else {
-            // If regular route fails, try the base-metal specific route
-            console.log(`Regular route failed for ${setting.slug}, trying base-metal route`)
-            response = await fetch(`/api/content/base-metal/${setting.slug}`)
+            // If base-metal route fails, try the regular process route as fallback
+            console.log(`Base-metal route failed for ${setting.slug}, trying regular route`)
+            response = await fetch(`/api/content/${setting.slug}`)
             if (response.ok) {
               data = await response.json()
             }
@@ -97,27 +102,37 @@ export default function BaseMetalsPage() {
             }
           }
           
+          // If no content found, still return the base metal entry with default content structure
           return {
             id: setting.slug,
             name: setting.name,
             slug: setting.slug,
-            content: null,
+            content: {
+              heroTitle: `${setting.name} Plating Services`,
+              heroSubtitle: `Professional ${setting.name} Plating Solutions`,
+              heroDescription: `High-quality ${setting.name.toLowerCase()} plating services for industrial applications`
+            },
             isActive: setting.isActive,
             heroImage: '',
-            heroTitle: '',
-            heroSubtitle: ''
+            heroTitle: `${setting.name} Plating Services`,
+            heroSubtitle: `Professional ${setting.name} Plating Solutions`
           }
         } catch (error) {
           console.error(`Failed to fetch ${setting.slug} content:`, error)
+          // Even on error, return the base metal with default content
           return {
             id: setting.slug,
             name: setting.name,
             slug: setting.slug,
-            content: null,
+            content: {
+              heroTitle: `${setting.name} Plating Services`,
+              heroSubtitle: `Professional ${setting.name} Plating Solutions`,
+              heroDescription: `High-quality ${setting.name.toLowerCase()} plating services for industrial applications`
+            },
             isActive: setting.isActive,
             heroImage: '',
-            heroTitle: '',
-            heroSubtitle: ''
+            heroTitle: `${setting.name} Plating Services`,
+            heroSubtitle: `Professional ${setting.name} Plating Solutions`
           }
         }
       })
@@ -164,7 +179,12 @@ export default function BaseMetalsPage() {
           isActive: p.slug === baseMetal.slug ? updatedSetting.isActive : p.isActive
         })))
         
-        toast.success(`${baseMetal.name} ${updatedSetting.isActive ? 'activated' : 'deactivated'} successfully`)
+        // Show success modal instead of toast
+        setSuccessMessage({
+          title: `Base Metal ${updatedSetting.isActive ? 'Activated' : 'Deactivated'}!`,
+          message: `${baseMetal.name} has been ${updatedSetting.isActive ? 'activated and will appear' : 'deactivated and will be hidden'} in the navigation menu.`
+        })
+        setShowSuccessModal(true)
       } else {
         throw new Error('Failed to update base metal status')
       }
@@ -176,18 +196,20 @@ export default function BaseMetalsPage() {
 
   const handleSaveBaseMetal = async (updatedBaseMetal: BaseMetalData) => {
     try {
-      // First try the regular process route
-      let response = await fetch(`/api/content/${updatedBaseMetal.slug}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedBaseMetal.content)
-      })
+      // Check if this is a dynamic base metal by looking it up in BaseMetalSettings
+      const settingsResponse = await fetch('/api/admin/base-metal-settings')
+      let isDynamicBaseMetal = false
+      
+      if (settingsResponse.ok) {
+        const baseMetals = await settingsResponse.json()
+        isDynamicBaseMetal = baseMetals.some((metal: any) => metal.slug === updatedBaseMetal.slug)
+      }
 
-      // If the regular route fails, try the base-metal specific route
-      if (!response.ok) {
-        console.log(`Regular route failed for ${updatedBaseMetal.slug}, trying base-metal route`);
+      let response;
+      
+      if (isDynamicBaseMetal) {
+        // For dynamic base metals, always use the base-metal specific route
+        console.log(`Saving dynamic base metal ${updatedBaseMetal.slug} via base-metal route`);
         response = await fetch(`/api/content/base-metal/${updatedBaseMetal.slug}`, {
           method: 'POST',
           headers: {
@@ -195,6 +217,27 @@ export default function BaseMetalsPage() {
           },
           body: JSON.stringify(updatedBaseMetal.content)
         })
+      } else {
+        // For legacy base metals, try regular process route first
+        response = await fetch(`/api/content/${updatedBaseMetal.slug}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedBaseMetal.content)
+        })
+
+        // If the regular route fails, try the base-metal specific route
+        if (!response.ok) {
+          console.log(`Regular route failed for ${updatedBaseMetal.slug}, trying base-metal route`);
+          response = await fetch(`/api/content/base-metal/${updatedBaseMetal.slug}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedBaseMetal.content)
+          })
+        }
       }
 
       if (response.ok) {
@@ -208,7 +251,17 @@ export default function BaseMetalsPage() {
         // Refresh the base metals list to get updated data
         await fetchAllBaseMetals()
         
-        toast.success(`${updatedBaseMetal.name} updated successfully`)
+        // Dispatch custom event to notify frontend components to refresh
+        window.dispatchEvent(new CustomEvent('contentUpdated', {
+          detail: { slug: updatedBaseMetal.slug, type: 'base-metal' }
+        }))
+        
+        // Show success modal instead of toast
+        setSuccessMessage({
+          title: 'Content Updated Successfully!',
+          message: `${updatedBaseMetal.name} content has been updated and is now live on the frontend.`
+        })
+        setShowSuccessModal(true)
         setIsEditModalOpen(false)
         setSelectedBaseMetal(null)
       } else {
@@ -224,13 +277,19 @@ export default function BaseMetalsPage() {
   const handleConfirmDelete = async () => {
     if (!baseMetalToDelete) return
 
+    setDeletingBaseMetal(true)
     try {
       const response = await fetch(`/api/admin/base-metal-settings?slug=${baseMetalToDelete.slug}`, {
         method: 'DELETE'
       })
 
       if (response.ok) {
-        toast.success(`${baseMetalToDelete.name} deleted successfully`)
+        // Show success modal instead of toast
+        setSuccessMessage({
+          title: 'Base Metal Deleted Successfully!',
+          message: `${baseMetalToDelete.name} has been permanently removed from the system.`
+        })
+        setShowSuccessModal(true)
         setIsDeleteModalOpen(false)
         setBaseMetalToDelete(null)
         await fetchAllBaseMetals()
@@ -241,6 +300,8 @@ export default function BaseMetalsPage() {
     } catch (error) {
       console.error('Failed to delete base metal:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to delete base metal')
+    } finally {
+      setDeletingBaseMetal(false)
     }
   }
 
@@ -281,18 +342,6 @@ export default function BaseMetalsPage() {
       if (response.ok) {
         const createdSetting = await response.json()
         
-        // Add to local state
-        setBaseMetals(prev => [...prev, {
-          id: createdSetting.slug,
-          name: createdSetting.name,
-          slug: createdSetting.slug,
-          content: null,
-          isActive: createdSetting.isActive,
-          heroImage: '',
-          heroTitle: '',
-          heroSubtitle: ''
-        }])
-
         // Reset form
         setNewBaseMetal({
           name: '',
@@ -301,7 +350,16 @@ export default function BaseMetalsPage() {
         })
         
         setIsAddModalOpen(false)
-        toast.success(`${createdSetting.name} added successfully`)
+        
+        // Show success modal instead of toast
+        setSuccessMessage({
+          title: 'Base Metal Created Successfully!',
+          message: `${createdSetting.name} has been created and is now available with full CRUD functionality.`
+        })
+        setShowSuccessModal(true)
+        
+        // Refresh the complete list to include the new base metal with proper content
+        await fetchAllBaseMetals()
       } else {
         const errorData = await response.json()
         throw new Error(errorData.error || 'Failed to add base metal')
@@ -334,7 +392,11 @@ export default function BaseMetalsPage() {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <ProfessionalLoader 
+          size="xl"
+          title="Authenticating"
+          subtitle="Verifying your credentials..."
+        />
       </div>
     )
   }
@@ -372,26 +434,37 @@ export default function BaseMetalsPage() {
               </div>
             </div>
 
-            {/* Base Metal Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {baseMetals.map((baseMetal) => (
-                <ProcessCard
-                  key={baseMetal.id}
-                  process={baseMetal}
-                  onEdit={() => handleEditBaseMetal(baseMetal)}
-                  onDelete={() => handleDeleteBaseMetal(baseMetal)}
-                  onToggleActive={() => handleToggleActive(baseMetal)}
-                />
-              ))}
-            </div>
+            {/* Loading State */}
+            {loading ? (
+              <ProfessionalLoader 
+                title="Loading Base Metals Content"
+                subtitle="Fetching all base metal configurations and content..."
+              />
 
-            {/* Empty State */}
-            {baseMetals.length === 0 && (
-              <div className="text-center py-12">
-                <Wrench className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-sm font-medium text-gray-900">No base metals</h3>
-                <p className="mt-1 text-sm text-gray-500">Get started by adding base metal content.</p>
-              </div>
+            ) : (
+              <>
+                {/* Base Metal Cards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {baseMetals.map((baseMetal) => (
+                    <ProcessCard
+                      key={baseMetal.id}
+                      process={baseMetal}
+                      onEdit={() => handleEditBaseMetal(baseMetal)}
+                      onDelete={() => handleDeleteBaseMetal(baseMetal)}
+                      onToggleActive={() => handleToggleActive(baseMetal)}
+                    />
+                  ))}
+                </div>
+
+                {/* Empty State */}
+                {baseMetals.length === 0 && (
+                  <div className="text-center py-12">
+                    <Wrench className="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 className="mt-2 text-sm font-medium text-gray-900">No base metals</h3>
+                    <p className="mt-1 text-sm text-gray-500">Get started by adding base metal content.</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </main>
@@ -415,14 +488,17 @@ export default function BaseMetalsPage() {
         <ConfirmationModal
           isOpen={isDeleteModalOpen}
           onClose={() => {
-            setIsDeleteModalOpen(false)
-            setBaseMetalToDelete(null)
+            if (!deletingBaseMetal) {
+              setIsDeleteModalOpen(false)
+              setBaseMetalToDelete(null)
+            }
           }}
-                     onConfirm={handleConfirmDelete}
-           title="Delete Base Metal"
-           message={`Are you sure you want to delete ${baseMetalToDelete.name} completely? This will remove it from the navigation and delete all its content. This action cannot be undone.`}
-           confirmText="Delete Base Metal"
-                       type="danger"
+          onConfirm={handleConfirmDelete}
+          title="Delete Base Metal"
+          message={`Are you sure you want to delete ${baseMetalToDelete.name} completely? This will remove it from the navigation and delete all its content. This action cannot be undone.`}
+          confirmText="Delete Base Metal"
+          type="danger"
+          loading={deletingBaseMetal}
         />
       )}
 
@@ -503,6 +579,14 @@ export default function BaseMetalsPage() {
           </div>
         </div>
       )}
+
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title={successMessage.title}
+        message={successMessage.message}
+      />
     </div>
   )
 } 

@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { createAPIHandler } from '@/lib/api-validation'
 
-// GET all sectors
-export async function GET() {
+// GET all sectors (only active ones for admin dashboard)
+const getSectors = async (request: NextRequest) => {
   try {
     const sectors = await prisma.sector.findMany({
+      where: {
+        isActive: true
+      },
       orderBy: {
         order: 'asc'
       }
@@ -20,8 +24,14 @@ export async function GET() {
   }
 }
 
+export const GET = createAPIHandler(getSectors, {
+  methods: ['GET'],
+  requireAuth: false,  // Allow public access for viewing sectors
+  requireAdmin: false
+})
+
 // POST new sector
-export async function POST(request: NextRequest) {
+const createSector = async (request: NextRequest) => {
   try {
     const body = await request.json()
     const { name, description, details, image, order, isActive } = body
@@ -53,4 +63,10 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-} 
+}
+
+export const POST = createAPIHandler(createSector, {
+  methods: ['POST'],
+  requireAuth: true,
+  requireAdmin: true
+}) 

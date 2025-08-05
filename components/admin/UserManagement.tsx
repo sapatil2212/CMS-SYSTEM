@@ -16,6 +16,7 @@ import {
   Calendar,
   ArrowRight
 } from 'lucide-react'
+import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
 
 interface User {
   id: string
@@ -341,8 +342,11 @@ export default function UserManagement() {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <span className="ml-2 text-gray-600">Loading users...</span>
+        <ProfessionalLoader 
+          size="lg"
+          title="Loading Users"
+          subtitle="Fetching user management data..."
+        />
       </div>
     )
   }

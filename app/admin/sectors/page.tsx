@@ -7,6 +7,9 @@ import AdminSidebar from '@/components/admin/AdminSidebar'
 import AdminHeader from '@/components/admin/AdminHeader'
 import SectorForm from '@/components/admin/SectorForm'
 import SectorList from '@/components/admin/SectorList'
+import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
+import ConfirmationModal from '@/components/ui/ConfirmationModal'
+import SuccessModal from '@/components/ui/SuccessModal'
 import { 
   PlusIcon, 
   MagnifyingGlassIcon,
@@ -33,6 +36,14 @@ export default function SectorsManagement() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingSector, setEditingSector] = useState<Sector | null>(null)
+  
+  // Modal states
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [deletingSectorId, setDeletingSectorId] = useState<string | null>(null)
+  const [deletingSectorName, setDeletingSectorName] = useState<string>('')
+  const [deleting, setDeleting] = useState(false)
+  const [successMessage, setSuccessMessage] = useState({ title: '', message: '' })
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -47,7 +58,13 @@ export default function SectorsManagement() {
   const fetchSectors = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/sectors')
+      const token = localStorage.getItem('token')
+      const response = await fetch('/api/sectors', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
       if (response.ok) {
         const data = await response.json()
         setSectors(data)
@@ -79,33 +96,98 @@ export default function SectorsManagement() {
   const handleFormSubmit = async () => {
     await fetchSectors()
     setShowForm(false)
+    
+    // Show success message
+    if (editingSector) {
+      setSuccessMessage({
+        title: 'Sector Updated Successfully!',
+        message: `The sector "${editingSector.name}" has been updated with the latest information.`
+      })
+    } else {
+      setSuccessMessage({
+        title: 'Sector Created Successfully!',
+        message: 'Your new sector has been created and is now available in the system.'
+      })
+    }
+    
     setEditingSector(null)
+    setShowSuccessModal(true)
   }
 
-  const handleDeleteSector = async (id: string) => {
-    if (confirm('Are you sure you want to delete this sector?')) {
-      try {
-        const response = await fetch(`/api/sectors/${id}`, {
-          method: 'DELETE'
-        })
-        if (response.ok) {
-          await fetchSectors()
-        } else {
-          console.error('Failed to delete sector')
-        }
-      } catch (error) {
-        console.error('Error deleting sector:', error)
-      }
+  const handleDeleteSector = (id: string) => {
+    console.log('Attempting to delete sector with ID:', id)
+    const sector = sectors.find(s => s.id === id)
+    if (sector) {
+      console.log('Found sector to delete:', sector.name)
+      setDeletingSectorId(id)
+      setDeletingSectorName(sector.name)
+      setShowDeleteConfirm(true)
+    } else {
+      console.error('Sector not found in list:', id)
+      alert('Sector not found. Please refresh the page and try again.')
     }
+  }
+
+  const confirmDeleteSector = async () => {
+    if (!deletingSectorId) return
+    
+    console.log('Confirming deletion of sector ID:', deletingSectorId)
+    setDeleting(true)
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch(`/api/sectors/${deletingSectorId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      console.log('Delete response status:', response.status)
+      
+      if (response.ok) {
+        const result = await response.json()
+        await fetchSectors()
+        setShowDeleteConfirm(false)
+        setSuccessMessage({
+          title: 'Sector Deleted Successfully!',
+          message: `The sector "${result.sectorName || deletingSectorName}" has been permanently removed from the system.`
+        })
+        setShowSuccessModal(true)
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('Failed to delete sector:', errorData)
+        
+        if (response.status === 404) {
+          alert('Sector not found. It may have already been deleted.')
+        } else {
+          alert(`Failed to delete sector: ${errorData.error || 'Please try again.'}`)
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting sector:', error)
+      alert('An error occurred while deleting the sector. Please try again.')
+    } finally {
+      setDeleting(false)
+      setDeletingSectorId(null)
+      setDeletingSectorName('')
+    }
+  }
+
+  const cancelDeleteSector = () => {
+    setShowDeleteConfirm(false)
+    setDeletingSectorId(null)
+    setDeletingSectorName('')
   }
 
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-2 text-xs text-gray-600">Loading...</p>
-        </div>
+        <ProfessionalLoader 
+          size="xl"
+          title="Authenticating"
+          subtitle="Verifying your credentials..."
+        />
       </div>
     )
   }
@@ -210,6 +292,29 @@ export default function SectorsManagement() {
           onSubmit={handleFormSubmit}
         />
       )}
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteConfirm}
+        onClose={cancelDeleteSector}
+        onConfirm={confirmDeleteSector}
+        title="Delete Sector"
+        message={`Are you sure you want to delete the sector "${deletingSectorName}"? This action cannot be undone and will permanently remove all associated data.`}
+        confirmLabel="Delete Sector"
+        cancelLabel="Cancel"
+        type="danger"
+        loading={deleting}
+      />
+
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        title={successMessage.title}
+        message={successMessage.message}
+        actionLabel="Continue"
+        autoCloseAfter={4000}
+      />
     </div>
   )
 } 

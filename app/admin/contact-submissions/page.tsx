@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminSidebar from '@/components/admin/AdminSidebar';
+import ProfessionalLoader from '@/components/ui/ProfessionalLoader';
 
 interface ContactSubmission {
   id: string;
@@ -237,9 +238,12 @@ export default function ContactSubmissionsPage() {
             {/* Submissions Table */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
               {loading ? (
-                <div className="p-8 text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="mt-2 text-gray-600">Loading submissions...</p>
+                <div className="p-8 flex justify-center">
+                  <ProfessionalLoader 
+                    size="md"
+                    title="Loading Submissions"
+                    subtitle="Fetching contact form data..."
+                  />
                 </div>
               ) : (
                 <div className="overflow-x-auto">

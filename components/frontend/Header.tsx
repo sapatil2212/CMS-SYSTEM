@@ -73,6 +73,27 @@ export default function Header() {
     fetchMenuActiveBaseMetals()
   }, [])
 
+  // Auto-refresh base metals every 15 seconds to pick up new additions quickly
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchMenuActiveBaseMetals()
+      fetchActiveBaseMetals()
+    }, 15000)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  // Listen for focus events to refresh menu when user returns to tab
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchMenuActiveBaseMetals()
+      fetchActiveBaseMetals()
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [])
+
   const fetchHeaderSettings = async () => {
     try {
       const response = await fetch('/api/content/header')

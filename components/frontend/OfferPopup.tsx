@@ -18,7 +18,6 @@ export default function OfferPopup() {
   const [offerData, setOfferData] = useState<OfferPopupData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [imageLoaded, setImageLoaded] = useState(false)
-  const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 })
 
   useEffect(() => {
     fetchOfferPopup()
@@ -58,12 +57,7 @@ export default function OfferPopup() {
     handleClose()
   }
 
-  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const img = e.target as HTMLImageElement
-    setImageDimensions({
-      width: img.naturalWidth,
-      height: img.naturalHeight
-    })
+  const handleImageLoad = () => {
     setImageLoaded(true)
   }
 
@@ -78,12 +72,8 @@ export default function OfferPopup() {
     return null
   }
 
-  // Calculate modal size based on image dimensions
-  const maxWidth = Math.min(imageDimensions.width || 600, window.innerWidth * 0.9)
-  const maxHeight = Math.min(imageDimensions.height || 400, window.innerHeight * 0.9)
-  
-  const modalWidth = imageLoaded ? maxWidth : 600
-  const modalHeight = imageLoaded ? maxHeight : 400
+  // Fixed square size for consistent display
+  const squareSize = Math.min(500, window.innerWidth * 0.9, window.innerHeight * 0.9)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -93,14 +83,13 @@ export default function OfferPopup() {
         onClick={handleClose}
       />
       
-      {/* Modal */}
+      {/* Modal - Fixed Square Container */}
       <div 
         className="relative bg-white rounded-lg shadow-2xl overflow-hidden"
         style={{
-          width: `${modalWidth}px`,
-          height: `${modalHeight}px`,
-          maxWidth: '90vw',
-          maxHeight: '90vh'
+          width: `${squareSize}px`,
+          height: `${squareSize}px`,
+          aspectRatio: '1 / 1'
         }}
       >
         {/* Close Button */}
@@ -111,12 +100,12 @@ export default function OfferPopup() {
           <XMarkIcon className="h-5 w-5 text-gray-600" />
         </button>
 
-        {/* Image Container */}
-        <div className="relative w-full h-full">
+        {/* Image Container - Square with perfect centering */}
+        <div className="relative w-full h-full flex items-center justify-center bg-gray-100">
           <img
             src={offerData.image}
             alt={offerData.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-center"
             onLoad={handleImageLoad}
             onError={handleImageError}
           />

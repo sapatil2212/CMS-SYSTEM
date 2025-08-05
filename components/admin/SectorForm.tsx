@@ -77,10 +77,12 @@ export default function SectorForm({ sector, onClose, onSubmit }: SectorFormProp
     try {
       const url = sector ? `/api/sectors/${sector.id}` : '/api/sectors'
       const method = sector ? 'PUT' : 'POST'
+      const token = localStorage.getItem('token')
 
       const response = await fetch(url, {
         method,
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
@@ -107,9 +109,13 @@ export default function SectorForm({ sector, onClose, onSubmit }: SectorFormProp
     try {
       const formData = new FormData()
       formData.append('file', file)
+      const token = localStorage.getItem('token')
 
       const response = await fetch('/api/upload', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData
       })
 

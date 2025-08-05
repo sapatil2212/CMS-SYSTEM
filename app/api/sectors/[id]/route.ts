@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { createAPIHandler } from '@/lib/api-validation'
 
 // GET single sector
-export async function GET(
+const getSector = async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
+) => {
   try {
     const sector = await prisma.sector.findUnique({
       where: {
@@ -30,11 +31,17 @@ export async function GET(
   }
 }
 
+export const GET = createAPIHandler(getSector, {
+  methods: ['GET'],
+  requireAuth: false,  // Allow public access for viewing single sector
+  requireAdmin: false
+})
+
 // PUT update sector
-export async function PUT(
+const updateSector = async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
+) => {
   try {
     const body = await request.json()
     const { name, description, details, image, order, isActive } = body
@@ -71,12 +78,33 @@ export async function PUT(
   }
 }
 
+export const PUT = createAPIHandler(updateSector, {
+  methods: ['PUT'],
+  requireAuth: true,
+  requireAdmin: true
+})
+
 // DELETE sector (soft delete)
-export async function DELETE(
+const deleteSector = async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
+) => {
   try {
+    // First check if the sector exists
+    const existingSector = await prisma.sector.findUnique({
+      where: {
+        id: params.id
+      }
+    })
+
+    if (!existingSector) {
+      return NextResponse.json(
+        { error: 'Sector not found' },
+        { status: 404 }
+      )
+    }
+
+    // Perform soft delete
     const sector = await prisma.sector.update({
       where: {
         id: params.id
@@ -86,7 +114,10 @@ export async function DELETE(
       }
     })
 
-    return NextResponse.json({ message: 'Sector deleted successfully' })
+    return NextResponse.json({ 
+      message: 'Sector deleted successfully',
+      sectorName: sector.name 
+    })
   } catch (error) {
     console.error('Error deleting sector:', error)
     return NextResponse.json(
@@ -94,4 +125,10 @@ export async function DELETE(
       { status: 500 }
     )
   }
-} 
+}
+
+export const DELETE = createAPIHandler(deleteSector, {
+  methods: ['DELETE'],
+  requireAuth: true,
+  requireAdmin: true
+}) 

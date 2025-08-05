@@ -9,6 +9,7 @@ import ProcessCard from '@/components/admin/ProcessCard'
 import ProcessEditModal from '@/components/admin/ProcessEditModal'
 import ConfirmationModal from '@/components/admin/ConfirmationModal'
 import toast from 'react-hot-toast'
+import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
 import { Plus, Settings, Wrench } from 'lucide-react'
 import { useActivityTracker } from '@/hooks/useActivityTracker'
 
@@ -276,10 +277,11 @@ export default function ProcessContentPage() {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
+        <ProfessionalLoader 
+          size="xl"
+          title="Authenticating"
+          subtitle="Verifying your credentials..."
+        />
       </div>
     )
   }
@@ -306,26 +308,36 @@ export default function ProcessContentPage() {
               </div>
             </div>
 
-            {/* Process Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {processes.map((process) => (
-                <ProcessCard
-                  key={process.id}
-                  process={process}
-                  onEdit={() => handleEditProcess(process)}
-                  onDelete={() => handleDeleteProcess(process)}
-                  onToggleActive={() => handleToggleActive(process)}
-                />
-              ))}
-            </div>
+            {/* Loading State */}
+            {loading ? (
+              <ProfessionalLoader 
+                title="Loading Process Content"
+                subtitle="Fetching all process configurations and content..."
+              />
+            ) : (
+              <>
+                {/* Process Cards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {processes.map((process) => (
+                    <ProcessCard
+                      key={process.id}
+                      process={process}
+                      onEdit={() => handleEditProcess(process)}
+                      onDelete={() => handleDeleteProcess(process)}
+                      onToggleActive={() => handleToggleActive(process)}
+                    />
+                  ))}
+                </div>
 
-            {/* Empty State */}
-            {processes.length === 0 && (
-              <div className="text-center py-12">
-                <Wrench className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No processes found</h3>
-                <p className="text-gray-600">Get started by adding your first process.</p>
-              </div>
+                {/* Empty State */}
+                {processes.length === 0 && (
+                  <div className="text-center py-12">
+                    <Wrench className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No processes found</h3>
+                    <p className="text-gray-600">Get started by adding your first process.</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </main>

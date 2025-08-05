@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Save, Upload, RefreshCw, CheckCircle, AlertCircle, X } from 'lucide-react'
 import ImageUpload from './ImageUpload'
 import HeaderMenuManagement from './HeaderMenuManagement'
+import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
 
 interface HeaderSettings {
   id: string
@@ -106,8 +107,11 @@ export default function HeaderManagement() {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <span className="ml-2 text-gray-600">Loading header settings...</span>
+        <ProfessionalLoader 
+          size="lg"
+          title="Loading Header Settings"
+          subtitle="Fetching header management data..."
+        />
       </div>
     )
   }

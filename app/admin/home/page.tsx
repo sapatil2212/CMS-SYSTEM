@@ -11,6 +11,7 @@ import ImagePreview from '@/components/admin/ImagePreview'
 import ProcessImageUpload from '@/components/admin/ProcessImageUpload'
 import ConfirmationModal from '@/components/admin/ConfirmationModal'
 import SuccessModal from '@/components/admin/SuccessModal'
+import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
 import { useConfirmationModal } from '@/hooks/useConfirmationModal'
 import toast from 'react-hot-toast'
 
@@ -1119,10 +1120,11 @@ export default function HomeContentPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
+        <ProfessionalLoader 
+          size="xl"
+          title="Loading Home Content"
+          subtitle="Preparing content management interface..."
+        />
       </div>
     )
   }

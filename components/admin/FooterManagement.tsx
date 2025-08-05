@@ -7,6 +7,7 @@ import {
   Loader2
 } from 'lucide-react'
 import ImageUpload from './ImageUpload'
+import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
 
 interface FooterSettings {
   id: string
@@ -310,12 +311,12 @@ export default function FooterManagement() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[300px] gap-4">
-        <div className="relative">
-          <div className="w-12 h-12 rounded-full absolute border-4 border-solid border-gray-200"></div>
-          <div className="w-12 h-12 rounded-full animate-spin absolute border-4 border-solid border-blue-500 border-t-transparent"></div>
-        </div>
-        <p className="text-gray-600 text-lg font-medium">Loading footer content...</p>
+      <div className="flex items-center justify-center min-h-[300px]">
+        <ProfessionalLoader 
+          size="lg"
+          title="Loading Footer Content"
+          subtitle="Fetching footer management data..."
+        />
       </div>
     )
   }

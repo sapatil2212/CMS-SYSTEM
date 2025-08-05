@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import AdminHeader from '@/components/admin/AdminHeader'
 import HeaderManagement from '@/components/admin/HeaderManagement'
+import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
 
 export default function HeaderContent() {
   const { user, loading } = useAuth()
@@ -21,10 +22,11 @@ export default function HeaderContent() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
+        <ProfessionalLoader 
+          size="xl"
+          title="Loading Header Content"
+          subtitle="Preparing content management interface..."
+        />
       </div>
     )
   }

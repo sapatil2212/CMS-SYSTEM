@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/auth-provider'
 import { useRouter } from 'next/navigation'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import AdminHeader from '@/components/admin/AdminHeader'
+import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
 import { 
   PlusIcon, 
   BeakerIcon,
@@ -1101,10 +1102,11 @@ export default function QualityTestingManagement() {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-2 text-xs text-gray-600">Loading...</p>
-        </div>
+        <ProfessionalLoader 
+          size="xl"
+          title="Authenticating"
+          subtitle="Verifying your credentials..."
+        />
       </div>
     )
   }

@@ -83,33 +83,61 @@ const DynamicBaseMetalComponent: React.FC<DynamicBaseMetalComponentProps> = ({ b
     fetchContent();
   }, [baseMetalSlug]);
 
-  // Auto-refresh content every 30 seconds to pick up dashboard changes
+  // Auto-refresh content every 10 seconds to pick up dashboard changes quickly
   useEffect(() => {
     const interval = setInterval(() => {
+      console.log(`Auto-refreshing content for ${baseMetalSlug}`);
       fetchContent();
-    }, 30000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [baseMetalSlug]);
 
+  // Listen for focus events to refresh content when user returns to tab
+  useEffect(() => {
+    const handleFocus = () => {
+      console.log(`Tab focused, refreshing content for ${baseMetalSlug}`);
+      fetchContent();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [baseMetalSlug]);
+
+  // Listen for content update events from admin dashboard
+  useEffect(() => {
+    const handleContentUpdate = (event: CustomEvent) => {
+      const { slug, type } = event.detail;
+      if (slug === baseMetalSlug && type === 'base-metal') {
+        console.log(`Content update event received for ${baseMetalSlug}, refreshing...`);
+        fetchContent();
+      }
+    };
+
+    window.addEventListener('contentUpdated', handleContentUpdate as EventListener);
+    return () => window.removeEventListener('contentUpdated', handleContentUpdate as EventListener);
+  }, [baseMetalSlug]);
+
   const fetchContent = async () => {
     try {
-      // First try the regular process route
-      let response = await fetch(`/api/content/${baseMetalSlug}?t=${Date.now()}`);
+      // First try the base-metal specific route (for new dynamic base metals)
+      let response = await fetch(`/api/content/base-metal/${baseMetalSlug}?t=${Date.now()}`);
       
       if (response.ok) {
         const data = await response.json();
         setContent(data);
         setLastUpdate(Date.now());
+        console.log(`Content loaded for ${baseMetalSlug} via base-metal route`);
       } else {
-        // If not found in process route, try the base-metal specific route
-        console.log(`Base metal ${baseMetalSlug} not found in process route, trying base-metal route`);
-        response = await fetch(`/api/content/base-metal/${baseMetalSlug}?t=${Date.now()}`);
+        // If not found in base-metal route, try the regular process route (for legacy base metals)
+        console.log(`Base metal ${baseMetalSlug} not found in base-metal route, trying process route`);
+        response = await fetch(`/api/content/${baseMetalSlug}?t=${Date.now()}`);
         
         if (response.ok) {
           const data = await response.json();
           setContent(data);
           setLastUpdate(Date.now());
+          console.log(`Content loaded for ${baseMetalSlug} via process route`);
         } else {
           console.log(`Base metal ${baseMetalSlug} not found in any route, using default content`);
         }

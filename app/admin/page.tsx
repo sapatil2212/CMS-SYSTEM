@@ -3,32 +3,16 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth-provider'
 import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import AdminHeader from '@/components/admin/AdminHeader'
-import DashboardStats from '@/components/admin/DashboardStats'
-import RecentContent from '@/components/admin/RecentContent'
+import ModernDashboardStats from '@/components/admin/ModernDashboardStats'
+import ModernTimeDisplay from '@/components/admin/ModernTimeDisplay'
+import QuickActions from '@/components/admin/QuickActions'
+import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
+import { Clock, Wifi, Calendar, Hand } from 'lucide-react'
 
-function TimeDisplay() {
-  const [currentTime, setCurrentTime] = useState(new Date())
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date())
-    }, 1000)
-
-    return () => clearInterval(interval)
-  }, [])
-
-  return (
-    <div className="bg-white rounded-lg border border-gray-200 p-3">
-      <div className="flex items-center space-x-3">
-        <span className="text-sm font-medium text-gray-700">🕐 {currentTime.toLocaleTimeString()}</span>
-        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-        <span className="text-sm text-green-600 font-medium">Live</span>
-      </div>
-    </div>
-  )
-}
 
 
 export default function AdminDashboard() {
@@ -36,23 +20,21 @@ export default function AdminDashboard() {
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-
-
   useEffect(() => {
     console.log('Admin dashboard auth check:', { user, loading })
-    // Temporarily comment out auth redirect to test navigation
-    // if (!loading && !user) {
-    //   router.push('/login')
-    // }
+    if (!loading && !user) {
+      router.push('/login')
+    }
   }, [user, loading, router])
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <ProfessionalLoader 
+          size="xl"
+          title="Loading Dashboard"
+          subtitle="Preparing admin interface..."
+        />
       </div>
     )
   }
@@ -62,7 +44,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <AdminSidebar open={sidebarOpen} setOpen={setSidebarOpen} />
       
       <div className="lg:pl-64">
@@ -70,23 +52,49 @@ export default function AdminDashboard() {
         
         <main className="py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-8 flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-                  Welcome 👋 {user.name}
-                </h1>
-                <p className="mt-2 text-gray-600">
-                  Here's what's happening with your Website
+            {/* Modern Header Section */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6"
+            >
+              <div className="flex-1">
+                <div className="flex items-center space-x-3 mb-2">
+                  
+                    <span className="text-2xl">👋</span>
+              
+                  <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                    Welcome back, {user.name}!
+                  </h1>
+                </div>
+                <p className="text-lg text-gray-600 max-w-2xl">
+                  Dashboard overview of your CMS system. Monitor performance, manage content, and track activities in real-time.
                 </p>
               </div>
-              <TimeDisplay />
-            </div>
+              <ModernTimeDisplay />
+            </motion.div>
 
-            <DashboardStats />
-            <RecentContent />
+            {/* Quick Actions Section */}
+            <QuickActions />
+
+            {/* Stats and Content Sections */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <ModernDashboardStats />
+            </motion.div>
+            
+
+
+            
           </div>
         </main>
       </div>
     </div>
   )
-} 
+}
+
+ 

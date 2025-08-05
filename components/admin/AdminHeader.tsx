@@ -2,8 +2,9 @@
 
 import { Fragment, useState } from 'react'
 import { Menu, Transition } from '@headlessui/react'
-import { Bars3Icon, BellIcon, MagnifyingGlassIcon, UserIcon } from '@heroicons/react/24/outline'
+import { Bars3Icon, MagnifyingGlassIcon, UserIcon } from '@heroicons/react/24/outline'
 import { useAuth } from '@/lib/auth-provider'
+import NotificationCenter from './NotificationCenter'
 
 interface AdminHeaderProps {
   setSidebarOpen: (open: boolean) => void
@@ -55,13 +56,7 @@ export default function AdminHeader({ setSidebarOpen }: AdminHeaderProps) {
         </form>
 
         <div className="flex items-center gap-x-4 lg:gap-x-6">
-          <button
-            type="button"
-            className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
-          >
-            <span className="sr-only">View notifications</span>
-            <BellIcon className="h-6 w-6" aria-hidden="true" />
-          </button>
+          <NotificationCenter />
 
           {/* Separator */}
           <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" aria-hidden="true" />

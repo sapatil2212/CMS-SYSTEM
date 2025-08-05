@@ -6,6 +6,7 @@ import AdminHeader from '@/components/admin/AdminHeader'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import ImageUpload from '@/components/admin/ImageUpload'
 import SuccessModal from '@/components/admin/SuccessModal'
+import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
 import { Plus, Edit, Trash2, Eye, EyeOff, Upload, X, Save, Crown, Shield, Zap, Cog, CheckCircle, Users, Award, Clock, Target, Eye as EyeIcon } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
@@ -367,7 +368,15 @@ export default function AboutPage() {
   }
 
   if (!user) {
-    return <div>Loading...</div>
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <ProfessionalLoader 
+          size="xl"
+          title="Loading About Content"
+          subtitle="Preparing content management interface..."
+        />
+      </div>
+    )
   }
 
   return (

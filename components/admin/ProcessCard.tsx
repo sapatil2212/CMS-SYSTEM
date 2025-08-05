@@ -140,11 +140,29 @@ export default function ProcessCard({ process, onEdit, onDelete, onToggleActive 
               <span>Edit</span>
             </button>
             <button
-              onClick={() => {
-                // Check if it's a base metal or process and open the correct URL
-                const isBaseMetal = ['aluminium', 'copper', 'brass', 'stainless-steel', 'carbon-steel'].includes(process.slug)
-                const url = isBaseMetal ? `/basemetals/${process.slug}` : `/processes/${process.slug}`
-                window.open(url, '_blank')
+              onClick={async () => {
+                // Dynamically check if it's a base metal by checking the database
+                try {
+                  const response = await fetch('/api/admin/base-metal-settings')
+                  let isBaseMetal = false
+                  
+                  if (response.ok) {
+                    const baseMetals = await response.json()
+                    isBaseMetal = baseMetals.some((metal: any) => metal.slug === process.slug)
+                  }
+                  
+                  // Fallback to hardcoded check if API fails
+                  if (!isBaseMetal) {
+                    isBaseMetal = ['aluminium', 'copper', 'brass', 'stainless-steel', 'carbon-steel'].includes(process.slug)
+                  }
+                  
+                  const url = isBaseMetal ? `/basemetals/${process.slug}` : `/processes/${process.slug}`
+                  window.open(url, '_blank')
+                } catch (error) {
+                  console.error('Error checking base metal status:', error)
+                  // Fallback to process URL if there's an error
+                  window.open(`/processes/${process.slug}`, '_blank')
+                }
               }}
               className="flex items-center space-x-1 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
             >

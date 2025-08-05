@@ -33,44 +33,48 @@ async function handleGet() {
   try {
     console.log('GET request received for base-metal-activation')
     
-    // Get all base metal content with their activation status
-    const baseMetals = await Promise.all([
-      prisma.aluminiumContent.findFirst().then(content => ({
-        id: content?.id || 'aluminium',
-        name: 'Aluminium',
-        slug: 'aluminium',
-        href: '/basemetals/aluminium',
-        isMenuActive: content?.isMenuActive ?? true
-      })),
-      prisma.copperContent.findFirst().then(content => ({
-        id: content?.id || 'copper',
-        name: 'Copper',
-        slug: 'copper',
-        href: '/basemetals/copper',
-        isMenuActive: content?.isMenuActive ?? true
-      })),
-      prisma.stainlessSteelContent.findFirst().then(content => ({
-        id: content?.id || 'stainless-steel',
-        name: 'Stainless Steel',
-        slug: 'stainless-steel',
-        href: '/basemetals/stainless-steel',
-        isMenuActive: content?.isMenuActive ?? true
-      })),
-      prisma.carbonSteelContent.findFirst().then(content => ({
-        id: content?.id || 'carbon-steel',
-        name: 'Carbon Steel',
-        slug: 'carbon-steel',
-        href: '/basemetals/carbon-steel',
-        isMenuActive: content?.isMenuActive ?? true
-      })),
-      prisma.brassContent.findFirst().then(content => ({
-        id: content?.id || 'brass',
-        name: 'Brass',
-        slug: 'brass',
-        href: '/basemetals/brass',
-        isMenuActive: content?.isMenuActive ?? true
-      }))
-    ])
+    // Get all base metal settings from database
+    const baseMetalSettings = await prisma.baseMetalSettings.findMany({
+      orderBy: { name: 'asc' }
+    })
+    
+    // For each base metal setting, try to get its content from BaseMetalContent
+    const baseMetals = await Promise.all(
+      baseMetalSettings.map(async (setting) => {
+        try {
+          // Try to get content from BaseMetalContent table
+          const baseMetalContent = await prisma.baseMetalContent.findUnique({
+            where: { slug: setting.slug },
+            select: { content: true }
+          })
+          
+          // Extract isMenuActive from the content JSON if it exists
+          let isMenuActive = true
+          if (baseMetalContent?.content && typeof baseMetalContent.content === 'object') {
+            const content = baseMetalContent.content as any
+            isMenuActive = content.isMenuActive ?? true
+          }
+          
+          return {
+            id: setting.id,
+            name: setting.name,
+            slug: setting.slug,
+            href: `/basemetals/${setting.slug}`,
+            isMenuActive
+          }
+        } catch (error) {
+          console.error(`Error fetching content for ${setting.slug}:`, error)
+          // Return with default isMenuActive if there's an error
+          return {
+            id: setting.id,
+            name: setting.name,
+            slug: setting.slug,
+            href: `/basemetals/${setting.slug}`,
+            isMenuActive: true
+          }
+        }
+      })
+    )
 
     console.log('Base metals fetched successfully:', baseMetals.length)
     return NextResponse.json(baseMetals)
@@ -102,33 +106,85 @@ async function handleUpdate(request: NextRequest) {
 
     console.log('Updating base metal:', baseMetalSlug, 'to:', isMenuActive)
 
-    // Map base metal slugs to their respective Prisma models
-    const baseMetalModelMap: { [key: string]: any } = {
-      'aluminium': prisma.aluminiumContent,
-      'copper': prisma.copperContent,
-      'stainless-steel': prisma.stainlessSteelContent,
-      'carbon-steel': prisma.carbonSteelContent,
-      'brass': prisma.brassContent
-    }
+    // Check if this base metal exists in BaseMetalSettings
+    const baseMetalSetting = await prisma.baseMetalSettings.findUnique({
+      where: { slug: baseMetalSlug }
+    })
 
-    const model = baseMetalModelMap[baseMetalSlug]
-    if (!model) {
-      console.error('Invalid base metal slug:', baseMetalSlug)
+    if (!baseMetalSetting) {
+      console.error('Base metal not found in settings:', baseMetalSlug)
       return NextResponse.json(
-        { error: 'Invalid base metal slug' },
-        { status: 400 }
+        { error: 'Base metal not found' },
+        { status: 404 }
       )
     }
 
-    // Update the first record (there should only be one per base metal)
-    const updatedBaseMetal = await model.updateMany({
-      where: {},
-      data: { isMenuActive }
-    })
+    // Try to update the content in BaseMetalContent table
+    let updatedBaseMetal
+    try {
+      // Get existing content from BaseMetalContent
+      const existingContent = await prisma.baseMetalContent.findUnique({
+        where: { slug: baseMetalSlug }
+      })
 
-    console.log('Update result:', updatedBaseMetal)
+      if (existingContent) {
+        // Update existing content with the new isMenuActive value
+        const currentContent = existingContent.content as any
+        const updatedContent = {
+          ...currentContent,
+          isMenuActive
+        }
 
-    return NextResponse.json({ success: true, updatedBaseMetal })
+        updatedBaseMetal = await prisma.baseMetalContent.update({
+          where: { slug: baseMetalSlug },
+          data: { content: updatedContent }
+        })
+      } else {
+        // Create new content entry with default content and isMenuActive
+        const defaultContent = {
+          heroTitle: `${baseMetalSetting.name} Plating Services`,
+          heroSubtitle: `Professional ${baseMetalSetting.name} Plating Solutions`,
+          heroDescription: `High-quality ${baseMetalSetting.name.toLowerCase()} plating services for industrial applications`,
+          isMenuActive
+        }
+
+        updatedBaseMetal = await prisma.baseMetalContent.create({
+          data: {
+            slug: baseMetalSlug,
+            content: defaultContent
+          }
+        })
+      }
+
+      console.log('Update result for BaseMetalContent:', updatedBaseMetal)
+      return NextResponse.json({ success: true, updatedBaseMetal })
+
+    } catch (contentError) {
+      console.log('BaseMetalContent update failed, trying legacy models:', contentError)
+      
+      // Fallback to legacy hardcoded models for backwards compatibility
+      const baseMetalModelMap: { [key: string]: any } = {
+        'aluminium': prisma.aluminiumContent,
+        'copper': prisma.copperContent,
+        'stainless-steel': prisma.stainlessSteelContent,
+        'carbon-steel': prisma.carbonSteelContent,
+        'brass': prisma.brassContent
+      }
+
+      const model = baseMetalModelMap[baseMetalSlug]
+      if (model) {
+        // Update the first record (there should only be one per base metal)
+        updatedBaseMetal = await model.updateMany({
+          where: {},
+          data: { isMenuActive }
+        })
+
+        console.log('Update result for legacy model:', updatedBaseMetal)
+        return NextResponse.json({ success: true, updatedBaseMetal })
+      } else {
+        throw new Error(`No model found for base metal: ${baseMetalSlug}`)
+      }
+    }
   } catch (error) {
     console.error('Error updating base metal activation status:', error)
     return NextResponse.json(

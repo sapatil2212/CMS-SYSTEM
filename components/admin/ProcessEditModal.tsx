@@ -298,7 +298,7 @@ export default function ProcessEditModal({ process, isOpen, onClose, onSave }: P
     setSaving(true)
     try {
       await onSave(editedProcess)
-      toast.success(`${editedProcess.name} updated successfully`)
+      // Success message is now handled by the parent component
     } catch (error) {
       toast.error('Failed to save process')
     } finally {

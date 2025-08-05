@@ -154,16 +154,22 @@ export function requireAuth() {
       throw new AuthenticationError('Token is required');
     }
     
-    // TODO: Verify JWT token here
-    // For now, just check if token exists
-    return token;
+    // Verify JWT token
+    const { verifyToken } = require('@/lib/auth');
+    const payload = verifyToken(token);
+    
+    if (!payload) {
+      throw new AuthenticationError('Invalid or expired token');
+    }
+    
+    return payload;
   };
 }
 
 // Admin role middleware
 export function requireAdmin() {
   return (request: NextRequest, user?: any) => {
-    if (!user || user.role !== 'admin') {
+    if (!user || user.role !== 'ADMIN') {
       throw new AuthorizationError('Admin access required');
     }
     
@@ -280,15 +286,16 @@ export function createAPIHandler(
       }
       
       // Authentication
+      let user: any = null;
       if (options.requireAuth) {
         const authMiddleware = requireAuth();
-        authMiddleware(request);
+        user = authMiddleware(request);
       }
       
       // Authorization
       if (options.requireAdmin) {
         const adminMiddleware = requireAdmin();
-        adminMiddleware(request);
+        adminMiddleware(request, user);
       }
       
       // Execute handler
