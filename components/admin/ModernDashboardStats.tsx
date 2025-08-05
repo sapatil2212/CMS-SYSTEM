@@ -62,25 +62,25 @@ export default function ModernDashboardStats() {
         fetch('/api/visitors/track', {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
-        }),
+        }).catch(() => ({ ok: false })),
         fetch('/api/admin/stats/base-metals-count', {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
-        }),
+        }).catch(() => ({ ok: false })),
         fetch('/api/admin/stats/processes-count', {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
-        }),
+        }).catch(() => ({ ok: false })),
         fetch('/api/admin/stats/sectors-count', {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
         }).catch(() => ({ ok: false }))
       ])
 
-      const visitsData = visitsResponse.ok ? await visitsResponse.json() : { totalVisits: 0 }
-      const baseMetalsData = baseMetalsResponse.ok ? await baseMetalsResponse.json() : { count: 0 }
-      const processesData = processesResponse.ok ? await processesResponse.json() : { count: 0 }
-      const sectorsData = sectorsResponse.ok ? await sectorsResponse.json() : { count: 0 }
+      const visitsData = visitsResponse.ok && 'json' in visitsResponse ? await visitsResponse.json() : { totalVisits: 0 }
+      const baseMetalsData = baseMetalsResponse.ok && 'json' in baseMetalsResponse ? await baseMetalsResponse.json() : { count: 0 }
+      const processesData = processesResponse.ok && 'json' in processesResponse ? await processesResponse.json() : { count: 0 }
+      const sectorsData = sectorsResponse.ok && 'json' in sectorsResponse ? await sectorsResponse.json() : { count: 0 }
 
       console.log('Dashboard: Received enhanced stats:', { visitsData, baseMetalsData, processesData, sectorsData })
       
