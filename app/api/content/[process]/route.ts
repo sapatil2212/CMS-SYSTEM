@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
 
 export async function GET(
   request: NextRequest,
@@ -55,7 +56,7 @@ export async function GET(
     } catch (error) {
       // If the model doesn't exist, return default content structure
       if (baseMetalSetting) {
-        console.log(`Model ${modelName} doesn't exist, returning default content for ${process}`)
+        logger.log(`Model ${modelName} doesn't exist, returning default content for ${process}`)
         return NextResponse.json({
           heroTitle: `${baseMetalSetting.name} Plating Services`,
           heroSubtitle: `Professional ${baseMetalSetting.name} Plating Solutions`,
@@ -157,7 +158,7 @@ export async function GET(
 
     return NextResponse.json(parsedContent)
   } catch (error) {
-    console.error(`Error fetching ${params.process} content:`, error)
+    logger.error(`Error fetching ${params.process} content:`, error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -170,7 +171,7 @@ export async function POST(
     const { process } = params
     const body = await request.json()
     
-    console.log(`Processing ${process} content update...`)
+    logger.log(`Processing ${process} content update...`)
     
     // Map process slug to Prisma model
     const processModelMap: { [key: string]: string } = {
@@ -206,11 +207,11 @@ export async function POST(
       // Convert slug to camelCase for model name (e.g., 'stainless-steel' -> 'stainlessSteelContent')
       const camelCaseSlug = process.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
       modelName = `${camelCaseSlug}Content`
-      console.log(`Dynamic base metal model: ${modelName}`)
+      logger.log(`Dynamic base metal model: ${modelName}`)
     }
 
     if (!modelName) {
-      console.log(`Process not found: ${process}`)
+      logger.log(`Process not found: ${process}`)
       return NextResponse.json({ error: 'Process not found' }, { status: 404 })
     }
 
@@ -221,23 +222,23 @@ export async function POST(
       await (prisma as any)[modelName].findFirst()
     } catch (error) {
       modelExists = false
-      console.log(`Model ${modelName} doesn't exist for ${process}`)
+      logger.log(`Model ${modelName} doesn't exist for ${process}`)
     }
 
     // If it's a new base metal and the model doesn't exist, we can't save content yet
     if (!modelExists && baseMetalSetting) {
-      console.log(`Cannot save content for ${process} - model ${modelName} doesn't exist in database`)
+      logger.log(`Cannot save content for ${process} - model ${modelName} doesn't exist in database`)
       return NextResponse.json({ 
         error: 'Content model not available for this base metal yet. Please contact administrator to add the required database models.',
         details: `Model ${modelName} needs to be added to the database schema`
       }, { status: 400 })
     }
 
-    console.log(`Using model: ${modelName}`)
+    logger.log(`Using model: ${modelName}`)
 
     // Check if content exists
     const existingContent = await (prisma as any)[modelName].findFirst()
-    console.log(`Existing content found: ${!!existingContent}`)
+    logger.log(`Existing content found: ${!!existingContent}`)
 
     // Use Prisma transaction for better Railway database handling
     let result
@@ -277,13 +278,13 @@ export async function POST(
             where: { id: existingContent.id },
             data: mainContentData
           })
-          console.log(`Updated existing content for ${process}`)
+          logger.log(`Updated existing content for ${process}`)
         } else {
           // Create main content first
           content = await (tx as any)[modelName].create({
             data: mainContentData
           })
-          console.log(`Created new content for ${process}`)
+          logger.log(`Created new content for ${process}`)
         }
 
         // Handle related data in batches to avoid timeout
@@ -310,7 +311,7 @@ export async function POST(
               })
             ))
           }
-          console.log(`Updated ${body.benefits.length} benefits`)
+          logger.log(`Updated ${body.benefits.length} benefits`)
         }
 
         // Handle process steps
@@ -336,7 +337,7 @@ export async function POST(
               })
             ))
           }
-          console.log(`Updated ${body.processSteps.length} process steps`)
+          logger.log(`Updated ${body.processSteps.length} process steps`)
         }
 
         // Handle applications
@@ -362,7 +363,7 @@ export async function POST(
               })
             ))
           }
-          console.log(`Updated ${body.applications.length} applications`)
+          logger.log(`Updated ${body.applications.length} applications`)
         }
 
         // Handle industries
@@ -388,7 +389,7 @@ export async function POST(
               })
             ))
           }
-          console.log(`Updated ${body.industries.length} industries`)
+          logger.log(`Updated ${body.industries.length} industries`)
         }
 
         // Handle quality checks
@@ -412,7 +413,7 @@ export async function POST(
               })
             ))
           }
-          console.log(`Updated ${body.qualityChecks.length} quality checks`)
+          logger.log(`Updated ${body.qualityChecks.length} quality checks`)
         }
 
         return content
@@ -421,7 +422,7 @@ export async function POST(
         timeout: 60000, // 60 seconds - increased significantly
       })
     } catch (transactionError) {
-      console.error('Transaction failed, falling back to individual operations:', transactionError)
+      logger.error('Transaction failed, falling back to individual operations:', transactionError)
       
       // Fallback: Handle operations individually without transaction
       const mainContentData = {
@@ -572,11 +573,11 @@ export async function POST(
       }
     })
 
-    console.log(`Successfully saved ${process} content`)
+    logger.log(`Successfully saved ${process} content`)
     return NextResponse.json(finalContent)
 
   } catch (error) {
-    console.error(`Error saving ${params.process} content:`, error)
+    logger.error(`Error saving ${params.process} content:`, error)
     
     // Provide more specific error information
     let errorMessage = 'Internal server error'

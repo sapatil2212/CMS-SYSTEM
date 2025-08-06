@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 export async function GET() {
   try {
@@ -11,7 +12,7 @@ export async function GET() {
 
     return NextResponse.json(baseMetalSettings)
   } catch (error) {
-    console.error('Error fetching base metal settings:', error)
+    logger.error('Error fetching base metal settings:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -67,7 +68,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(updatedSetting)
   } catch (error) {
-    console.error('Error updating base metal setting:', error)
+    logger.error('Error updating base metal setting:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -89,7 +90,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ message: 'Base metal deleted successfully' })
   } catch (error) {
-    console.error('Error deleting base metal:', error)
+    logger.error('Error deleting base metal:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 } 

@@ -17,6 +17,7 @@ import {
   ArrowRight
 } from 'lucide-react'
 import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
+import { logger } from '@/lib/logger';
 
 interface User {
   id: string
@@ -76,7 +77,7 @@ export default function UserManagement() {
         throw new Error('Failed to fetch users')
       }
     } catch (error) {
-      console.error('Error fetching users:', error)
+      logger.error('Error fetching users:', error)
       setMessage({ type: 'error', text: 'Failed to load users' })
     } finally {
       setLoading(false)
@@ -107,7 +108,7 @@ export default function UserManagement() {
          throw new Error(error.error || 'Failed to save user')
        }
                } catch (error) {
-        console.error('Error saving user:', error)
+        logger.error('Error saving user:', error)
         setSuccessMessage(error instanceof Error ? error.message : 'Failed to save user')
         setShowSuccessModal(true)
         setTimeout(() => setShowSuccessModal(false), 3000)
@@ -162,7 +163,7 @@ export default function UserManagement() {
         throw new Error(error.error || 'Failed to send OTP')
       }
     } catch (error) {
-      console.error('Error sending OTP:', error)
+      logger.error('Error sending OTP:', error)
       setSuccessMessage(error instanceof Error ? error.message : 'Failed to send OTP')
       setShowSuccessModal(true)
       setTimeout(() => setShowSuccessModal(false), 3000)
@@ -209,7 +210,7 @@ export default function UserManagement() {
         throw new Error(error.error || 'Failed to delete user')
       }
     } catch (error) {
-      console.error('Error deleting user:', error)
+      logger.error('Error deleting user:', error)
       setSuccessMessage(error instanceof Error ? error.message : 'Failed to delete user')
       setShowSuccessModal(true)
       setTimeout(() => setShowSuccessModal(false), 3000)
@@ -250,7 +251,7 @@ export default function UserManagement() {
         throw new Error(error.error || 'Failed to send OTP')
       }
     } catch (error) {
-      console.error('Error sending OTP:', error)
+      logger.error('Error sending OTP:', error)
       setSuccessMessage(error instanceof Error ? error.message : 'Failed to send OTP')
       setShowSuccessModal(true)
       setTimeout(() => setShowSuccessModal(false), 3000)
@@ -306,7 +307,7 @@ export default function UserManagement() {
         throw new Error(error.error || 'Failed to update password')
       }
     } catch (error) {
-      console.error('Error updating password:', error)
+      logger.error('Error updating password:', error)
       setSuccessMessage(error instanceof Error ? error.message : 'Failed to update password')
       setShowSuccessModal(true)
       setTimeout(() => setShowSuccessModal(false), 3000)

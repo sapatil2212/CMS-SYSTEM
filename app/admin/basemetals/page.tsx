@@ -11,7 +11,8 @@ import ConfirmationModal from '@/components/admin/ConfirmationModal'
 import SuccessModal from '@/components/ui/SuccessModal'
 import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
 import toast from 'react-hot-toast'
-import { Wrench, Plus } from 'lucide-react'
+import { logger } from '@/lib/logger';
+import {  Wrench, Plus  } from 'lucide-react';
 
 interface BaseMetalData {
   id: string
@@ -58,45 +59,33 @@ export default function BaseMetalsPage() {
   }, [user, authLoading, router])
 
   useEffect(() => {
-    console.log('🔄 Dashboard: Component mounted, fetching base metals...')
     fetchAllBaseMetals()
   }, [])
-
-  // Debug state changes
-  useEffect(() => {
-    console.log('📊 Dashboard: Base metals state updated:', baseMetals.length, 'items')
-  }, [baseMetals])
 
   const fetchAllBaseMetals = async () => {
     setLoading(true)
     try {
-      console.log('🔍 Dashboard: Fetching base metal settings...')
       // Fetch base metal settings from database
       const settingsResponse = await fetch('/api/admin/base-metal-settings')
       if (!settingsResponse.ok) {
         throw new Error('Failed to fetch base metal settings')
       }
       const settings = await settingsResponse.json()
-      console.log('📊 Dashboard: Base metal settings:', settings)
 
       // Fetch content for each base metal
       const promises = settings.map(async (setting: any) => {
         try {
-          console.log(`🔍 Dashboard: Fetching content for ${setting.slug}...`)
           // For base metals, always use the base-metal specific route first
           let response = await fetch(`/api/content/base-metal/${setting.slug}`)
           let data = null
           
           if (response.ok) {
             data = await response.json()
-            console.log(`✅ Dashboard: Content for ${setting.slug}:`, data)
           } else {
             // If base-metal route fails, try the regular process route as fallback
-            console.log(`❌ Dashboard: Base-metal route failed for ${setting.slug}, trying regular route`)
             response = await fetch(`/api/content/${setting.slug}`)
             if (response.ok) {
               data = await response.json()
-              console.log(`✅ Dashboard: Content for ${setting.slug} (fallback):`, data)
             }
           }
           
@@ -114,7 +103,6 @@ export default function BaseMetalsPage() {
           }
           
           // If no content found, still return the base metal entry with default content structure
-          console.log(`📝 Dashboard: Using default content for ${setting.slug}`)
           return {
             id: setting.slug,
             name: setting.name,
@@ -130,7 +118,7 @@ export default function BaseMetalsPage() {
             heroSubtitle: `Professional ${setting.name} Plating Solutions`
           }
         } catch (error) {
-          console.error(`❌ Dashboard: Failed to fetch ${setting.slug} content:`, error)
+          logger.error(`Failed to fetch ${setting.slug} content:`, error)
           // Even on error, return the base metal with default content
           return {
             id: setting.slug,
@@ -150,27 +138,12 @@ export default function BaseMetalsPage() {
       })
 
       const updatedBaseMetals = await Promise.all(promises)
-      console.log('📊 Dashboard: Final base metals array:', updatedBaseMetals)
-      console.log('🔄 Dashboard: Setting base metals state with', updatedBaseMetals.length, 'items')
       
-      // Force a more explicit state update with useCallback to ensure proper re-render
       setBaseMetals(prevState => {
-        console.log('🔄 Dashboard: Previous state length:', prevState.length)
-        console.log('🔄 Dashboard: New state length:', updatedBaseMetals.length)
         return [...updatedBaseMetals]
       })
-      console.log('✅ Dashboard: setBaseMetals called with callback')
-      
-      // Use a ref to track the actual state update
-      const checkStateUpdate = () => {
-        console.log('🔄 Dashboard: Checking state update...')
-        // This will be called after the state update
-      }
-      
-      // Schedule the check after the state update
-      setTimeout(checkStateUpdate, 100)
     } catch (error) {
-      console.error('❌ Dashboard: Failed to fetch base metals:', error)
+      logger.error('Failed to fetch base metals:', error)
       toast.error('Failed to load base metals')
     } finally {
       setLoading(false)
@@ -219,7 +192,7 @@ export default function BaseMetalsPage() {
         throw new Error('Failed to update base metal status')
       }
     } catch (error) {
-      console.error('Failed to toggle base metal status:', error)
+      logger.error('Failed to toggle base metal status:', error)
       toast.error('Failed to update base metal status')
     }
   }
@@ -239,7 +212,7 @@ export default function BaseMetalsPage() {
       
       if (isDynamicBaseMetal) {
         // For dynamic base metals, always use the base-metal specific route
-        console.log(`Saving dynamic base metal ${updatedBaseMetal.slug} via base-metal route`);
+        logger.log(`Saving dynamic base metal ${updatedBaseMetal.slug} via base-metal route`);
         response = await fetch(`/api/content/base-metal/${updatedBaseMetal.slug}`, {
           method: 'POST',
           headers: {
@@ -259,7 +232,7 @@ export default function BaseMetalsPage() {
 
         // If the regular route fails, try the base-metal specific route
         if (!response.ok) {
-          console.log(`Regular route failed for ${updatedBaseMetal.slug}, trying base-metal route`);
+          logger.log(`Regular route failed for ${updatedBaseMetal.slug}, trying base-metal route`);
           response = await fetch(`/api/content/base-metal/${updatedBaseMetal.slug}`, {
             method: 'POST',
             headers: {
@@ -299,7 +272,7 @@ export default function BaseMetalsPage() {
         throw new Error(errorData.error || 'Failed to save base metal')
       }
     } catch (error) {
-      console.error('Failed to save base metal:', error)
+      logger.error('Failed to save base metal:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to save base metal')
     }
   }
@@ -328,7 +301,7 @@ export default function BaseMetalsPage() {
         throw new Error(errorData.error || 'Failed to delete base metal')
       }
     } catch (error) {
-      console.error('Failed to delete base metal:', error)
+      logger.error('Failed to delete base metal:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to delete base metal')
     } finally {
       setDeletingBaseMetal(false)
@@ -395,7 +368,7 @@ export default function BaseMetalsPage() {
         throw new Error(errorData.error || 'Failed to add base metal')
       }
     } catch (error) {
-      console.error('Failed to add base metal:', error)
+      logger.error('Failed to add base metal:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to add base metal')
     } finally {
       setAddingBaseMetal(false)
@@ -435,14 +408,14 @@ export default function BaseMetalsPage() {
     return null
   }
 
-  console.log('🔄 Dashboard: Component rendering with', baseMetals.length, 'base metals')
-  console.log('🔄 Dashboard: Base metals array:', baseMetals)
+  logger.log('🔄 Dashboard: Component rendering with', baseMetals.length, 'base metals')
+  logger.log('🔄 Dashboard: Base metals array:', baseMetals)
   
   // Add a more explicit check for the state update
   useEffect(() => {
     if (baseMetals.length > 0) {
-      console.log('✅ Dashboard: State successfully updated with', baseMetals.length, 'base metals')
-      console.log('✅ Dashboard: First base metal:', baseMetals[0]?.name)
+      logger.log('✅ Dashboard: State successfully updated with', baseMetals.length, 'base metals')
+      logger.log('✅ Dashboard: First base metal:', baseMetals[0]?.name)
     }
   }, [baseMetals])
   
@@ -501,28 +474,24 @@ export default function BaseMetalsPage() {
                   )}
                 </div>
 
-                                 {/* Base Metal Cards Grid */}
-                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                   {console.log('🔄 Dashboard: Rendering', baseMetals.length, 'ProcessCard components')}
-                   {baseMetals.length > 0 ? (
-                     baseMetals.map((baseMetal) => {
-                       console.log('🔄 Dashboard: Creating ProcessCard for:', baseMetal.name)
-                       return (
-                         <ProcessCard
-                           key={baseMetal.id}
-                           process={baseMetal}
-                           onEdit={() => handleEditBaseMetal(baseMetal)}
-                           onDelete={() => handleDeleteBaseMetal(baseMetal)}
-                           onToggleActive={() => handleToggleActive(baseMetal)}
-                         />
-                       )
-                     })
-                   ) : (
-                     <div className="col-span-full text-center py-8">
-                       <p className="text-gray-500">No base metals found in state</p>
-                     </div>
-                   )}
-                 </div>
+                {/* Base Metal Cards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {baseMetals.length > 0 ? (
+                    baseMetals.map((baseMetal) => (
+                      <ProcessCard
+                        key={baseMetal.id}
+                        process={baseMetal}
+                        onEdit={() => handleEditBaseMetal(baseMetal)}
+                        onDelete={() => handleDeleteBaseMetal(baseMetal)}
+                        onToggleActive={() => handleToggleActive(baseMetal)}
+                      />
+                    ))
+                  ) : (
+                    <div className="col-span-full text-center py-8">
+                      <p className="text-gray-500">No base metals found in state</p>
+                    </div>
+                  )}
+                </div>
 
                 {/* Empty State */}
                 {baseMetals.length === 0 && (

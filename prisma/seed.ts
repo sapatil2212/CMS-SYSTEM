@@ -1,9 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Starting database seed...')
+  logger.log('🌱 Starting database seed...')
 
   // Clear existing hero slider data
   await prisma.heroSlider.deleteMany({})
@@ -51,11 +52,11 @@ async function main() {
     })
   }
 
-  console.log('✅ Hero slider data seeded successfully!')
-  console.log(`📊 Created ${heroSlides.length} hero slides`)
+  logger.log('✅ Hero slider data seeded successfully!')
+  logger.log(`📊 Created ${heroSlides.length} hero slides`)
 
   // Seed copper plating content
-  console.log('🌱 Seeding copper plating content...')
+  logger.log('🌱 Seeding copper plating content...')
   
   // Check if copper plating content already exists
   const existingCopperContent = await prisma.copperPlatingContent.findFirst()
@@ -64,11 +65,11 @@ async function main() {
     const { default: seedCopperPlating } = await import('./seed-copper-plating')
     await seedCopperPlating()
   } else {
-    console.log('✅ Copper plating content already exists, skipping...')
+    logger.log('✅ Copper plating content already exists, skipping...')
   }
 
   // Seed silver plating content
-  console.log('🌱 Seeding silver plating content...')
+  logger.log('🌱 Seeding silver plating content...')
   
   // Check if silver plating content already exists
   const existingSilverContent = await prisma.silverPlatingContent.findFirst()
@@ -77,11 +78,11 @@ async function main() {
     const { default: seedSilverPlating } = await import('./seed-silver-plating')
     await seedSilverPlating()
   } else {
-    console.log('✅ Silver plating content already exists, skipping...')
+    logger.log('✅ Silver plating content already exists, skipping...')
   }
 
   // Seed gold plating content
-  console.log('🌱 Seeding gold plating content...')
+  logger.log('🌱 Seeding gold plating content...')
   
   // Check if gold plating content already exists
   const existingGoldContent = await prisma.goldPlatingContent.findFirst()
@@ -90,101 +91,101 @@ async function main() {
     const { default: seedGoldPlating } = await import('./seed-gold-plating')
     await seedGoldPlating()
   } else {
-    console.log('✅ Gold plating content already exists, skipping...')
+    logger.log('✅ Gold plating content already exists, skipping...')
   }
 
   // Seed zinc plating content
-  console.log('🌱 Seeding zinc plating content...')
+  logger.log('🌱 Seeding zinc plating content...')
   const existingZincContent = await prisma.zincPlatingContent.findFirst()
   if (!existingZincContent) {
     const { default: seedZincPlating } = await import('./seed-zinc-plating')
     await seedZincPlating()
   } else {
-    console.log('✅ Zinc plating content already exists, skipping...')
+    logger.log('✅ Zinc plating content already exists, skipping...')
   }
 
   // Seed nickel plating content
-  console.log('🌱 Seeding nickel plating content...')
+  logger.log('🌱 Seeding nickel plating content...')
   const existingNickelContent = await prisma.nickelPlatingContent.findFirst()
   if (!existingNickelContent) {
     const { default: seedNickelPlating } = await import('./seed-nickel-plating')
     await seedNickelPlating()
   } else {
-    console.log('✅ Nickel plating content already exists, skipping...')
+    logger.log('✅ Nickel plating content already exists, skipping...')
   }
 
   // Seed busbar plating content
-  console.log('🌱 Seeding busbar plating content...')
+  logger.log('🌱 Seeding busbar plating content...')
   const existingBusbarContent = await prisma.busbarPlatingContent.findFirst()
   if (!existingBusbarContent) {
     const { default: seedBusbarPlating } = await import('./seed-busbar-plating')
     await seedBusbarPlating()
   } else {
-    console.log('✅ Busbar plating content already exists, skipping...')
+    logger.log('✅ Busbar plating content already exists, skipping...')
   }
 
   // Seed electroless nickel plating content
-  console.log('🌱 Seeding electroless nickel plating content...')
+  logger.log('🌱 Seeding electroless nickel plating content...')
   const existingElectrolessNickelContent = await prisma.electrolessNickelPlatingContent.findFirst()
   if (!existingElectrolessNickelContent) {
     const { default: seedElectrolessNickelPlating } = await import('./seed-electroless-nickel-plating')
     await seedElectrolessNickelPlating()
   } else {
-    console.log('✅ Electroless nickel plating content already exists, skipping...')
+    logger.log('✅ Electroless nickel plating content already exists, skipping...')
   }
 
   // Seed bright tin plating content
-  console.log('🌱 Seeding bright tin plating content...')
+  logger.log('🌱 Seeding bright tin plating content...')
   const existingBrightTinContent = await prisma.brightTinPlatingContent.findFirst()
   if (!existingBrightTinContent) {
     const { default: seedBrightTinPlating } = await import('./seed-bright-tin-plating')
     await seedBrightTinPlating()
   } else {
-    console.log('✅ Bright tin plating content already exists, skipping...')
+    logger.log('✅ Bright tin plating content already exists, skipping...')
   }
 
   // Seed dull tin plating content
-  console.log('🌱 Seeding dull tin plating content...')
+  logger.log('🌱 Seeding dull tin plating content...')
   const existingDullTinContent = await prisma.dullTinPlatingContent.findFirst()
   if (!existingDullTinContent) {
     const { default: seedDullTinPlating } = await import('./seed-dull-tin-plating')
     await seedDullTinPlating()
   } else {
-    console.log('✅ Dull tin plating content already exists, skipping...')
+    logger.log('✅ Dull tin plating content already exists, skipping...')
   }
 
   // Seed rack barrel plating content
-  console.log('🌱 Seeding rack barrel plating content...')
+  logger.log('🌱 Seeding rack barrel plating content...')
   const existingRackBarrelContent = await prisma.rackBarrelPlatingContent.findFirst()
   if (!existingRackBarrelContent) {
     const { default: seedRackBarrelPlating } = await import('./seed-rack-barrel-plating')
     await seedRackBarrelPlating()
   } else {
-    console.log('✅ Rack barrel plating content already exists, skipping...')
+    logger.log('✅ Rack barrel plating content already exists, skipping...')
   }
 
   // Seed zinc flake coating content
-  console.log('🌱 Seeding zinc flake coating content...')
+  logger.log('🌱 Seeding zinc flake coating content...')
   const existingZincFlakeContent = await prisma.zincFlakeCoatingContent.findFirst()
   if (!existingZincFlakeContent) {
     const { default: seedZincFlakeCoating } = await import('./seed-zinc-flake-coating')
     await seedZincFlakeCoating()
   } else {
-    console.log('✅ Zinc flake coating content already exists, skipping...')
+    logger.log('✅ Zinc flake coating content already exists, skipping...')
   }
 
   // Seed molykote content
-  console.log('🌱 Seeding molykote content...')
+  logger.log('🌱 Seeding molykote content...')
   const existingMolykoteContent = await prisma.molykoteContent.findFirst()
   if (!existingMolykoteContent) {
     const { default: seedMolykote } = await import('./seed-molykote')
     await seedMolykote()
   } else {
-    console.log('✅ Molykote content already exists, skipping...')
+    logger.log('✅ Molykote content already exists, skipping...')
   }
 
   // Seed base metals content
-  console.log('🌱 Seeding base metals content...')
+  logger.log('🌱 Seeding base metals content...')
   
   // Import all base metal seeding functions
   const { seedAluminiumContent } = await import('./seed-aluminium-content')
@@ -200,10 +201,10 @@ async function main() {
   await seedStainlessSteelContent()
   await seedCarbonSteelContent()
 
-  console.log('✅ All base metal content seeded successfully')
+  logger.log('✅ All base metal content seeded successfully')
 
   // Seed header menu items
-  console.log('🌱 Seeding header menu items...')
+  logger.log('🌱 Seeding header menu items...')
   
   // Check if header menu items already exist
   const existingMenuItems = await prisma.headerMenuItem.findFirst()
@@ -212,13 +213,13 @@ async function main() {
     const { default: seedHeaderMenuItems } = await import('./seed-header-menu-items')
     await seedHeaderMenuItems()
   } else {
-    console.log('✅ Header menu items already exist, skipping...')
+    logger.log('✅ Header menu items already exist, skipping...')
   }
 
-  console.log('✅ Header menu items seeded successfully')
+  logger.log('✅ Header menu items seeded successfully')
 
   // Seed gallery content and images
-  console.log('🌱 Seeding gallery content and images...')
+  logger.log('🌱 Seeding gallery content and images...')
   
   // Check if gallery content already exists
   const existingGalleryContent = await prisma.galleryContent.findFirst()
@@ -227,15 +228,15 @@ async function main() {
     const { default: seedGallery } = await import('./seed-gallery')
     await seedGallery()
   } else {
-    console.log('✅ Gallery content already exists, skipping...')
+    logger.log('✅ Gallery content already exists, skipping...')
   }
 
-  console.log('✅ Gallery content and images seeded successfully')
+  logger.log('✅ Gallery content and images seeded successfully')
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding database:', e)
+    logger.error('❌ Error seeding database:', e)
     process.exit(1)
   })
   .finally(async () => {

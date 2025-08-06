@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { authenticateUser, generateToken } from '@/lib/auth'
+import { logger } from '@/lib/logger';
+import {  authenticateUser, generateToken  } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Login error:', error)
+    logger.error('Login error:', error)
     return NextResponse.json(
       { error: 'Invalid credentials' },
       { status: 401 }

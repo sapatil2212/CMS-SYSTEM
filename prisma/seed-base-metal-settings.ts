@@ -1,9 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Seeding base metal settings...')
+  logger.log('🌱 Seeding base metal settings...')
 
   const baseMetals = [
     { slug: 'aluminium', name: 'Aluminium' },
@@ -25,12 +26,12 @@ async function main() {
     })
   }
 
-  console.log('✅ Base metal settings seeded successfully!')
+  logger.log('✅ Base metal settings seeded successfully!')
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding base metal settings:', e)
+    logger.error('❌ Error seeding base metal settings:', e)
     process.exit(1)
   })
   .finally(async () => {

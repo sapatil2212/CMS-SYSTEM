@@ -5,7 +5,8 @@ import { Save, Edit, Trash2, Plus, X, CheckCircle, AlertCircle } from 'lucide-re
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import ImageUpload from '@/components/admin/ImageUpload';
-import ProfessionalLoader from '@/components/ui/ProfessionalLoader';
+import { logger } from '@/lib/logger';
+import ProfessionalLoader from '@/components/ui/ProfessionalLoader';;
 
 interface ContactContent {
   id: string;
@@ -73,7 +74,7 @@ export default function ContactContentPage() {
         throw new Error('Failed to fetch contact content');
       }
     } catch (error) {
-      console.error('Error fetching contact content:', error);
+      logger.error('Error fetching contact content:', error);
       setMessage({ type: 'error', text: 'Failed to load contact content' });
     } finally {
       setLoading(false);
@@ -89,7 +90,7 @@ export default function ContactContentPage() {
   };
 
   const handleImageUpload = (imageUrl: string) => {
-    console.log('Image upload callback called with URL:', imageUrl);
+    logger.log('Image upload callback called with URL:', imageUrl);
     setFormData(prev => ({
       ...prev,
       image: imageUrl
@@ -124,7 +125,7 @@ export default function ContactContentPage() {
         throw new Error(errorData.error || 'Failed to save contact content');
       }
     } catch (error: any) {
-      console.error('Error saving contact content:', error);
+      logger.error('Error saving contact content:', error);
       setMessage({ type: 'error', text: error.message || 'Failed to save contact content' });
     } finally {
       setSaving(false);
@@ -164,7 +165,7 @@ export default function ContactContentPage() {
         throw new Error('Failed to delete contact content');
       }
     } catch (error) {
-      console.error('Error deleting contact content:', error);
+      logger.error('Error deleting contact content:', error);
       setMessage({ type: 'error', text: 'Failed to delete contact content' });
     } finally {
       setSaving(false);

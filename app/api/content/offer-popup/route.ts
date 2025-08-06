@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 // GET - Get all offer popups
 export async function GET() {
@@ -12,7 +13,7 @@ export async function GET() {
 
     return NextResponse.json(offerPopups)
   } catch (error) {
-    console.error('Error fetching offer popups:', error)
+    logger.error('Error fetching offer popups:', error)
     return NextResponse.json(
       { error: 'Failed to fetch offer popups' },
       { status: 500 }
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(offerPopup)
   } catch (error) {
-    console.error('Error creating offer popup:', error)
+    logger.error('Error creating offer popup:', error)
     return NextResponse.json(
       { error: 'Failed to create offer popup' },
       { status: 500 }
@@ -76,7 +77,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(offerPopup)
   } catch (error) {
-    console.error('Error updating offer popup:', error)
+    logger.error('Error updating offer popup:', error)
     return NextResponse.json(
       { error: 'Failed to update offer popup' },
       { status: 500 }
@@ -103,7 +104,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ message: 'Offer popup deleted successfully' })
   } catch (error) {
-    console.error('Error deleting offer popup:', error)
+    logger.error('Error deleting offer popup:', error)
     return NextResponse.json(
       { error: 'Failed to delete offer popup' },
       { status: 500 }

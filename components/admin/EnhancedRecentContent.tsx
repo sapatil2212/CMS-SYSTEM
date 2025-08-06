@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { useAuth } from '@/lib/auth-provider'
+import { logger } from '@/lib/logger';
+import {  useAuth  } from '@/lib/auth-provider';
 import { 
   Activity, 
   Clock, 
@@ -100,7 +101,7 @@ export default function EnhancedRecentContent() {
         setLastUpdated(new Date())
       }
     } catch (error) {
-      console.error('Failed to fetch recent content:', error)
+      logger.error('Failed to fetch recent content:', error)
     } finally {
       setLoading(false)
     }
@@ -126,7 +127,7 @@ export default function EnhancedRecentContent() {
         setLastUpdated(new Date())
       }
     } catch (error) {
-      console.error('Failed to fetch activities:', error)
+      logger.error('Failed to fetch activities:', error)
     }
   }
 

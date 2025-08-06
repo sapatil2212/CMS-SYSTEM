@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 
 
@@ -21,7 +22,7 @@ export async function GET() {
     
     return NextResponse.json(content)
   } catch (error) {
-    console.error('Error fetching why choose us content:', error)
+    logger.error('Error fetching why choose us content:', error)
     return NextResponse.json(
       { error: 'Failed to fetch why choose us content' },
       { status: 500 }
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error creating why choose us content:', error)
+    logger.error('Error creating why choose us content:', error)
     return NextResponse.json(
       { error: 'Failed to create why choose us content' },
       { status: 500 }
@@ -77,7 +78,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error updating why choose us content:', error)
+    logger.error('Error updating why choose us content:', error)
     return NextResponse.json(
       { error: 'Failed to update why choose us content' },
       { status: 500 }

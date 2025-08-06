@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ChevronRight, Check, Zap, Layers, Activity, Cpu, CircuitBoard, TestTube2, Wrench, Plane, HardHat, Anchor, Shield, Award } from 'lucide-react'
+import { logger } from '@/lib/logger';
+import {  ChevronRight, Check, Zap, Layers, Activity, Cpu, CircuitBoard, TestTube2, Wrench, Plane, HardHat, Anchor, Shield, Award  } from 'lucide-react';
 
 const ZincPlating = () => {
   const [content, setContent] = useState<any>(null)
@@ -23,7 +24,7 @@ const ZincPlating = () => {
         setContent(getDefaultContent())
       }
     } catch (error) {
-      console.error('Error fetching content:', error)
+      logger.error('Error fetching content:', error)
       setContent(getDefaultContent())
     } finally {
       setLoading(false)
@@ -97,7 +98,7 @@ const ZincPlating = () => {
       if (typeof data === 'string') return JSON.parse(data);
       return [];
     } catch (error) {
-      console.error('Error parsing JSON:', error);
+      logger.error('Error parsing JSON:', error);
       return [];
     }
   }

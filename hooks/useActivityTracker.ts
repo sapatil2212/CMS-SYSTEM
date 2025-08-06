@@ -1,4 +1,5 @@
-import { useAuth } from '@/lib/auth-provider'
+import { logger } from '@/lib/logger';
+import {  useAuth  } from '@/lib/auth-provider';
 
 interface ActivityData {
   action: string
@@ -27,7 +28,7 @@ export const useActivityTracker = () => {
         }),
       })
     } catch (error) {
-      console.error('Failed to track activity:', error)
+      logger.error('Failed to track activity:', error)
     }
   }
 

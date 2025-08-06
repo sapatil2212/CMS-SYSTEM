@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 export async function GET() {
   try {
@@ -11,7 +12,7 @@ export async function GET() {
     
     return NextResponse.json(images)
   } catch (error) {
-    console.error('Error fetching gallery images:', error)
+    logger.error('Error fetching gallery images:', error)
     return NextResponse.json(
       { error: 'Failed to fetch gallery images' },
       { status: 500 }
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error creating gallery image:', error)
+    logger.error('Error creating gallery image:', error)
     return NextResponse.json(
       { error: 'Failed to create gallery image' },
       { status: 500 }
@@ -62,7 +63,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error updating gallery image:', error)
+    logger.error('Error updating gallery image:', error)
     return NextResponse.json(
       { error: 'Failed to update gallery image' },
       { status: 500 }
@@ -88,7 +89,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting gallery image:', error)
+    logger.error('Error deleting gallery image:', error)
     return NextResponse.json(
       { error: 'Failed to delete gallery image' },
       { status: 500 }

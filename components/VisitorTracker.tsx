@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
+import { logger } from '@/lib/logger'
 
 export default function VisitorTracker() {
   const pathname = usePathname()
@@ -29,7 +30,7 @@ export default function VisitorTracker() {
 
     const trackVisitor = async () => {
       try {
-        console.log('VisitorTracker: Tracking visitor visit on homepage')
+        logger.log('VisitorTracker: Tracking visitor visit on homepage')
         const response = await fetch('/api/visitors/track', {
           method: 'POST',
           headers: {
@@ -39,16 +40,16 @@ export default function VisitorTracker() {
 
         if (response.ok) {
           const data = await response.json()
-          console.log('VisitorTracker: Visit tracked successfully:', data)
+          logger.log('VisitorTracker: Visit tracked successfully:', data)
           // Mark as tracked for this session
           sessionStorage.setItem('visitorTracked', 'true')
         } else {
-          console.error('VisitorTracker: Failed to track visit:', response.status)
+          logger.error('VisitorTracker: Failed to track visit:', response.status)
           // Reset tracking flag on failure
           hasTrackedRef.current = false
         }
       } catch (error) {
-        console.error('VisitorTracker: Error tracking visit:', error)
+        logger.error('VisitorTracker: Error tracking visit:', error)
         // Reset tracking flag on error
         hasTrackedRef.current = false
       }

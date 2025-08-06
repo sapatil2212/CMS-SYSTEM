@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { logger } from '@/lib/logger';
+import {  ArrowRight  } from 'lucide-react';
 
 interface Process {
   id: string
@@ -39,7 +40,7 @@ export default function HomeProcesses() {
         setProcesses(data)
       }
     } catch (error) {
-      console.error('Failed to fetch processes:', error)
+      logger.error('Failed to fetch processes:', error)
     } finally {
       setLoading(false)
     }
@@ -47,7 +48,7 @@ export default function HomeProcesses() {
 
   // Force refresh function that can be called externally
   const forceRefresh = () => {
-    console.log('HomeProcesses: Force refresh triggered')
+    logger.log('HomeProcesses: Force refresh triggered')
     setLastUpdate(Date.now())
   }
 
@@ -55,7 +56,7 @@ export default function HomeProcesses() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       (window as any).refreshHomeProcesses = forceRefresh
-      console.log('HomeProcesses: Refresh function exposed globally')
+      logger.log('HomeProcesses: Refresh function exposed globally')
     }
   }, [])
 

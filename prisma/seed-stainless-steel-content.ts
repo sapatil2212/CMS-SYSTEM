@@ -1,9 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 export async function seedStainlessSteelContent() {
-  console.log('🔶 Seeding Stainless Steel content...')
+  logger.log('🔶 Seeding Stainless Steel content...')
 
   try {
     // Clear existing content
@@ -15,7 +16,7 @@ export async function seedStainlessSteelContent() {
         heroTitle: "Advanced Stainless Steel Plating for Superior Performance",
         heroSubtitle: "Unmatched Corrosion Resistance & Durability",
         heroDescription: "Premium finishing solutions for applications requiring exceptional strength, hygiene, and aesthetic appeal",
-        heroImage: "/uploads/stainless-steel/hero-stainless-plating.jpg",
+        heroImage: "/uploads/stainless-steel/hero-stainless-steel-plating.svg",
         whatIsTitle: "What is Stainless Steel Plating?",
         whatIsDescription: "Stainless steel plating involves applying a thin layer of stainless steel alloy to enhance corrosion resistance, strength, and appearance. This process provides exceptional protection against rust, staining, and chemical attack while maintaining the aesthetic appeal of polished steel.",
         whatIsImage: "/uploads/stainless-steel/stainless-process.jpg",
@@ -195,10 +196,10 @@ export async function seedStainlessSteelContent() {
       }
     })
 
-    console.log('✅ Stainless Steel content seeded successfully')
+    logger.log('✅ Stainless Steel content seeded successfully')
     return stainlessSteelContent
   } catch (error) {
-    console.error('❌ Error seeding stainless steel content:', error)
+    logger.error('❌ Error seeding stainless steel content:', error)
     throw error
   }
 }

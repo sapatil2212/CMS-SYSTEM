@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth-provider'
 import { useRouter } from 'next/navigation'
+import { logger } from '@/lib/logger';
 import AdminSidebar from '@/components/admin/AdminSidebar'
-import AdminHeader from '@/components/admin/AdminHeader'
+import AdminHeader from '@/components/admin/AdminHeader';
 import { 
   DocumentTextIcon,
   EyeIcon,
@@ -78,10 +79,10 @@ export default function SectorsOverviewManagement() {
           ctaLink: data.ctaLink
         })
       } else {
-        console.error('Failed to fetch sectors overview content')
+        logger.error('Failed to fetch sectors overview content')
       }
     } catch (error) {
-      console.error('Error fetching sectors overview content:', error)
+      logger.error('Error fetching sectors overview content:', error)
     } finally {
       setLoading(false)
     }
@@ -102,10 +103,10 @@ export default function SectorsOverviewManagement() {
         await fetchContent()
         setEditMode(false)
       } else {
-        console.error('Failed to save content')
+        logger.error('Failed to save content')
       }
     } catch (error) {
-      console.error('Error saving content:', error)
+      logger.error('Error saving content:', error)
     } finally {
       setSaving(false)
     }

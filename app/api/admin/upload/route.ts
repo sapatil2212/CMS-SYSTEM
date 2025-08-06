@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { uploadToCloudinary } from '@/lib/cloudinary'
+import { logger } from '@/lib/logger';
+import {  uploadToCloudinary  } from '@/lib/cloudinary';
 
 export async function POST(request: NextRequest) {
   try {
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('File uploaded successfully:', {
+    logger.log('File uploaded successfully:', {
       filename: file.name,
       size: file.size,
       type: file.type,
@@ -60,11 +61,11 @@ export async function POST(request: NextRequest) {
       type: file.type
     }
 
-    console.log('Returning upload response:', responseData)
+    logger.log('Returning upload response:', responseData)
 
     return NextResponse.json(responseData)
   } catch (error) {
-    console.error('Error uploading file:', error)
+    logger.error('Error uploading file:', error)
     return NextResponse.json(
       { error: 'Failed to upload file' },
       { status: 500 }

@@ -1,11 +1,12 @@
 'use client'
 
+import { logger } from '@/lib/logger';
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth-provider'
 import { useRouter } from 'next/navigation'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import AdminHeader from '@/components/admin/AdminHeader'
-import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
+import ProfessionalLoader from '@/components/ui/ProfessionalLoader';
 import { 
   PlusIcon, 
   BeakerIcon,
@@ -236,7 +237,7 @@ export default function QualityTestingManagement() {
         setLabImages(labImagesData)
       }
     } catch (error) {
-      console.error('Error fetching quality testing data:', error)
+      logger.error('Error fetching quality testing data:', error)
     } finally {
       setLoading(false)
     }
@@ -275,7 +276,7 @@ export default function QualityTestingManagement() {
         alert(`Failed to delete ${itemToDelete.section}`)
       }
     } catch (error) {
-      console.error(`Error deleting ${itemToDelete.section}:`, error)
+      logger.error(`Error deleting ${itemToDelete.section}:`, error)
       alert(`Error deleting ${itemToDelete.section}`)
     } finally {
       setIsLoading(false)
@@ -298,7 +299,7 @@ export default function QualityTestingManagement() {
         fetchData()
       }
     } catch (error) {
-      console.error(`Error updating ${section}:`, error)
+      logger.error(`Error updating ${section}:`, error)
       alert(`Error updating ${section}`)
     }
   }
@@ -323,7 +324,7 @@ export default function QualityTestingManagement() {
         throw new Error('Failed to save content')
       }
     } catch (error) {
-      console.error('Error saving content:', error)
+      logger.error('Error saving content:', error)
       alert('Error saving content')
     } finally {
       setIsLoading(false)
@@ -375,7 +376,7 @@ export default function QualityTestingManagement() {
         }
       }
     } catch (error) {
-      console.error(`Error saving ${section}:`, error)
+      logger.error(`Error saving ${section}:`, error)
       alert(`Error saving ${section}`)
     } finally {
       setIsLoading(false)

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyToken } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 export const dynamic = 'force-dynamic'
 
@@ -44,7 +45,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(user)
   } catch (error) {
-    console.error('Auth check error:', error)
+    logger.error('Auth check error:', error)
     return NextResponse.json(
       { error: 'Authentication failed' },
       { status: 500 }

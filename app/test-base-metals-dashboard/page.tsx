@@ -1,11 +1,23 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { logger } from '@/lib/logger';
+import {  useState, useEffect  } from 'react';
+
+interface BaseMetal {
+  id: string
+  name: string
+  slug: string
+  content: any
+  isActive: boolean
+  heroImage: string
+  heroTitle: string
+  heroSubtitle: string
+}
 
 export default function TestBaseMetalsDashboard() {
-  const [baseMetals, setBaseMetals] = useState([])
+  const [baseMetals, setBaseMetals] = useState<BaseMetal[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchBaseMetals()
@@ -14,33 +26,33 @@ export default function TestBaseMetalsDashboard() {
   const fetchBaseMetals = async () => {
     setLoading(true)
     try {
-      console.log('🔍 Fetching base metal settings...')
+      logger.log('🔍 Fetching base metal settings...')
       const settingsResponse = await fetch('/api/admin/base-metal-settings')
-      console.log('Settings response status:', settingsResponse.status)
+      logger.log('Settings response status:', settingsResponse.status)
       
       if (!settingsResponse.ok) {
         throw new Error('Failed to fetch base metal settings')
       }
       
       const settings = await settingsResponse.json()
-      console.log('📊 Base metal settings:', settings)
+      logger.log('📊 Base metal settings:', settings)
 
       // Fetch content for each base metal
       const promises = settings.map(async (setting: any) => {
         try {
-          console.log(`🔍 Fetching content for ${setting.slug}...`)
+          logger.log(`🔍 Fetching content for ${setting.slug}...`)
           let response = await fetch(`/api/content/base-metal/${setting.slug}`)
           let data = null
           
           if (response.ok) {
             data = await response.json()
-            console.log(`✅ Content for ${setting.slug}:`, data)
+            logger.log(`✅ Content for ${setting.slug}:`, data)
           } else {
-            console.log(`❌ Base-metal route failed for ${setting.slug}, trying regular route`)
+            logger.log(`❌ Base-metal route failed for ${setting.slug}, trying regular route`)
             response = await fetch(`/api/content/${setting.slug}`)
             if (response.ok) {
               data = await response.json()
-              console.log(`✅ Content for ${setting.slug} (fallback):`, data)
+              logger.log(`✅ Content for ${setting.slug} (fallback):`, data)
             }
           }
           
@@ -73,7 +85,7 @@ export default function TestBaseMetalsDashboard() {
             heroSubtitle: `Professional ${setting.name} Plating Solutions`
           }
         } catch (error) {
-          console.error(`❌ Failed to fetch ${setting.slug} content:`, error)
+          logger.error(`❌ Failed to fetch ${setting.slug} content:`, error)
           return {
             id: setting.slug,
             name: setting.name,
@@ -92,11 +104,11 @@ export default function TestBaseMetalsDashboard() {
       })
 
       const updatedBaseMetals = await Promise.all(promises)
-      console.log('📊 Final base metals array:', updatedBaseMetals)
+      logger.log('📊 Final base metals array:', updatedBaseMetals)
       setBaseMetals(updatedBaseMetals)
     } catch (error) {
-      console.error('❌ Failed to fetch base metals:', error)
-      setError(error.message)
+      logger.error('❌ Failed to fetch base metals:', error)
+      setError(error instanceof Error ? error.message : 'An unknown error occurred')
     } finally {
       setLoading(false)
     }
@@ -139,7 +151,7 @@ export default function TestBaseMetalsDashboard() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {baseMetals.map((baseMetal: any) => (
+                {baseMetals.map((baseMetal: BaseMetal) => (
                   <div key={baseMetal.id} className="bg-white rounded-lg shadow p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">{baseMetal.name}</h3>
                     <p className="text-sm text-gray-600 mb-2">Slug: {baseMetal.slug}</p>

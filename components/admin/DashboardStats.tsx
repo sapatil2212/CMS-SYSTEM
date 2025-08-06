@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { logger } from '@/lib/logger';
+import {  useState, useEffect  } from 'react';
 
 interface Stats {
   totalVisits: number
@@ -32,7 +33,7 @@ export default function DashboardStats() {
 
   const fetchStats = async () => {
     try {
-      console.log('Dashboard: Fetching stats...')
+      logger.log('Dashboard: Fetching stats...')
       
       // Fetch all stats in parallel
       const [visitsResponse, baseMetalsResponse, processesResponse] = await Promise.all([
@@ -54,7 +55,7 @@ export default function DashboardStats() {
       const baseMetalsData = baseMetalsResponse.ok ? await baseMetalsResponse.json() : { count: 0 }
       const processesData = processesResponse.ok ? await processesResponse.json() : { count: 0 }
 
-      console.log('Dashboard: Received stats:', { visitsData, baseMetalsData, processesData })
+      logger.log('Dashboard: Received stats:', { visitsData, baseMetalsData, processesData })
       
       setStats({
         totalVisits: visitsData.totalVisits || 0,
@@ -62,7 +63,7 @@ export default function DashboardStats() {
         processesCount: processesData.count || 0,
       })
     } catch (error) {
-      console.error('Dashboard: Failed to fetch stats:', error)
+      logger.error('Dashboard: Failed to fetch stats:', error)
       // Fallback data
       setStats({
         totalVisits: 0,
@@ -92,12 +93,12 @@ export default function DashboardStats() {
           ...prevStats,
           totalVisits: 0
         }))
-        console.log('Visit count reset successfully')
+        logger.log('Visit count reset successfully')
       } else {
-        console.error('Failed to reset visit count')
+        logger.error('Failed to reset visit count')
       }
     } catch (error) {
-      console.error('Error resetting visit count:', error)
+      logger.error('Error resetting visit count:', error)
     } finally {
       setResetting(false)
     }

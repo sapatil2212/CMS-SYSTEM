@@ -4,7 +4,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { ZodError, z } from 'zod';
+import { logger } from '@/lib/logger';
+import {  ZodError, z  } from 'zod';;
 
 // Common validation schemas
 export const commonSchemas = {
@@ -197,7 +198,7 @@ export function corsHeaders(origin?: string) {
 
 // Error response formatter
 export function formatErrorResponse(error: unknown): NextResponse {
-  console.error('API Error:', error);
+  logger.error('API Error:', error);
   
   if (error instanceof APIError) {
     return NextResponse.json(

@@ -47,7 +47,8 @@ import {
   Signal,
   Wifi
 } from 'lucide-react';
-import QualityTestingSidebar from '@/components/admin/QualityTestingSidebar';
+import { logger } from '@/lib/logger';
+import QualityTestingSidebar from '@/components/admin/QualityTestingSidebar';;
 
 
 
@@ -120,7 +121,7 @@ const QualityTestingComponent: React.FC = () => {
         setLabImages(labImagesData);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      logger.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }

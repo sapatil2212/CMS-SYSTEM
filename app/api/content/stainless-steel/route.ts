@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 export async function GET() {
   try {
@@ -32,7 +33,7 @@ export async function GET() {
 
     return NextResponse.json(parsedContent)
   } catch (error) {
-    console.error('Error fetching stainless steel content:', error)
+    logger.error('Error fetching stainless steel content:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -208,7 +209,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(newContent)
     }
   } catch (error) {
-    console.error('Error saving stainless steel content:', error)
+    logger.error('Error saving stainless steel content:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -1,9 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Seeding order process steps...')
+  logger.log('🌱 Seeding order process steps...')
 
   const steps = [
     {
@@ -83,15 +84,15 @@ async function main() {
         details: JSON.stringify(step.details)
       }
     })
-    console.log(`✅ Created step: ${step.title}`)
+    logger.log(`✅ Created step: ${step.title}`)
   }
 
-  console.log('🎉 All order process steps seeded successfully!')
+  logger.log('🎉 All order process steps seeded successfully!')
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding order process steps:', e)
+    logger.error('❌ Error seeding order process steps:', e)
     process.exit(1)
   })
   .finally(async () => {

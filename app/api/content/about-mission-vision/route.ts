@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 
 
@@ -33,7 +34,7 @@ export async function GET() {
     
     return NextResponse.json(missionVision)
   } catch (error) {
-    console.error('Error fetching about mission/vision:', error)
+    logger.error('Error fetching about mission/vision:', error)
     return NextResponse.json(
       { error: 'Failed to fetch about mission/vision' },
       { status: 500 }
@@ -57,7 +58,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error creating about mission/vision:', error)
+    logger.error('Error creating about mission/vision:', error)
     return NextResponse.json(
       { error: 'Failed to create about mission/vision' },
       { status: 500 }
@@ -82,7 +83,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error updating about mission/vision:', error)
+    logger.error('Error updating about mission/vision:', error)
     return NextResponse.json(
       { error: 'Failed to update about mission/vision' },
       { status: 500 }
@@ -108,7 +109,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting about mission/vision:', error)
+    logger.error('Error deleting about mission/vision:', error)
     return NextResponse.json(
       { error: 'Failed to delete about mission/vision' },
       { status: 500 }

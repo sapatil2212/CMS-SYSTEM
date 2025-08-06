@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { logger } from './logger'
 
 interface User {
   id: string
@@ -38,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     if (user) {
       const timer = setTimeout(() => {
-        console.log('User inactive for 10 minutes, logging out...')
+        logger.log('User inactive for 10 minutes, logging out...')
         logout()
       }, INACTIVITY_TIMEOUT)
       
@@ -83,25 +84,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkAuth = async () => {
     try {
       const token = localStorage.getItem('token')
-      console.log('Checking auth, token exists:', !!token)
+      logger.log('Checking auth, token exists:', !!token)
       if (token) {
         const response = await fetch('/api/auth/me', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         })
-        console.log('Auth response status:', response.status)
+        logger.log('Auth response status:', response.status)
         if (response.ok) {
           const userData = await response.json()
-          console.log('User data received:', userData)
+          logger.log('User data received:', userData)
           setUser(userData)
         } else {
-          console.log('Auth failed, removing token')
+          logger.log('Auth failed, removing token')
           localStorage.removeItem('token')
         }
       }
     } catch (error) {
-      console.error('Auth check failed:', error)
+      logger.error('Auth check failed:', error)
     } finally {
       setLoading(false)
     }
@@ -109,7 +110,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      console.log('Auth provider: Starting login...')
+      logger.log('Auth provider: Starting login...')
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -124,15 +125,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       const { token, user: userData } = await response.json()
-      console.log('Auth provider: Login successful, user data:', userData)
+      logger.log('Auth provider: Login successful, user data:', userData)
       localStorage.setItem('token', token)
       setUser(userData)
       
       // Redirect to admin dashboard after successful login
-      console.log('Auth provider: Redirecting to /admin...')
+      logger.log('Auth provider: Redirecting to /admin...')
       window.location.href = '/admin'
     } catch (error) {
-      console.error('Auth provider: Login error:', error)
+      logger.error('Auth provider: Login error:', error)
       throw error
     }
   }
@@ -193,7 +194,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
     } catch (error) {
-      console.error('Refresh user error:', error)
+      logger.error('Refresh user error:', error)
     }
   }
 

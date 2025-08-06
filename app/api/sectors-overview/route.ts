@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 // GET sectors overview content
 export async function GET() {
@@ -42,7 +43,7 @@ export async function GET() {
 
     return NextResponse.json(parsedContent)
   } catch (error) {
-    console.error('Error fetching sectors overview content:', error)
+    logger.error('Error fetching sectors overview content:', error)
     return NextResponse.json(
       { error: 'Failed to fetch sectors overview content' },
       { status: 500 }
@@ -117,7 +118,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(content, { status: 200 })
   } catch (error) {
-    console.error('Error updating sectors overview content:', error)
+    logger.error('Error updating sectors overview content:', error)
     return NextResponse.json(
       { error: 'Failed to update sectors overview content' },
       { status: 500 }

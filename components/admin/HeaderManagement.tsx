@@ -5,6 +5,7 @@ import { Save, Upload, RefreshCw, CheckCircle, AlertCircle, X } from 'lucide-rea
 import ImageUpload from './ImageUpload'
 import HeaderMenuManagement from './HeaderMenuManagement'
 import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
+import { logger } from '@/lib/logger';
 
 interface HeaderSettings {
   id: string
@@ -37,7 +38,7 @@ export default function HeaderManagement() {
         throw new Error('Failed to fetch header settings')
       }
     } catch (error) {
-      console.error('Error fetching header settings:', error)
+      logger.error('Error fetching header settings:', error)
       setMessage({ type: 'error', text: 'Failed to load header settings' })
     } finally {
       setLoading(false)
@@ -62,7 +63,7 @@ export default function HeaderManagement() {
 
       // If PUT fails, try POST as fallback
       if (!response.ok && response.status === 405) {
-        console.log('PUT method not allowed, trying POST as fallback...')
+        logger.log('PUT method not allowed, trying POST as fallback...')
         response = await fetch('/api/content/header', {
           method: 'POST',
           headers: {
@@ -74,7 +75,7 @@ export default function HeaderManagement() {
 
                    if (response.ok) {
         const result = await response.json()
-        console.log('Header settings updated successfully:', result)
+        logger.log('Header settings updated successfully:', result)
         setShowSuccessModal(true)
         // Auto-hide modal after 2 seconds
         setTimeout(() => {
@@ -84,11 +85,11 @@ export default function HeaderManagement() {
         await fetchHeaderSettings()
       } else {
         const errorData = await response.json()
-        console.error('Server error response:', errorData)
+        logger.error('Server error response:', errorData)
         throw new Error(errorData.error || errorData.details || 'Failed to update header settings')
       }
     } catch (error) {
-      console.error('Error updating header settings:', error)
+      logger.error('Error updating header settings:', error)
       const errorMessage = error instanceof Error ? error.message : 'Failed to update header settings'
       setMessage({ type: 'error', text: errorMessage })
     } finally {

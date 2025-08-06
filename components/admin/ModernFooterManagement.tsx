@@ -23,7 +23,8 @@ import {
   Sparkles,
   ExternalLink
 } from 'lucide-react'
-import ImageUpload from './ImageUpload'
+import { logger } from '@/lib/logger';
+import ImageUpload from './ImageUpload';
 
 interface FooterSettings {
   id: string
@@ -127,7 +128,7 @@ export default function ModernFooterManagement() {
         setServices(servicesData)
       }
     } catch (error) {
-      console.error('Error fetching footer data:', error)
+      logger.error('Error fetching footer data:', error)
       setMessage({ type: 'error', text: 'Failed to load footer data' })
     } finally {
       setLoading(false)
@@ -156,7 +157,7 @@ export default function ModernFooterManagement() {
         throw new Error('Failed to update settings')
       }
     } catch (error) {
-      console.error('Error updating settings:', error)
+      logger.error('Error updating settings:', error)
       setMessage({ type: 'error', text: 'Failed to update settings' })
     }
   }
@@ -187,7 +188,7 @@ export default function ModernFooterManagement() {
         throw new Error('Failed to save social media')
       }
     } catch (error) {
-      console.error('Error saving social media:', error)
+      logger.error('Error saving social media:', error)
       setMessage({ type: 'error', text: 'Failed to save social media' })
     }
   }
@@ -211,7 +212,7 @@ export default function ModernFooterManagement() {
         throw new Error('Failed to delete social media')
       }
     } catch (error) {
-      console.error('Error deleting social media:', error)
+      logger.error('Error deleting social media:', error)
       setMessage({ type: 'error', text: 'Failed to delete social media' })
     }
   }
@@ -242,7 +243,7 @@ export default function ModernFooterManagement() {
         throw new Error('Failed to save quick link')
       }
     } catch (error) {
-      console.error('Error saving quick link:', error)
+      logger.error('Error saving quick link:', error)
       setMessage({ type: 'error', text: 'Failed to save quick link' })
     }
   }
@@ -266,7 +267,7 @@ export default function ModernFooterManagement() {
         throw new Error('Failed to delete quick link')
       }
     } catch (error) {
-      console.error('Error deleting quick link:', error)
+      logger.error('Error deleting quick link:', error)
       setMessage({ type: 'error', text: 'Failed to delete quick link' })
     }
   }
@@ -297,7 +298,7 @@ export default function ModernFooterManagement() {
         throw new Error('Failed to save service')
       }
     } catch (error) {
-      console.error('Error saving service:', error)
+      logger.error('Error saving service:', error)
       setMessage({ type: 'error', text: 'Failed to save service' })
     }
   }
@@ -321,7 +322,7 @@ export default function ModernFooterManagement() {
         throw new Error('Failed to delete service')
       }
     } catch (error) {
-      console.error('Error deleting service:', error)
+      logger.error('Error deleting service:', error)
       setMessage({ type: 'error', text: 'Failed to delete service' })
     }
   }

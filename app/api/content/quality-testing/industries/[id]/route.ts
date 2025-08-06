@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';;
 
 // GET - Fetch a single industry by ID
 export async function GET(
@@ -20,7 +21,7 @@ export async function GET(
 
     return NextResponse.json(industry);
   } catch (error) {
-    console.error('Error fetching industry:', error);
+    logger.error('Error fetching industry:', error);
     return NextResponse.json(
       { error: 'Failed to fetch industry' },
       { status: 500 }
@@ -50,7 +51,7 @@ export async function PUT(
 
     return NextResponse.json(updatedIndustry);
   } catch (error) {
-    console.error('Error updating industry:', error);
+    logger.error('Error updating industry:', error);
     return NextResponse.json(
       { error: 'Failed to update industry' },
       { status: 500 }
@@ -70,7 +71,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Industry deleted successfully' });
   } catch (error) {
-    console.error('Error deleting industry:', error);
+    logger.error('Error deleting industry:', error);
     return NextResponse.json(
       { error: 'Failed to delete industry' },
       { status: 500 }

@@ -5,7 +5,8 @@ import Link from 'next/link'
 import { useAuth } from '@/lib/auth-provider'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
-import { EyeIcon, EyeSlashIcon, EnvelopeIcon, UserIcon, ArrowLeftIcon, PhoneIcon } from '@heroicons/react/24/outline'
+import { logger } from '@/lib/logger';
+import {  EyeIcon, EyeSlashIcon, EnvelopeIcon, UserIcon, ArrowLeftIcon, PhoneIcon  } from '@heroicons/react/24/outline';
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -63,7 +64,7 @@ export default function SignupPage() {
       toast.success('Registration successful! Welcome to our platform!')
       router.push('/admin') // Redirect to admin dashboard
     } catch (error: any) {
-      console.error('Registration error:', error)
+      logger.error('Registration error:', error)
       if (error.message.includes('Invalid or expired OTP')) {
         toast.error('Invalid or expired OTP. Please request a new one.')
         setIsOtpSent(false)

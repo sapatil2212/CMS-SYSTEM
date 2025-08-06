@@ -1,9 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Seeding header settings...')
+  logger.log('🌱 Seeding header settings...')
 
   // Check if header settings already exist
   const existingSettings = await prisma.headerSettings.findFirst()
@@ -19,17 +20,17 @@ async function main() {
       }
     })
 
-    console.log('✅ Header settings created:', headerSettings)
+    logger.log('✅ Header settings created:', headerSettings)
   } else {
-    console.log('ℹ️ Header settings already exist, skipping...')
+    logger.log('ℹ️ Header settings already exist, skipping...')
   }
 
-  console.log('✅ Header settings seeding completed!')
+  logger.log('✅ Header settings seeding completed!')
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding header settings:', e)
+    logger.error('❌ Error seeding header settings:', e)
     process.exit(1)
   })
   .finally(async () => {

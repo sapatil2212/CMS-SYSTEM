@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -39,7 +40,7 @@ prisma.$use(async (params, next) => {
   } catch (error: any) {
     // Handle connection closed errors
     if (error?.code === 'P1017' || error?.message?.includes('Server has closed the connection')) {
-      console.log('Database connection closed, attempting to reconnect...')
+      logger.log('Database connection closed, attempting to reconnect...')
       // Force disconnect and reconnect
       await prisma.$disconnect()
       // The next query will automatically reconnect

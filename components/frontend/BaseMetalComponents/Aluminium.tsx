@@ -1,6 +1,7 @@
 'use client'
+import { logger } from '@/lib/logger';
 import React, { useState, useEffect } from 'react'
-import Link from 'next/link'
+import Link from 'next/link';
 import { 
   ChevronRight, Check, Shield, Zap, Layers, 
   Thermometer, Plane, Car, CircuitBoard, 
@@ -19,11 +20,11 @@ const Aluminium = () => {
         const data = await response.json()
         setContent(data)
       } else {
-        console.error('Failed to fetch aluminium content')
+        logger.error('Failed to fetch aluminium content')
         setContent(getDefaultContent())
       }
     } catch (error) {
-      console.error('Error fetching aluminium content:', error)
+      logger.error('Error fetching aluminium content:', error)
       setContent(getDefaultContent())
     } finally {
       setLoading(false)

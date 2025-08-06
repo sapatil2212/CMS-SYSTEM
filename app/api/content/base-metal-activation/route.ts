@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 // Handle all HTTP methods
 export async function GET() {
@@ -31,7 +32,7 @@ export async function OPTIONS() {
 
 async function handleGet() {
   try {
-    console.log('GET request received for base-metal-activation')
+    logger.log('GET request received for base-metal-activation')
     
     // Get all base metal settings from database
     const baseMetalSettings = await prisma.baseMetalSettings.findMany({
@@ -63,7 +64,7 @@ async function handleGet() {
             isMenuActive
           }
         } catch (error) {
-          console.error(`Error fetching content for ${setting.slug}:`, error)
+          logger.error(`Error fetching content for ${setting.slug}:`, error)
           // Return with default isMenuActive if there's an error
           return {
             id: setting.id,
@@ -76,10 +77,10 @@ async function handleGet() {
       })
     )
 
-    console.log('Base metals fetched successfully:', baseMetals.length)
+    logger.log('Base metals fetched successfully:', baseMetals.length)
     return NextResponse.json(baseMetals)
   } catch (error) {
-    console.error('Error fetching base metal activation status:', error)
+    logger.error('Error fetching base metal activation status:', error)
     return NextResponse.json(
       { error: 'Failed to fetch base metal activation status' },
       { status: 500 }
@@ -89,22 +90,22 @@ async function handleGet() {
 
 async function handleUpdate(request: NextRequest) {
   try {
-    console.log(`${request.method} request received for base-metal-activation`)
+    logger.log(`${request.method} request received for base-metal-activation`)
     
     const body = await request.json()
-    console.log('Request body:', body)
+    logger.log('Request body:', body)
     
     const { baseMetalSlug, isMenuActive } = body
 
     if (!baseMetalSlug || typeof isMenuActive !== 'boolean') {
-      console.error('Invalid request data:', { baseMetalSlug, isMenuActive })
+      logger.error('Invalid request data:', { baseMetalSlug, isMenuActive })
       return NextResponse.json(
         { error: 'Invalid request data' },
         { status: 400 }
       )
     }
 
-    console.log('Updating base metal:', baseMetalSlug, 'to:', isMenuActive)
+    logger.log('Updating base metal:', baseMetalSlug, 'to:', isMenuActive)
 
     // Check if this base metal exists in BaseMetalSettings
     const baseMetalSetting = await prisma.baseMetalSettings.findUnique({
@@ -112,7 +113,7 @@ async function handleUpdate(request: NextRequest) {
     })
 
     if (!baseMetalSetting) {
-      console.error('Base metal not found in settings:', baseMetalSlug)
+      logger.error('Base metal not found in settings:', baseMetalSlug)
       return NextResponse.json(
         { error: 'Base metal not found' },
         { status: 404 }
@@ -156,11 +157,11 @@ async function handleUpdate(request: NextRequest) {
         })
       }
 
-      console.log('Update result for BaseMetalContent:', updatedBaseMetal)
+      logger.log('Update result for BaseMetalContent:', updatedBaseMetal)
       return NextResponse.json({ success: true, updatedBaseMetal })
 
     } catch (contentError) {
-      console.log('BaseMetalContent update failed, trying legacy models:', contentError)
+      logger.log('BaseMetalContent update failed, trying legacy models:', contentError)
       
       // Fallback to legacy hardcoded models for backwards compatibility
       const baseMetalModelMap: { [key: string]: any } = {
@@ -179,14 +180,14 @@ async function handleUpdate(request: NextRequest) {
           data: { isMenuActive }
         })
 
-        console.log('Update result for legacy model:', updatedBaseMetal)
+        logger.log('Update result for legacy model:', updatedBaseMetal)
         return NextResponse.json({ success: true, updatedBaseMetal })
       } else {
         throw new Error(`No model found for base metal: ${baseMetalSlug}`)
       }
     }
   } catch (error) {
-    console.error('Error updating base metal activation status:', error)
+    logger.error('Error updating base metal activation status:', error)
     return NextResponse.json(
       { error: 'Failed to update base metal activation status' },
       { status: 500 }

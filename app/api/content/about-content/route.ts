@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 
 
@@ -19,7 +20,7 @@ export async function GET() {
     
     return NextResponse.json(content)
   } catch (error) {
-    console.error('Error fetching about content:', error)
+    logger.error('Error fetching about content:', error)
     return NextResponse.json(
       { error: 'Failed to fetch about content' },
       { status: 500 }
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error creating about content:', error)
+    logger.error('Error creating about content:', error)
     return NextResponse.json(
       { error: 'Failed to create about content' },
       { status: 500 }
@@ -71,7 +72,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error updating about content:', error)
+    logger.error('Error updating about content:', error)
     return NextResponse.json(
       { error: 'Failed to update about content' },
       { status: 500 }

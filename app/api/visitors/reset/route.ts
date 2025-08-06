@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('Resetting visitor count...')
+    logger.log('Resetting visitor count...')
     
     // Reset the visit count to 0
     const visitCount = await prisma.visitCount.upsert({
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
       visitCount: visitCount.count
     })
   } catch (error) {
-    console.error('Error resetting visitor count:', error)
+    logger.error('Error resetting visitor count:', error)
     return NextResponse.json(
       { error: 'Failed to reset visitor count' },
       { status: 500 }

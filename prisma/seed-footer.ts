@@ -1,9 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('Seeding footer data...')
+  logger.log('Seeding footer data...')
 
   // Create default footer settings
   const footerSettings = await prisma.footerSettings.upsert({
@@ -86,12 +87,12 @@ async function main() {
     })
   }
 
-  console.log('Footer data seeded successfully!')
+  logger.log('Footer data seeded successfully!')
 }
 
 main()
   .catch((e) => {
-    console.error(e)
+    logger.error(e)
     process.exit(1)
   })
   .finally(async () => {

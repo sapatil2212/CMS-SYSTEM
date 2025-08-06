@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 // Add OPTIONS method for CORS
 export async function OPTIONS() {
@@ -34,7 +35,7 @@ export async function GET() {
     
     return NextResponse.json(footerSettings)
   } catch (error) {
-    console.error('Error fetching footer settings:', error)
+    logger.error('Error fetching footer settings:', error)
     return NextResponse.json(
       { error: 'Failed to fetch footer settings' },
       { status: 500 }
@@ -44,11 +45,11 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    console.log('Footer settings PUT request received')
+    logger.log('Footer settings PUT request received')
     const body = await request.json()
     const { logoUrl, logoAlt, description, phoneNumber, email, address } = body
 
-    console.log('Updating footer settings with:', { logoUrl, logoAlt, description, phoneNumber, email, address })
+    logger.log('Updating footer settings with:', { logoUrl, logoAlt, description, phoneNumber, email, address })
 
     const footerSettings = await prisma.footerSettings.findFirst()
     
@@ -64,7 +65,7 @@ export async function PUT(request: NextRequest) {
           address
         }
       })
-      console.log('Footer settings updated successfully:', updatedSettings)
+      logger.log('Footer settings updated successfully:', updatedSettings)
       return NextResponse.json(updatedSettings)
     } else {
       const newSettings = await prisma.footerSettings.create({
@@ -77,11 +78,11 @@ export async function PUT(request: NextRequest) {
           address
         }
       })
-      console.log('New footer settings created:', newSettings)
+      logger.log('New footer settings created:', newSettings)
       return NextResponse.json(newSettings)
     }
   } catch (error) {
-    console.error('Error updating footer settings:', error)
+    logger.error('Error updating footer settings:', error)
     return NextResponse.json(
       { error: 'Failed to update footer settings' },
       { status: 500 }
@@ -92,11 +93,11 @@ export async function PUT(request: NextRequest) {
 // Add POST method as fallback for debugging
 export async function POST(request: NextRequest) {
   try {
-    console.log('Footer settings POST request received (fallback)')
+    logger.log('Footer settings POST request received (fallback)')
     const body = await request.json()
     const { logoUrl, logoAlt, description, phoneNumber, email, address } = body
 
-    console.log('Updating footer settings with:', { logoUrl, logoAlt, description, phoneNumber, email, address })
+    logger.log('Updating footer settings with:', { logoUrl, logoAlt, description, phoneNumber, email, address })
 
     const footerSettings = await prisma.footerSettings.findFirst()
     
@@ -112,7 +113,7 @@ export async function POST(request: NextRequest) {
           address
         }
       })
-      console.log('Footer settings updated successfully:', updatedSettings)
+      logger.log('Footer settings updated successfully:', updatedSettings)
       return NextResponse.json(updatedSettings)
     } else {
       const newSettings = await prisma.footerSettings.create({
@@ -125,11 +126,11 @@ export async function POST(request: NextRequest) {
           address
         }
       })
-      console.log('New footer settings created:', newSettings)
+      logger.log('New footer settings created:', newSettings)
       return NextResponse.json(newSettings)
     }
   } catch (error) {
-    console.error('Error updating footer settings:', error)
+    logger.error('Error updating footer settings:', error)
     return NextResponse.json(
       { error: 'Failed to update footer settings' },
       { status: 500 }

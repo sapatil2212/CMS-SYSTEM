@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import nodemailer from 'nodemailer'
+import { logger } from '@/lib/logger';
+import nodemailer from 'nodemailer';
 
 // Generate 6-digit OTP
 function generateOTP(): string {
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    console.log('OTP created for signup:', { email, otp, expiresAt, otpId: otpRecord.id })
+    logger.log('OTP created for signup:', { email, otp, expiresAt, otpId: otpRecord.id })
 
     // Enhanced email template for signup verification
     const emailHtml = `
@@ -190,9 +191,9 @@ export async function POST(request: NextRequest) {
         html: emailHtml
       })
       
-      console.log('Signup OTP email sent successfully to:', email)
+      logger.log('Signup OTP email sent successfully to:', email)
     } catch (emailError) {
-      console.error('Failed to send signup OTP email:', emailError)
+      logger.error('Failed to send signup OTP email:', emailError)
       // Delete the OTP record since email failed
       await prisma.oTP.delete({
         where: { id: otpRecord.id }
@@ -205,7 +206,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error sending signup OTP:', error)
+    logger.error('Error sending signup OTP:', error)
     return NextResponse.json(
       { error: 'Failed to send OTP.' },
       { status: 500 }

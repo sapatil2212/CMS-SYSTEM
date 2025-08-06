@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
+import { logger } from '@/lib/logger';
+import Link from 'next/link';
 
 interface Service {
   id: string
@@ -27,7 +28,7 @@ export default function ServicesSection() {
         setServices(data)
       }
     } catch (error) {
-      console.error('Failed to fetch services:', error)
+      logger.error('Failed to fetch services:', error)
       // Fallback services
       setServices([
         {

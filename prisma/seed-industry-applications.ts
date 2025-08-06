@@ -1,9 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Seeding industry applications for copper plating...')
+  logger.log('🌱 Seeding industry applications for copper plating...')
 
   // First, get or create the copper plating content
   let content = await prisma.copperPlatingContent.findFirst()
@@ -76,15 +77,15 @@ async function main() {
         order: app.order
       }
     })
-    console.log(`✅ Created application: ${app.title}`)
+    logger.log(`✅ Created application: ${app.title}`)
   }
 
-  console.log('🎉 Industry applications seeded successfully!')
+  logger.log('🎉 Industry applications seeded successfully!')
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding industry applications:', e)
+    logger.error('❌ Error seeding industry applications:', e)
     process.exit(1)
   })
   .finally(async () => {

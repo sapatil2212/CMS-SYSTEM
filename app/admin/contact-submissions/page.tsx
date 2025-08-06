@@ -17,7 +17,8 @@ import {
 } from 'lucide-react';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminSidebar from '@/components/admin/AdminSidebar';
-import ProfessionalLoader from '@/components/ui/ProfessionalLoader';
+import { logger } from '@/lib/logger';
+import ProfessionalLoader from '@/components/ui/ProfessionalLoader';;
 
 interface ContactSubmission {
   id: string;
@@ -81,10 +82,10 @@ export default function ContactSubmissionsPage() {
         setPagination(data.pagination);
         setStatusCounts(data.statusCounts);
       } else {
-        console.error('Failed to fetch submissions');
+        logger.error('Failed to fetch submissions');
       }
     } catch (error) {
-      console.error('Error fetching submissions:', error);
+      logger.error('Error fetching submissions:', error);
     } finally {
       setLoading(false);
     }
@@ -104,10 +105,10 @@ export default function ContactSubmissionsPage() {
       if (response.ok) {
         await fetchSubmissions();
       } else {
-        console.error('Failed to update status');
+        logger.error('Failed to update status');
       }
     } catch (error) {
-      console.error('Error updating status:', error);
+      logger.error('Error updating status:', error);
     } finally {
       setUpdating(false);
     }
@@ -126,10 +127,10 @@ export default function ContactSubmissionsPage() {
       if (response.ok) {
         await fetchSubmissions();
       } else {
-        console.error('Failed to delete submission');
+        logger.error('Failed to delete submission');
       }
     } catch (error) {
-      console.error('Error deleting submission:', error);
+      logger.error('Error deleting submission:', error);
     }
   };
 

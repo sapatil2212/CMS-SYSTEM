@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import ImageUpload from './ImageUpload'
 import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
+import { logger } from '@/lib/logger';
 
 interface FooterSettings {
   id: string
@@ -113,7 +114,7 @@ export default function FooterManagement() {
         setServices(servicesData)
       }
     } catch (error) {
-      console.error('Error fetching footer data:', error)
+      logger.error('Error fetching footer data:', error)
       setMessage({ type: 'error', text: 'Failed to load footer data' })
     } finally {
       setLoading(false)
@@ -152,7 +153,7 @@ export default function FooterManagement() {
         throw new Error(`Failed to update settings: ${response.status} ${errorText}`)
       }
     } catch (error) {
-      console.error('Error updating settings:', error)
+      logger.error('Error updating settings:', error)
       setMessage({ type: 'error', text: `Failed to update settings: ${error instanceof Error ? error.message : 'Unknown error'}` })
     } finally {
       setIsProcessing(false)
@@ -183,7 +184,7 @@ export default function FooterManagement() {
         throw new Error('Failed to save social media')
       }
     } catch (error) {
-      console.error('Error saving social media:', error)
+      logger.error('Error saving social media:', error)
       setMessage({ type: 'error', text: 'Failed to save social media' })
     } finally {
       setIsProcessing(false)
@@ -219,7 +220,7 @@ export default function FooterManagement() {
         throw new Error('Failed to save quick link')
       }
     } catch (error) {
-      console.error('Error saving quick link:', error)
+      logger.error('Error saving quick link:', error)
       setMessage({ type: 'error', text: 'Failed to save quick link' })
     } finally {
       setIsProcessing(false)
@@ -255,7 +256,7 @@ export default function FooterManagement() {
         throw new Error('Failed to save service')
       }
     } catch (error) {
-      console.error('Error saving service:', error)
+      logger.error('Error saving service:', error)
       setMessage({ type: 'error', text: 'Failed to save service' })
     } finally {
       setIsProcessing(false)

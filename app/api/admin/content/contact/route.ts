@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';;
 
 // GET - Fetch contact content
 export async function GET() {
@@ -26,7 +27,7 @@ export async function GET() {
 
     return NextResponse.json(contactContent);
   } catch (error) {
-    console.error('Error fetching contact content:', error);
+    logger.error('Error fetching contact content:', error);
     return NextResponse.json(
       { error: 'Failed to fetch contact content' },
       { status: 500 }
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(newContactContent);
   } catch (error) {
-    console.error('Error creating contact content:', error);
+    logger.error('Error creating contact content:', error);
     return NextResponse.json(
       { error: 'Failed to create contact content' },
       { status: 500 }
@@ -108,7 +109,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(updatedContactContent);
   } catch (error) {
-    console.error('Error updating contact content:', error);
+    logger.error('Error updating contact content:', error);
     return NextResponse.json(
       { error: 'Failed to update contact content' },
       { status: 500 }
@@ -135,7 +136,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error deleting contact content:', error);
+    logger.error('Error deleting contact content:', error);
     return NextResponse.json(
       { error: 'Failed to delete contact content' },
       { status: 500 }

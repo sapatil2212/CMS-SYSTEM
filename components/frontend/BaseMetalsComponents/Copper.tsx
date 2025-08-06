@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { logger } from '@/lib/logger';
+import Link from 'next/link';;
 import { 
   ChevronRight, Check, Shield, Zap, Layers, 
   Thermometer, CircuitBoard, Car, Battery, Factory, 
@@ -97,7 +98,7 @@ const CopperPlating = () => {
         setLastUpdate(Date.now());
       }
     } catch (error) {
-      console.error('Error fetching copper content:', error);
+      logger.error('Error fetching copper content:', error);
     } finally {
       setLoading(false);
     }
@@ -144,11 +145,11 @@ const CopperPlating = () => {
       <section className="mb-20 bg-gradient-to-r from-orange-900 to-red-900 rounded-3xl p-8 md:p-12 text-white overflow-hidden relative">
         <div className="absolute inset-0 opacity-30">
           <img 
-            src={getImageSrc(content?.heroImage || "/uploads/copper/hero-copper-plating.jpg")} 
+            src={getImageSrc(content?.heroImage || "/uploads/copper/hero-copper-plating.svg")} 
             alt="Copper plating process" 
             className="w-full h-full object-cover"
             loading="eager"
-            onError={() => handleImageError(content?.heroImage || "/uploads/copper/hero-copper-plating.jpg")}
+            onError={() => handleImageError(content?.heroImage || "/uploads/copper/hero-copper-plating.svg")}
           />
         </div>
         <div className="relative z-10 max-w-4xl">

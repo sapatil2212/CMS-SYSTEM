@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
@@ -112,9 +113,9 @@ export default async function seedMolykote() {
       })
     }
 
-    console.log('✅ Molykote content seeded successfully')
+    logger.log('✅ Molykote content seeded successfully')
   } catch (error) {
-    console.error('❌ Error seeding Molykote content:', error)
+    logger.error('❌ Error seeding Molykote content:', error)
     throw error
   }
 } 

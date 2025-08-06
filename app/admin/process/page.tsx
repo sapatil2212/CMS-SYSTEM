@@ -11,7 +11,8 @@ import ConfirmationModal from '@/components/admin/ConfirmationModal'
 import toast from 'react-hot-toast'
 import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
 import { Plus, Settings, Wrench } from 'lucide-react'
-import { useActivityTracker } from '@/hooks/useActivityTracker'
+import { logger } from '@/lib/logger';
+import {  useActivityTracker  } from '@/hooks/useActivityTracker';
 
 interface ProcessData {
   id: string
@@ -163,7 +164,7 @@ export default function ProcessContentPage() {
           }
           return process
         } catch (error) {
-          console.error(`Failed to fetch ${process.slug} content:`, error)
+          logger.error(`Failed to fetch ${process.slug} content:`, error)
           return process
         }
       })
@@ -171,7 +172,7 @@ export default function ProcessContentPage() {
       const updatedProcesses = await Promise.all(promises)
       setProcesses(updatedProcesses)
     } catch (error) {
-      console.error('Failed to fetch processes:', error)
+      logger.error('Failed to fetch processes:', error)
       toast.error('Failed to load processes')
     } finally {
       setLoading(false)
@@ -220,7 +221,7 @@ export default function ProcessContentPage() {
         throw new Error(errorData.error || 'Failed to update process status')
       }
     } catch (error) {
-      console.error('Failed to toggle process status:', error)
+      logger.error('Failed to toggle process status:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to update process status')
     }
   }
@@ -254,7 +255,7 @@ export default function ProcessContentPage() {
         throw new Error(errorData.error || 'Failed to save process')
       }
     } catch (error) {
-      console.error('Failed to save process:', error)
+      logger.error('Failed to save process:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to save process')
     }
   }
@@ -269,7 +270,7 @@ export default function ProcessContentPage() {
       setIsDeleteModalOpen(false)
       setProcessToDelete(null)
     } catch (error) {
-      console.error('Failed to delete process:', error)
+      logger.error('Failed to delete process:', error)
       toast.error('Failed to delete process')
     }
   }

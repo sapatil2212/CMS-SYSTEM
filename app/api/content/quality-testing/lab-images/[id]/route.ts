@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';;
 
 // GET - Fetch a single lab image by ID
 export async function GET(
@@ -20,7 +21,7 @@ export async function GET(
 
     return NextResponse.json(labImage);
   } catch (error) {
-    console.error('Error fetching lab image:', error);
+    logger.error('Error fetching lab image:', error);
     return NextResponse.json(
       { error: 'Failed to fetch lab image' },
       { status: 500 }
@@ -50,7 +51,7 @@ export async function PUT(
 
     return NextResponse.json(updatedLabImage);
   } catch (error) {
-    console.error('Error updating lab image:', error);
+    logger.error('Error updating lab image:', error);
     return NextResponse.json(
       { error: 'Failed to update lab image' },
       { status: 500 }
@@ -70,7 +71,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Lab image deleted successfully' });
   } catch (error) {
-    console.error('Error deleting lab image:', error);
+    logger.error('Error deleting lab image:', error);
     return NextResponse.json(
       { error: 'Failed to delete lab image' },
       { status: 500 }

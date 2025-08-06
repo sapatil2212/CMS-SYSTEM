@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import { Mail, Settings, CheckCircle, Package, ArrowRight } from 'lucide-react';
+import { logger } from '@/lib/logger';
+import {  Mail, Settings, CheckCircle, Package, ArrowRight  } from 'lucide-react';;
 
 interface OrderProcessStep {
   id: string
@@ -34,7 +35,7 @@ const OrderProcess = () => {
         setSteps(data);
       }
     } catch (error) {
-      console.error('Failed to fetch order process steps:', error);
+      logger.error('Failed to fetch order process steps:', error);
     } finally {
       setLoading(false);
     }

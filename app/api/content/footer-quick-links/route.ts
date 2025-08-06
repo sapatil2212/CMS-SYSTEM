@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 // Add OPTIONS method for CORS
 export async function OPTIONS() {
@@ -40,7 +41,7 @@ export async function GET() {
     
     return NextResponse.json(quickLinks)
   } catch (error) {
-    console.error('Error fetching footer quick links:', error)
+    logger.error('Error fetching footer quick links:', error)
     return NextResponse.json(
       { error: 'Failed to fetch footer quick links' },
       { status: 500 }
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json(quickLink)
   } catch (error) {
-    console.error('Error creating footer quick link:', error)
+    logger.error('Error creating footer quick link:', error)
     return NextResponse.json(
       { error: 'Failed to create footer quick link' },
       { status: 500 }
@@ -88,7 +89,7 @@ export async function PUT(request: NextRequest) {
     
     return NextResponse.json(quickLink)
   } catch (error) {
-    console.error('Error updating footer quick link:', error)
+    logger.error('Error updating footer quick link:', error)
     return NextResponse.json(
       { error: 'Failed to update footer quick link' },
       { status: 500 }
@@ -114,7 +115,7 @@ export async function DELETE(request: NextRequest) {
     
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting footer quick link:', error)
+    logger.error('Error deleting footer quick link:', error)
     return NextResponse.json(
       { error: 'Failed to delete footer quick link' },
       { status: 500 }

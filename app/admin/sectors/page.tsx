@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth-provider'
 import { useRouter } from 'next/navigation'
+import { logger } from '@/lib/logger';
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import AdminHeader from '@/components/admin/AdminHeader'
 import SectorForm from '@/components/admin/SectorForm'
 import SectorList from '@/components/admin/SectorList'
 import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
 import ConfirmationModal from '@/components/ui/ConfirmationModal'
-import SuccessModal from '@/components/ui/SuccessModal'
+import SuccessModal from '@/components/ui/SuccessModal';
 import { 
   PlusIcon, 
   MagnifyingGlassIcon,
@@ -69,10 +70,10 @@ export default function SectorsManagement() {
         const data = await response.json()
         setSectors(data)
       } else {
-        console.error('Failed to fetch sectors')
+        logger.error('Failed to fetch sectors')
       }
     } catch (error) {
-      console.error('Error fetching sectors:', error)
+      logger.error('Error fetching sectors:', error)
     } finally {
       setLoading(false)
     }
@@ -115,15 +116,15 @@ export default function SectorsManagement() {
   }
 
   const handleDeleteSector = (id: string) => {
-    console.log('Attempting to delete sector with ID:', id)
+    logger.log('Attempting to delete sector with ID:', id)
     const sector = sectors.find(s => s.id === id)
     if (sector) {
-      console.log('Found sector to delete:', sector.name)
+      logger.log('Found sector to delete:', sector.name)
       setDeletingSectorId(id)
       setDeletingSectorName(sector.name)
       setShowDeleteConfirm(true)
     } else {
-      console.error('Sector not found in list:', id)
+      logger.error('Sector not found in list:', id)
       alert('Sector not found. Please refresh the page and try again.')
     }
   }
@@ -131,7 +132,7 @@ export default function SectorsManagement() {
   const confirmDeleteSector = async () => {
     if (!deletingSectorId) return
     
-    console.log('Confirming deletion of sector ID:', deletingSectorId)
+    logger.log('Confirming deletion of sector ID:', deletingSectorId)
     setDeleting(true)
     try {
       const token = localStorage.getItem('token')
@@ -143,7 +144,7 @@ export default function SectorsManagement() {
         }
       })
       
-      console.log('Delete response status:', response.status)
+      logger.log('Delete response status:', response.status)
       
       if (response.ok) {
         const result = await response.json()
@@ -156,7 +157,7 @@ export default function SectorsManagement() {
         setShowSuccessModal(true)
       } else {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
-        console.error('Failed to delete sector:', errorData)
+        logger.error('Failed to delete sector:', errorData)
         
         if (response.status === 404) {
           alert('Sector not found. It may have already been deleted.')
@@ -165,7 +166,7 @@ export default function SectorsManagement() {
         }
       }
     } catch (error) {
-      console.error('Error deleting sector:', error)
+      logger.error('Error deleting sector:', error)
       alert('An error occurred while deleting the sector. Please try again.')
     } finally {
       setDeleting(false)

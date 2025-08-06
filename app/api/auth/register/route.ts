@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createUser, generateToken } from '@/lib/auth'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    console.log('OTP Verification for registration:', {
+    logger.log('OTP Verification for registration:', {
       email,
       providedOTP: otp,
       storedOTP: storedOTP ? storedOTP.otp : 'NOT_FOUND',
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
       where: { id: storedOTP.id }
     });
 
-    console.log('User created successfully:', { userId: user.id, email: user.email, name: user.name });
+    logger.log('User created successfully:', { userId: user.id, email: user.email, name: user.name });
 
     const token = generateToken({
       userId: user.id,
@@ -79,7 +80,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Registration error:', error)
+    logger.error('Registration error:', error)
     
     // Check for specific error types
     if (error instanceof Error) {

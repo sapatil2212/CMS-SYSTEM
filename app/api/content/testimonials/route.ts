@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 
 
@@ -13,7 +14,7 @@ export async function GET() {
     
     return NextResponse.json(testimonials)
   } catch (error) {
-    console.error('Error fetching testimonials:', error)
+    logger.error('Error fetching testimonials:', error)
     return NextResponse.json(
       { error: 'Failed to fetch testimonials' },
       { status: 500 }
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error creating testimonial:', error)
+    logger.error('Error creating testimonial:', error)
     return NextResponse.json(
       { error: 'Failed to create testimonial' },
       { status: 500 }
@@ -74,7 +75,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error updating testimonial:', error)
+    logger.error('Error updating testimonial:', error)
     return NextResponse.json(
       { error: 'Failed to update testimonial' },
       { status: 500 }
@@ -100,7 +101,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting testimonial:', error)
+    logger.error('Error deleting testimonial:', error)
     return NextResponse.json(
       { error: 'Failed to delete testimonial' },
       { status: 500 }

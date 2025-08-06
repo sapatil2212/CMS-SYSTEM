@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/db'
-import DynamicBaseMetalComponent from '@/components/frontend/DynamicBaseMetalComponent'
+import { logger } from '@/lib/logger';
+import DynamicBaseMetalComponent from '@/components/frontend/DynamicBaseMetalComponent';
 
 interface PageProps {
   params: {
@@ -19,7 +20,7 @@ export async function generateStaticParams() {
       baseMetal: metal.slug,
     }))
   } catch (error) {
-    console.error('Error generating static params:', error)
+    logger.error('Error generating static params:', error)
     return []
   }
 }
@@ -39,7 +40,7 @@ export default async function BaseMetalPage({ params }: PageProps) {
 
     return <DynamicBaseMetalComponent baseMetalSlug={baseMetal} />
   } catch (error) {
-    console.error(`Error loading ${baseMetal} page:`, error)
+    logger.error(`Error loading ${baseMetal} page:`, error)
     notFound()
   }
 } 

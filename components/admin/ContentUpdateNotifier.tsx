@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect } from 'react'
-import { toast } from 'react-hot-toast'
+import { logger } from '@/lib/logger';
+import {  toast  } from 'react-hot-toast';
 
 interface ContentUpdateNotifierProps {
   onContentSaved: () => void
@@ -12,7 +13,7 @@ const ContentUpdateNotifier: React.FC<ContentUpdateNotifierProps> = ({ onContent
     // Listen for custom events from the admin dashboard
     const handleContentUpdate = (event: CustomEvent) => {
       const { slug, type } = event.detail
-      console.log(`Content updated for ${slug} (${type})`)
+      logger.log(`Content updated for ${slug} (${type})`)
       
       // Notify other components to refresh
       onContentSaved()

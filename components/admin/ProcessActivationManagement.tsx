@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { ToggleLeft, ToggleRight, CheckCircle, AlertCircle, Settings, XCircle } from 'lucide-react'
+import { logger } from '@/lib/logger';
 
 interface Process {
   id: string
@@ -34,7 +35,7 @@ export default function ProcessActivationManagement() {
   const fetchProcesses = async () => {
     try {
       setLoading(true)
-      console.log('Fetching processes from:', '/api/content/process-activation')
+      logger.log('Fetching processes from:', '/api/content/process-activation')
       
       const response = await fetch('/api/content/process-activation', {
         method: 'GET',
@@ -43,19 +44,19 @@ export default function ProcessActivationManagement() {
         },
       })
       
-      console.log('Response status:', response.status)
+      logger.log('Response status:', response.status)
       
       if (response.ok) {
         const data = await response.json()
-        console.log('Processes fetched:', data)
+        logger.log('Processes fetched:', data)
         setProcesses(data)
       } else {
         const errorText = await response.text()
-        console.error('Failed to fetch processes:', errorText)
+        logger.error('Failed to fetch processes:', errorText)
         throw new Error(`Failed to fetch processes: ${response.status} ${errorText}`)
       }
     } catch (error) {
-      console.error('Error fetching processes:', error)
+      logger.error('Error fetching processes:', error)
       setMessage({ type: 'error', text: `Failed to load processes: ${error instanceof Error ? error.message : 'Unknown error'}` })
     } finally {
       setLoading(false)
@@ -67,7 +68,7 @@ export default function ProcessActivationManagement() {
       setUpdating(processSlug)
       setMessage(null)
 
-      console.log('Toggling process:', processSlug, 'isMenuActive:', isMenuActive)
+      logger.log('Toggling process:', processSlug, 'isMenuActive:', isMenuActive)
 
       // Try PUT method first
       let response = await fetch('/api/content/process-activation', {
@@ -80,7 +81,7 @@ export default function ProcessActivationManagement() {
 
       // If PUT fails, try POST as fallback
       if (!response.ok) {
-        console.log('PUT failed, trying POST fallback')
+        logger.log('PUT failed, trying POST fallback')
         response = await fetch('/api/content/process-activation', {
           method: 'POST',
           headers: {
@@ -90,21 +91,21 @@ export default function ProcessActivationManagement() {
         })
       }
 
-      console.log('Response status:', response.status)
+      logger.log('Response status:', response.status)
 
       if (response.ok) {
         const result = await response.json()
-        console.log('Process updated successfully:', result)
+        logger.log('Process updated successfully:', result)
         setMessage({ type: 'success', text: 'Process activation updated successfully!' })
         // Refresh the data
         await fetchProcesses()
       } else {
         const errorText = await response.text()
-        console.error('Failed to update process:', errorText)
+        logger.error('Failed to update process:', errorText)
         throw new Error(`Failed to update process activation: ${response.status} ${errorText}`)
       }
     } catch (error) {
-      console.error('Error updating process activation:', error)
+      logger.error('Error updating process activation:', error)
       setMessage({ type: 'error', text: `Failed to update process activation: ${error instanceof Error ? error.message : 'Unknown error'}` })
     } finally {
       setUpdating(null)

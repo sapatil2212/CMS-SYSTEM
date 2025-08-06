@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 export async function GET() {
   try {
@@ -14,7 +15,7 @@ export async function GET() {
       count: baseMetalsCount
     })
   } catch (error) {
-    console.error('Error fetching base metals count:', error)
+    logger.error('Error fetching base metals count:', error)
     return NextResponse.json(
       { error: 'Failed to fetch base metals count' },
       { status: 500 }

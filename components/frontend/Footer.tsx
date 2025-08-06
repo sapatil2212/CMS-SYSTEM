@@ -1,8 +1,9 @@
 'use client'
 
+import { logger } from '@/lib/logger';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Phone, Mail, MapPin } from 'lucide-react';
+import {  Phone, Mail, MapPin  } from 'lucide-react';
 
 interface FooterSettings {
   id: string
@@ -81,7 +82,7 @@ const Footer: React.FC = () => {
         setServices(servicesData.filter((item: FooterService) => item.isActive))
       }
     } catch (error) {
-      console.error('Error fetching footer data:', error)
+      logger.error('Error fetching footer data:', error)
     } finally {
       setLoading(false)
     }

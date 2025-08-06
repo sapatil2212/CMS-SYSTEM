@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Edit, Trash2, Eye, Power, PowerOff, Wrench } from 'lucide-react'
+import { logger } from '@/lib/logger';
+import {  Edit, Trash2, Eye, Power, PowerOff, Wrench, Image  } from 'lucide-react';
 
 interface ProcessData {
   id: string
@@ -23,14 +24,18 @@ interface ProcessCardProps {
 
 export default function ProcessCard({ process, onEdit, onDelete, onToggleActive }: ProcessCardProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const [imageError, setImageError] = useState(false)
   
-  console.log('🔄 ProcessCard rendering:', process.name, 'ID:', process.id)
-
   const hasContent = process.content && (
     process.content.heroTitle || 
     process.content.heroSubtitle || 
     process.content.whatIsTitle
   )
+
+  const handleImageError = () => {
+    logger.log('❌ ProcessCard: Image failed to load for', process.name)
+    setImageError(true)
+  }
 
   return (
     <div
@@ -102,13 +107,23 @@ export default function ProcessCard({ process, onEdit, onDelete, onToggleActive 
       {/* Card Content */}
       <div className="p-6">
         {/* Hero Image Preview */}
-        {process.heroImage && (
+        {process.heroImage && !imageError ? (
           <div className="mb-4">
             <img
               src={process.heroImage}
               alt={`${process.name} hero image`}
               className="w-full h-32 object-cover rounded-lg"
+              onError={handleImageError}
             />
+          </div>
+        ) : (
+          <div className="mb-4">
+            <div className="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center">
+              <div className="text-center">
+                <Image className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                <p className="text-xs text-gray-500">No image available</p>
+              </div>
+            </div>
           </div>
         )}
 
@@ -161,7 +176,7 @@ export default function ProcessCard({ process, onEdit, onDelete, onToggleActive 
                   const url = isBaseMetal ? `/basemetals/${process.slug}` : `/processes/${process.slug}`
                   window.open(url, '_blank')
                 } catch (error) {
-                  console.error('Error checking base metal status:', error)
+                  logger.error('Error checking base metal status:', error)
                   // Fallback to process URL if there's an error
                   window.open(`/processes/${process.slug}`, '_blank')
                 }

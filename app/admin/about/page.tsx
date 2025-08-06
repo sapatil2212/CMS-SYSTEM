@@ -8,7 +8,8 @@ import ImageUpload from '@/components/admin/ImageUpload'
 import SuccessModal from '@/components/admin/SuccessModal'
 import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
 import { Plus, Edit, Trash2, Eye, EyeOff, Upload, X, Save, Crown, Shield, Zap, Cog, CheckCircle, Users, Award, Clock, Target, Eye as EyeIcon } from 'lucide-react'
-import { toast } from 'react-hot-toast'
+import { logger } from '@/lib/logger';
+import {  toast  } from 'react-hot-toast';
 
 interface AboutContent {
   id?: string
@@ -135,7 +136,7 @@ export default function AboutPage() {
         setMissionVision(missionVisionData)
       }
     } catch (error) {
-      console.error('Error fetching about data:', error)
+      logger.error('Error fetching about data:', error)
     }
   }
 
@@ -155,7 +156,7 @@ export default function AboutPage() {
         toast.error('Failed to save about content')
       }
     } catch (error) {
-      console.error('Error saving about content:', error)
+      logger.error('Error saving about content:', error)
       toast.error('Failed to save about content')
     } finally {
       setSavingContent(false)
@@ -185,7 +186,7 @@ export default function AboutPage() {
         toast.error('Failed to save value')
       }
     } catch (error) {
-      console.error('Error saving value:', error)
+      logger.error('Error saving value:', error)
       toast.error('Failed to save value')
     } finally {
       setSavingValue(false)
@@ -211,7 +212,7 @@ export default function AboutPage() {
           toast.error('Failed to delete value')
         }
       } catch (error) {
-        console.error('Error deleting value:', error)
+        logger.error('Error deleting value:', error)
         toast.error('Failed to delete value')
       }
     }
@@ -232,7 +233,7 @@ export default function AboutPage() {
         toast.error('Failed to update value')
       }
     } catch (error) {
-      console.error('Error updating value:', error)
+      logger.error('Error updating value:', error)
       toast.error('Failed to update value')
     }
   }
@@ -260,7 +261,7 @@ export default function AboutPage() {
         toast.error('Failed to save capability')
       }
     } catch (error) {
-      console.error('Error saving capability:', error)
+      logger.error('Error saving capability:', error)
       toast.error('Failed to save capability')
     } finally {
       setSavingCapability(false)
@@ -286,7 +287,7 @@ export default function AboutPage() {
           toast.error('Failed to delete capability')
         }
       } catch (error) {
-        console.error('Error deleting capability:', error)
+        logger.error('Error deleting capability:', error)
         toast.error('Failed to delete capability')
       }
     }
@@ -307,7 +308,7 @@ export default function AboutPage() {
         toast.error('Failed to update capability')
       }
     } catch (error) {
-      console.error('Error updating capability:', error)
+      logger.error('Error updating capability:', error)
       toast.error('Failed to update capability')
     }
   }
@@ -335,7 +336,7 @@ export default function AboutPage() {
         toast.error('Failed to save mission/vision')
       }
     } catch (error) {
-      console.error('Error saving mission/vision:', error)
+      logger.error('Error saving mission/vision:', error)
       toast.error('Failed to save mission/vision')
     } finally {
       setSavingMissionVision(false)
@@ -361,7 +362,7 @@ export default function AboutPage() {
           toast.error('Failed to delete mission/vision')
         }
       } catch (error) {
-        console.error('Error deleting mission/vision:', error)
+        logger.error('Error deleting mission/vision:', error)
         toast.error('Failed to delete mission/vision')
       }
     }

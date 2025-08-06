@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 // GET method to fetch contact information
 export async function GET(request: NextRequest) {
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest) {
       mapLink: contactContent.mapLink || ''
     });
   } catch (error) {
-    console.error('Error fetching contact info:', error);
+    logger.error('Error fetching contact info:', error);
     return NextResponse.json(
       { error: 'Failed to fetch contact information' },
       { status: 500 }
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     // Here you would typically send an email or save to database
     // For now, we'll just log the message
-    console.log('Contact form submission:', {
+    logger.log('Contact form submission:', {
       name,
       email,
       subject,
@@ -68,7 +69,7 @@ export async function POST(request: NextRequest) {
       message: 'Message sent successfully',
     })
   } catch (error) {
-    console.error('Contact form error:', error)
+    logger.error('Contact form error:', error)
     return NextResponse.json(
       { error: 'Failed to send message' },
       { status: 500 }

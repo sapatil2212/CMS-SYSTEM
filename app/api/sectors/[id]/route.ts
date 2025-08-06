@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { createAPIHandler } from '@/lib/api-validation'
+import { logger } from '@/lib/logger';
+import {  createAPIHandler  } from '@/lib/api-validation';
 
 // GET single sector
 const getSector = async (
@@ -23,7 +24,7 @@ const getSector = async (
 
     return NextResponse.json(sector)
   } catch (error) {
-    console.error('Error fetching sector:', error)
+    logger.error('Error fetching sector:', error)
     return NextResponse.json(
       { error: 'Failed to fetch sector' },
       { status: 500 }
@@ -70,7 +71,7 @@ const updateSector = async (
 
     return NextResponse.json(sector)
   } catch (error) {
-    console.error('Error updating sector:', error)
+    logger.error('Error updating sector:', error)
     return NextResponse.json(
       { error: 'Failed to update sector' },
       { status: 500 }
@@ -119,7 +120,7 @@ const deleteSector = async (
       sectorName: sector.name 
     })
   } catch (error) {
-    console.error('Error deleting sector:', error)
+    logger.error('Error deleting sector:', error)
     return NextResponse.json(
       { error: 'Failed to delete sector' },
       { status: 500 }

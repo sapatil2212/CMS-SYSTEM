@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Save, Upload, RefreshCw, CheckCircle, AlertCircle, X, Plus, Edit, Trash, Power, PowerOff } from 'lucide-react'
 import ImageUpload from './ImageUpload'
 import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
+import { logger } from '@/lib/logger';
 
 interface OfferPopup {
   id: string
@@ -61,7 +62,7 @@ export default function OfferPopupManagement() {
         throw new Error('Failed to fetch offer popups')
       }
     } catch (error) {
-      console.error('Error fetching offer popups:', error)
+      logger.error('Error fetching offer popups:', error)
       setMessage({ type: 'error', text: 'Failed to load offer popups' })
     } finally {
       setLoading(false)
@@ -102,7 +103,7 @@ export default function OfferPopupManagement() {
         throw new Error('Failed to create offer popup')
       }
     } catch (error) {
-      console.error('Error creating offer popup:', error)
+      logger.error('Error creating offer popup:', error)
       setMessage({ type: 'error', text: 'Failed to create offer popup' })
     } finally {
       setSaving(false)
@@ -145,7 +146,7 @@ export default function OfferPopupManagement() {
         throw new Error('Failed to update offer popup')
       }
     } catch (error) {
-      console.error('Error updating offer popup:', error)
+      logger.error('Error updating offer popup:', error)
       setMessage({ type: 'error', text: 'Failed to update offer popup' })
     } finally {
       setSaving(false)
@@ -174,7 +175,7 @@ export default function OfferPopupManagement() {
         throw new Error('Failed to delete offer popup')
       }
     } catch (error) {
-      console.error('Error deleting offer popup:', error)
+      logger.error('Error deleting offer popup:', error)
       setMessage({ type: 'error', text: 'Failed to delete offer popup' })
     } finally {
       setSaving(false)
@@ -222,7 +223,7 @@ export default function OfferPopupManagement() {
         throw new Error('Failed to update offer popup')
       }
     } catch (error) {
-      console.error('Error updating offer popup:', error)
+      logger.error('Error updating offer popup:', error)
       setMessage({ type: 'error', text: 'Failed to update offer popup' })
     } finally {
       setSaving(false)

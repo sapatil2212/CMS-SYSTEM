@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 
 
@@ -30,7 +31,7 @@ export async function GET() {
       }
     })
   } catch (error) {
-    console.error('Error fetching testimonial content:', error)
+    logger.error('Error fetching testimonial content:', error)
     return NextResponse.json(
       { error: 'Failed to fetch testimonial content' },
       { status: 500 }
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error creating testimonial content:', error)
+    logger.error('Error creating testimonial content:', error)
     return NextResponse.json(
       { error: 'Failed to create testimonial content' },
       { status: 500 }
@@ -86,7 +87,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error updating testimonial content:', error)
+    logger.error('Error updating testimonial content:', error)
     return NextResponse.json(
       { error: 'Failed to update testimonial content' },
       { status: 500 }

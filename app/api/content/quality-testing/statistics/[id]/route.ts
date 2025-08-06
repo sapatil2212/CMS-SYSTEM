@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';;
 
 // GET - Fetch a single statistic by ID
 export async function GET(
@@ -20,7 +21,7 @@ export async function GET(
 
     return NextResponse.json(statistic);
   } catch (error) {
-    console.error('Error fetching statistic:', error);
+    logger.error('Error fetching statistic:', error);
     return NextResponse.json(
       { error: 'Failed to fetch statistic' },
       { status: 500 }
@@ -50,7 +51,7 @@ export async function PUT(
 
     return NextResponse.json(updatedStatistic);
   } catch (error) {
-    console.error('Error updating statistic:', error);
+    logger.error('Error updating statistic:', error);
     return NextResponse.json(
       { error: 'Failed to update statistic' },
       { status: 500 }
@@ -70,7 +71,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Statistic deleted successfully' });
   } catch (error) {
-    console.error('Error deleting statistic:', error);
+    logger.error('Error deleting statistic:', error);
     return NextResponse.json(
       { error: 'Failed to delete statistic' },
       { status: 500 }

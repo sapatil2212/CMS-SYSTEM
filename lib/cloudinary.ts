@@ -1,4 +1,5 @@
-import { v2 as cloudinary } from 'cloudinary';
+import { logger } from '@/lib/logger';
+import {  v2 as cloudinary  } from 'cloudinary';;
 
 // Configure Cloudinary
 cloudinary.config({
@@ -12,7 +13,7 @@ export default cloudinary;
 export const uploadToCloudinary = async (file: Buffer, folder: string = 'cms-uploads'): Promise<string> => {
   return new Promise((resolve, reject) => {
     if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
-      console.error('Cloudinary credentials missing:', {
+      logger.error('Cloudinary credentials missing:', {
         cloud_name: !!process.env.CLOUDINARY_CLOUD_NAME,
         api_key: !!process.env.CLOUDINARY_API_KEY,
         api_secret: !!process.env.CLOUDINARY_API_SECRET
@@ -32,10 +33,10 @@ export const uploadToCloudinary = async (file: Buffer, folder: string = 'cms-upl
       },
       (error, result) => {
         if (error) {
-          console.error('Cloudinary upload error:', error);
+          logger.error('Cloudinary upload error:', error);
           reject(error);
         } else {
-          console.log('Cloudinary upload successful:', {
+          logger.log('Cloudinary upload successful:', {
             public_id: result?.public_id,
             secure_url: result?.secure_url,
             folder
@@ -58,7 +59,7 @@ export const deleteFromCloudinary = async (publicId: string): Promise<void> => {
 
     cloudinary.uploader.destroy(publicId, (error, result) => {
       if (error) {
-        console.error('Cloudinary delete error:', error);
+        logger.error('Cloudinary delete error:', error);
         reject(error);
       } else {
         resolve();

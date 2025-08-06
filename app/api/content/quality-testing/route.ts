@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';;
 
 export async function GET() {
   try {
@@ -79,7 +80,7 @@ export async function GET() {
 
     return NextResponse.json(content);
   } catch (error) {
-    console.error('Error fetching quality testing content:', error);
+    logger.error('Error fetching quality testing content:', error);
     return NextResponse.json(
       { error: 'Failed to fetch quality testing content' },
       { status: 500 }
@@ -154,7 +155,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(content);
   } catch (error) {
-    console.error('Error updating quality testing content:', error);
+    logger.error('Error updating quality testing content:', error);
     return NextResponse.json(
       { error: 'Failed to update quality testing content' },
       { status: 500 }

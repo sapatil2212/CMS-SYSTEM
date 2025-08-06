@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { logger } from '@/lib/logger';
+import {  useEffect, useState  } from 'react';
 
 interface Sector {
   id: string
@@ -39,7 +40,7 @@ export default function TestSectorsPage() {
       }
     } catch (error) {
       setError('Error fetching sectors')
-      console.error('Error:', error)
+      logger.error('Error:', error)
     } finally {
       setLoading(false)
     }

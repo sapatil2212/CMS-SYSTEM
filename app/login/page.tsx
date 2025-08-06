@@ -5,7 +5,8 @@ import Link from 'next/link'
 import { useAuth } from '@/lib/auth-provider'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
-import { EyeIcon, EyeSlashIcon, EnvelopeIcon, ArrowLeftIcon, PhoneIcon } from '@heroicons/react/24/outline'
+import { logger } from '@/lib/logger';
+import {  EyeIcon, EyeSlashIcon, EnvelopeIcon, ArrowLeftIcon, PhoneIcon  } from '@heroicons/react/24/outline';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -31,12 +32,12 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      console.log('Attempting login...')
+      logger.log('Attempting login...')
       await login(formData.email, formData.password)
-      console.log('Login successful, redirecting...')
+      logger.log('Login successful, redirecting...')
       toast.success('Login successful!')
     } catch (error) {
-      console.error('Login error:', error)
+      logger.error('Login error:', error)
       toast.error('Login failed. Please check your credentials.')
     } finally {
       setLoading(false)

@@ -1,14 +1,15 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('Seeding gold plating content...')
+  logger.log('Seeding gold plating content...')
 
   // Check if content already exists
   const existingContent = await prisma.goldPlatingContent.findFirst()
   if (existingContent) {
-    console.log('Gold plating content already exists, skipping...')
+    logger.log('Gold plating content already exists, skipping...')
     return
   }
 
@@ -184,15 +185,15 @@ async function main() {
     }
   })
 
-  console.log('Gold plating content seeded successfully!')
-  console.log('Created content with ID:', goldPlatingContent.id)
+  logger.log('Gold plating content seeded successfully!')
+  logger.log('Created content with ID:', goldPlatingContent.id)
 }
 
 export default async function seedGoldPlating() {
   try {
     await main()
   } catch (e) {
-    console.error(e)
+    logger.error(e)
     throw e
   } finally {
     await prisma.$disconnect()
@@ -203,7 +204,7 @@ export default async function seedGoldPlating() {
 if (require.main === module) {
   main()
     .catch((e) => {
-      console.error(e)
+      logger.error(e)
       process.exit(1)
     })
     .finally(async () => {

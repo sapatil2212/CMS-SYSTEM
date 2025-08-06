@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { HeaderMenuItem, HeaderMenuDropdownItem } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  HeaderMenuItem, HeaderMenuDropdownItem  } from '@prisma/client';
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🔍 Checking for duplicate menu items...')
+    logger.log('🔍 Checking for duplicate menu items...')
 
     // Get all menu items
     const allMenuItems = await prisma.headerMenuItem.findMany({
@@ -14,7 +15,7 @@ export async function POST(request: NextRequest) {
       orderBy: { order: 'asc' }
     })
 
-    console.log(`📊 Found ${allMenuItems.length} total menu items`)
+    logger.log(`📊 Found ${allMenuItems.length} total menu items`)
 
     // Group by name to find duplicates
     const menuItemsByName: Record<string, (HeaderMenuItem & { dropdownItems: HeaderMenuDropdownItem[] })[]> = {}
@@ -36,9 +37,9 @@ export async function POST(request: NextRequest) {
     Object.keys(menuItemsByName).forEach(name => {
       const items = menuItemsByName[name]
       if (items.length > 1) {
-        console.log(`⚠️ Found ${items.length} duplicate items for "${name}":`)
+        logger.log(`⚠️ Found ${items.length} duplicate items for "${name}":`)
         items.forEach((item, index) => {
-          console.log(`   ${index + 1}. ID: ${item.id}, Order: ${item.order}, Active: ${item.isActive}`)
+          logger.log(`   ${index + 1}. ID: ${item.id}, Order: ${item.order}, Active: ${item.isActive}`)
         })
         duplicateGroups.push({
           name,
@@ -61,13 +62,13 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    console.log(`\n🗑️ Found ${duplicates.length} duplicate menu items to remove:`)
+    logger.log(`\n🗑️ Found ${duplicates.length} duplicate menu items to remove:`)
     duplicates.forEach(item => {
-      console.log(`   - ${item.name} (ID: ${item.id})`)
+      logger.log(`   - ${item.name} (ID: ${item.id})`)
     })
 
     // Remove duplicates
-    console.log('\n🗑️ Removing duplicate menu items...')
+    logger.log('\n🗑️ Removing duplicate menu items...')
     const removedItems: {
       id: string;
       name: string;
@@ -90,7 +91,7 @@ export async function POST(request: NextRequest) {
         dropdownItemsRemoved: deletedDropdownItems.count
       })
 
-      console.log(`   ✅ Removed duplicate: ${duplicate.name} (ID: ${duplicate.id})`)
+      logger.log(`   ✅ Removed duplicate: ${duplicate.name} (ID: ${duplicate.id})`)
     }
 
     // Verify the cleanup
@@ -101,9 +102,9 @@ export async function POST(request: NextRequest) {
       orderBy: { order: 'asc' }
     })
 
-    console.log(`\n📊 After cleanup:`)
-    console.log(`   - Total menu items: ${remainingMenuItems.length}`)
-    console.log(`   - Active menu items: ${remainingMenuItems.filter(item => item.isActive).length}`)
+    logger.log(`\n📊 After cleanup:`)
+    logger.log(`   - Total menu items: ${remainingMenuItems.length}`)
+    logger.log(`   - Active menu items: ${remainingMenuItems.filter(item => item.isActive).length}`)
 
     return NextResponse.json({
       success: true,
@@ -123,7 +124,7 @@ export async function POST(request: NextRequest) {
       }))
     })
   } catch (error) {
-    console.error('❌ Error removing duplicate menu items:', error)
+    logger.error('❌ Error removing duplicate menu items:', error)
     return NextResponse.json(
       { 
         error: 'Failed to remove duplicate menu items',

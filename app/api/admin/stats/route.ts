@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
       activeUsers,
     })
   } catch (error) {
-    console.error('Error fetching admin stats:', error)
+    logger.error('Error fetching admin stats:', error)
     return NextResponse.json(
       { error: 'Failed to fetch stats' },
       { status: 500 }

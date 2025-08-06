@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
@@ -79,7 +80,7 @@ const features = [
 
 async function seedWhyChooseUsFeatures() {
   try {
-    console.log('🌱 Seeding WhyChooseUs features...')
+    logger.log('🌱 Seeding WhyChooseUs features...')
 
     // Clear existing features
     await prisma.whyChooseUsFeature.deleteMany({})
@@ -91,9 +92,9 @@ async function seedWhyChooseUsFeatures() {
       })
     }
 
-    console.log('✅ WhyChooseUs features seeded successfully!')
+    logger.log('✅ WhyChooseUs features seeded successfully!')
   } catch (error) {
-    console.error('❌ Error seeding WhyChooseUs features:', error)
+    logger.error('❌ Error seeding WhyChooseUs features:', error)
   } finally {
     await prisma.$disconnect()
   }

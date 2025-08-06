@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { logger } from '@/lib/logger';
+import Link from 'next/link';;
 import { 
   ChevronRight, Check, Shield, Zap, Layers, 
   Thermometer, Plane, Car, CircuitBoard, 
@@ -98,7 +99,7 @@ const AluminiumPlating = () => {
         setLastUpdate(Date.now());
       }
     } catch (error) {
-      console.error('Error fetching aluminium content:', error);
+      logger.error('Error fetching aluminium content:', error);
     } finally {
       setLoading(false);
     }
@@ -145,11 +146,11 @@ const AluminiumPlating = () => {
       <section className="mb-20 bg-gradient-to-r from-gray-900 to-blue-900 rounded-3xl p-8 md:p-12 text-white overflow-hidden relative">
         <div className="absolute inset-0 opacity-30">
           <img 
-            src={getImageSrc(content?.heroImage || "/uploads/aluminium/hero-aluminium-plating.jpg")} 
+            src={getImageSrc(content?.heroImage || "/uploads/aluminium/hero-aluminium-plating.svg")} 
             alt="Aluminium plating process" 
             className="w-full h-full object-cover"
             loading="eager"
-            onError={() => handleImageError(content?.heroImage || "/uploads/aluminium/hero-aluminium-plating.jpg")}
+            onError={() => handleImageError(content?.heroImage || "/uploads/aluminium/hero-aluminium-plating.svg")}
           />
         </div>
         <div className="relative z-10 max-w-4xl">

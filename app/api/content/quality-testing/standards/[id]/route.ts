@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';;
 
 // GET - Fetch a single standard by ID
 export async function GET(
@@ -20,7 +21,7 @@ export async function GET(
 
     return NextResponse.json(standard);
   } catch (error) {
-    console.error('Error fetching standard:', error);
+    logger.error('Error fetching standard:', error);
     return NextResponse.json(
       { error: 'Failed to fetch standard' },
       { status: 500 }
@@ -50,7 +51,7 @@ export async function PUT(
 
     return NextResponse.json(updatedStandard);
   } catch (error) {
-    console.error('Error updating standard:', error);
+    logger.error('Error updating standard:', error);
     return NextResponse.json(
       { error: 'Failed to update standard' },
       { status: 500 }
@@ -70,7 +71,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Standard deleted successfully' });
   } catch (error) {
-    console.error('Error deleting standard:', error);
+    logger.error('Error deleting standard:', error);
     return NextResponse.json(
       { error: 'Failed to delete standard' },
       { status: 500 }

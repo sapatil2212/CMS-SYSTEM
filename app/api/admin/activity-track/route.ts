@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 // Activity tracking interface
 interface ActivityData {
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, activity })
   } catch (error) {
-    console.error('Error tracking activity:', error)
+    logger.error('Error tracking activity:', error)
     return NextResponse.json(
       { error: 'Failed to track activity' },
       { status: 500 }
@@ -53,7 +54,7 @@ export async function GET() {
 
     return NextResponse.json(activities)
   } catch (error) {
-    console.error('Error fetching activities:', error)
+    logger.error('Error fetching activities:', error)
     return NextResponse.json(
       { error: 'Failed to fetch activities' },
       { status: 500 }

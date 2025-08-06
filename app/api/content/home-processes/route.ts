@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { revalidatePath } from 'next/cache'
+import { logger } from '@/lib/logger';
+import {  revalidatePath  } from 'next/cache';
 
 export async function GET() {
   try {
@@ -12,7 +13,7 @@ export async function GET() {
     
     return NextResponse.json(processes)
   } catch (error) {
-    console.error('Error fetching home processes:', error)
+    logger.error('Error fetching home processes:', error)
     return NextResponse.json(
       { error: 'Failed to fetch home processes' },
       { status: 500 }
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { title, description, content, image, link, order, isActive } = body
 
-    console.log('Creating home process:', {
+    logger.log('Creating home process:', {
       title,
       description,
       content,
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    console.log('Home process created successfully:', result)
+    logger.log('Home process created successfully:', result)
 
     // Revalidate home page to ensure frontend updates
     revalidatePath('/')
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error creating home process:', error)
+    logger.error('Error creating home process:', error)
     return NextResponse.json(
       { error: 'Failed to create home process' },
       { status: 500 }
@@ -68,7 +69,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json()
     const { id, title, description, content, image, link, order, isActive } = body
 
-    console.log('Updating home process:', {
+    logger.log('Updating home process:', {
       id,
       title,
       description,
@@ -92,7 +93,7 @@ export async function PUT(request: NextRequest) {
       }
     })
 
-    console.log('Home process updated successfully:', result)
+    logger.log('Home process updated successfully:', result)
 
     // Revalidate home page to ensure frontend updates
     revalidatePath('/')
@@ -100,7 +101,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error updating home process:', error)
+    logger.error('Error updating home process:', error)
     return NextResponse.json(
       { error: 'Failed to update home process' },
       { status: 500 }
@@ -130,7 +131,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting home process:', error)
+    logger.error('Error deleting home process:', error)
     return NextResponse.json(
       { error: 'Failed to delete home process' },
       { status: 500 }

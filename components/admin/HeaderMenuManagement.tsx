@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { ToggleLeft, ToggleRight, ChevronDown, ChevronRight, CheckCircle, AlertCircle } from 'lucide-react'
 import ProcessActivationManagement from './ProcessActivationManagement'
 import BaseMetalActivationManagement from './BaseMetalActivationManagement'
+import { logger } from '@/lib/logger';
 
 interface HeaderMenuDropdownItem {
   id: string
@@ -36,20 +37,20 @@ export default function HeaderMenuManagement() {
   }, [])
 
   useEffect(() => {
-    console.log('MenuItems state changed:', menuItems.length, 'items')
+    logger.log('MenuItems state changed:', menuItems.length, 'items')
     if (menuItems.length > 0) {
-      console.log('First menu item in state:', menuItems[0])
+      logger.log('First menu item in state:', menuItems[0])
     }
   }, [menuItems])
 
   useEffect(() => {
-    console.log('Active sub-section changed to:', activeSubSection)
+    logger.log('Active sub-section changed to:', activeSubSection)
   }, [activeSubSection])
 
   const fetchMenuItems = async () => {
     try {
       setLoading(true)
-      console.log('Fetching menu items from:', '/api/content/header-menu')
+      logger.log('Fetching menu items from:', '/api/content/header-menu')
       
       const response = await fetch('/api/content/header-menu', {
         method: 'GET',
@@ -58,15 +59,15 @@ export default function HeaderMenuManagement() {
         },
       })
       
-      console.log('Response status:', response.status)
+      logger.log('Response status:', response.status)
       
       if (response.ok) {
         const data = await response.json()
-        console.log('Menu items fetched:', data)
-        console.log('Number of menu items:', data.length)
-        console.log('First menu item:', data[0])
+        logger.log('Menu items fetched:', data)
+        logger.log('Number of menu items:', data.length)
+        logger.log('First menu item:', data[0])
         setMenuItems(data)
-        console.log('Menu items state set with:', data.length, 'items')
+        logger.log('Menu items state set with:', data.length, 'items')
         
         // Show success message if items were loaded
         if (data.length > 0) {
@@ -76,11 +77,11 @@ export default function HeaderMenuManagement() {
         }
       } else {
         const errorText = await response.text()
-        console.error('Failed to fetch menu items:', errorText)
+        logger.error('Failed to fetch menu items:', errorText)
         throw new Error(`Failed to fetch menu items: ${response.status} ${errorText}`)
       }
     } catch (error) {
-      console.error('Error fetching menu items:', error)
+      logger.error('Error fetching menu items:', error)
       setMessage({ type: 'error', text: `Failed to load menu items: ${error instanceof Error ? error.message : 'Unknown error'}` })
     } finally {
       setLoading(false)
@@ -92,7 +93,7 @@ export default function HeaderMenuManagement() {
       setLoading(true)
       setMessage(null)
 
-      console.log('Creating default menu items...')
+      logger.log('Creating default menu items...')
 
       const response = await fetch('/api/admin/header-menu/create-default', {
         method: 'POST',
@@ -101,20 +102,20 @@ export default function HeaderMenuManagement() {
         },
       })
 
-      console.log('Create default response status:', response.status)
+      logger.log('Create default response status:', response.status)
 
       if (response.ok) {
         const result = await response.json()
-        console.log('Default menu items created:', result)
+        logger.log('Default menu items created:', result)
         setMessage({ type: 'success', text: 'Default menu items created successfully!' })
         await fetchMenuItems()
       } else {
         const errorText = await response.text()
-        console.error('Failed to create default menu items:', errorText)
+        logger.error('Failed to create default menu items:', errorText)
         throw new Error(`Failed to create default menu items: ${response.status} ${errorText}`)
       }
     } catch (error) {
-      console.error('Error creating default menu items:', error)
+      logger.error('Error creating default menu items:', error)
       setMessage({ type: 'error', text: `Failed to create default menu items: ${error instanceof Error ? error.message : 'Unknown error'}` })
     } finally {
       setLoading(false)
@@ -126,7 +127,7 @@ export default function HeaderMenuManagement() {
       setUpdating(menuItemId)
       setMessage(null)
 
-      console.log('Toggling menu item:', menuItemId, 'isActive:', isActive)
+      logger.log('Toggling menu item:', menuItemId, 'isActive:', isActive)
 
       // Try PUT method first
       let response = await fetch('/api/content/header-menu', {
@@ -139,7 +140,7 @@ export default function HeaderMenuManagement() {
 
       // If PUT fails, try POST as fallback
       if (!response.ok) {
-        console.log('PUT failed, trying POST fallback')
+        logger.log('PUT failed, trying POST fallback')
         response = await fetch('/api/content/header-menu', {
           method: 'POST',
           headers: {
@@ -149,20 +150,20 @@ export default function HeaderMenuManagement() {
         })
       }
 
-      console.log('Response status:', response.status)
+      logger.log('Response status:', response.status)
 
       if (response.ok) {
         const result = await response.json()
-        console.log('Menu item updated successfully:', result)
+        logger.log('Menu item updated successfully:', result)
         setMessage({ type: 'success', text: 'Menu item updated successfully!' })
         await fetchMenuItems()
       } else {
         const errorText = await response.text()
-        console.error('Failed to update menu item:', errorText)
+        logger.error('Failed to update menu item:', errorText)
         throw new Error(`Failed to update menu item: ${response.status} ${errorText}`)
       }
     } catch (error) {
-      console.error('Error updating menu item:', error)
+      logger.error('Error updating menu item:', error)
       setMessage({ type: 'error', text: `Failed to update menu item: ${error instanceof Error ? error.message : 'Unknown error'}` })
     } finally {
       setUpdating(null)
@@ -174,7 +175,7 @@ export default function HeaderMenuManagement() {
       setUpdating(dropdownItemId)
       setMessage(null)
 
-      console.log('Toggling dropdown item:', dropdownItemId, 'isActive:', isActive)
+      logger.log('Toggling dropdown item:', dropdownItemId, 'isActive:', isActive)
 
       // Try PUT method first
       let response = await fetch('/api/content/header-menu', {
@@ -187,7 +188,7 @@ export default function HeaderMenuManagement() {
 
       // If PUT fails, try POST as fallback
       if (!response.ok) {
-        console.log('PUT failed, trying POST fallback')
+        logger.log('PUT failed, trying POST fallback')
         response = await fetch('/api/content/header-menu', {
           method: 'POST',
           headers: {
@@ -197,20 +198,20 @@ export default function HeaderMenuManagement() {
         })
       }
 
-      console.log('Response status:', response.status)
+      logger.log('Response status:', response.status)
 
       if (response.ok) {
         const result = await response.json()
-        console.log('Dropdown item updated successfully:', result)
+        logger.log('Dropdown item updated successfully:', result)
         setMessage({ type: 'success', text: 'Dropdown item updated successfully!' })
         await fetchMenuItems()
       } else {
         const errorText = await response.text()
-        console.error('Failed to update dropdown item:', errorText)
+        logger.error('Failed to update dropdown item:', errorText)
         throw new Error(`Failed to update dropdown item: ${response.status} ${errorText}`)
       }
     } catch (error) {
-      console.error('Error updating dropdown item:', error)
+      logger.error('Error updating dropdown item:', error)
       setMessage({ type: 'error', text: `Failed to update dropdown item: ${error instanceof Error ? error.message : 'Unknown error'}` })
     } finally {
       setUpdating(null)
@@ -312,7 +313,7 @@ export default function HeaderMenuManagement() {
       {/* Menu Items Section */}
       {activeSubSection === 'menu-items' && (
         <>
-          {console.log('Rendering menu items section, menuItems.length:', menuItems.length)}
+          {logger.log('Rendering menu items section, menuItems.length:', menuItems.length)}
           {menuItems.length === 0 ? (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="text-center">

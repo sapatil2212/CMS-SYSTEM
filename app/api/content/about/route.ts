@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   try {
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(content)
   } catch (error) {
-    console.error('Error fetching about content:', error)
+    logger.error('Error fetching about content:', error)
     return NextResponse.json(
       { error: 'Failed to fetch about content' },
       { status: 500 }

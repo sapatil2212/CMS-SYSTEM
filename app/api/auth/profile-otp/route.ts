@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import nodemailer from 'nodemailer'
+import { logger } from '@/lib/logger';
+import nodemailer from 'nodemailer';
 
 // Generate 6-digit OTP
 function generateOTP(): string {
@@ -180,7 +181,7 @@ export async function POST(request: NextRequest) {
 
     // Check if email credentials are configured
     if (!hasEmailCredentials) {
-      console.log('Email credentials not configured. OTP for testing:', otp)
+      logger.log('Email credentials not configured. OTP for testing:', otp)
       return NextResponse.json({
         message: 'OTP generated successfully (email not sent - credentials not configured)',
         expiresIn: '10 minutes',
@@ -197,14 +198,14 @@ export async function POST(request: NextRequest) {
         html: emailHtml
       })
       
-      console.log('Profile update OTP email sent successfully to:', user.email)
+      logger.log('Profile update OTP email sent successfully to:', user.email)
       
       return NextResponse.json({
         message: 'OTP sent successfully',
         expiresIn: '10 minutes'
       })
     } catch (emailError) {
-      console.error('Email sending failed:', emailError)
+      logger.error('Email sending failed:', emailError)
       return NextResponse.json({
         message: 'OTP generated but email failed to send',
         expiresIn: '10 minutes',
@@ -214,7 +215,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Error sending profile update OTP:', error)
+    logger.error('Error sending profile update OTP:', error)
     return NextResponse.json(
       { error: 'Failed to send OTP' },
       { status: 500 }
@@ -258,7 +259,7 @@ export async function PUT(request: NextRequest) {
 
     // Verify OTP
     if (storedOTP.otp !== otp) {
-      console.log('Profile update OTP mismatch for user:', userId, 'Expected:', storedOTP.otp, 'Received:', otp)
+      logger.log('Profile update OTP mismatch for user:', userId, 'Expected:', storedOTP.otp, 'Received:', otp)
       return NextResponse.json(
         { error: 'Invalid OTP' },
         { status: 400 }
@@ -278,7 +279,7 @@ export async function PUT(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error verifying profile update OTP:', error)
+    logger.error('Error verifying profile update OTP:', error)
     return NextResponse.json(
       { error: 'Failed to verify OTP' },
       { status: 500 }

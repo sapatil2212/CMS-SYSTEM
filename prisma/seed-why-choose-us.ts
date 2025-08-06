@@ -1,9 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Seeding why choose us content and features...')
+  logger.log('🌱 Seeding why choose us content and features...')
 
   // Seed content
   const content = {
@@ -22,7 +23,7 @@ async function main() {
   await prisma.whyChooseUsContent.create({
     data: content
   })
-  console.log('✅ Created why choose us content')
+  logger.log('✅ Created why choose us content')
 
   // Seed features
   const features = [
@@ -108,15 +109,15 @@ async function main() {
     await prisma.whyChooseUsFeature.create({
       data: feature
     })
-    console.log(`✅ Created feature: ${feature.title}`)
+    logger.log(`✅ Created feature: ${feature.title}`)
   }
 
-  console.log('🎉 All why choose us content and features seeded successfully!')
+  logger.log('🎉 All why choose us content and features seeded successfully!')
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding why choose us data:', e)
+    logger.error('❌ Error seeding why choose us data:', e)
     process.exit(1)
   })
   .finally(async () => {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import bcrypt from 'bcryptjs'
+import { logger } from '@/lib/logger';
+import bcrypt from 'bcryptjs';
 
 // PUT - Reset password with OTP verification
 export async function PUT(request: NextRequest) {
@@ -72,7 +73,7 @@ export async function PUT(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error resetting password:', error)
+    logger.error('Error resetting password:', error)
     return NextResponse.json(
       { error: 'Failed to reset password' },
       { status: 500 }

@@ -1,10 +1,11 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 async function seedWhyChooseUsContent() {
   try {
-    console.log('🌱 Seeding WhyChooseUs content...')
+    logger.log('🌱 Seeding WhyChooseUs content...')
 
     // Clear existing content
     await prisma.whyChooseUsContent.deleteMany({})
@@ -21,9 +22,9 @@ async function seedWhyChooseUsContent() {
       }
     })
 
-    console.log('✅ WhyChooseUs content seeded successfully!')
+    logger.log('✅ WhyChooseUs content seeded successfully!')
   } catch (error) {
-    console.error('❌ Error seeding WhyChooseUs content:', error)
+    logger.error('❌ Error seeding WhyChooseUs content:', error)
   } finally {
     await prisma.$disconnect()
   }

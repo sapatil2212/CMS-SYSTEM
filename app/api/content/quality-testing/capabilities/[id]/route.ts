@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';;
 
 export async function GET(
   request: NextRequest,
@@ -19,7 +20,7 @@ export async function GET(
 
     return NextResponse.json(capability);
   } catch (error) {
-    console.error('Error fetching capability:', error);
+    logger.error('Error fetching capability:', error);
     return NextResponse.json(
       { error: 'Failed to fetch capability' },
       { status: 500 }
@@ -49,7 +50,7 @@ export async function PUT(
 
     return NextResponse.json(capability);
   } catch (error) {
-    console.error('Error updating capability:', error);
+    logger.error('Error updating capability:', error);
     return NextResponse.json(
       { error: 'Failed to update capability' },
       { status: 500 }
@@ -68,7 +69,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Capability deleted successfully' });
   } catch (error) {
-    console.error('Error deleting capability:', error);
+    logger.error('Error deleting capability:', error);
     return NextResponse.json(
       { error: 'Failed to delete capability' },
       { status: 500 }

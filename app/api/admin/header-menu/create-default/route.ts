@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🔧 Creating default header menu items...')
+    logger.log('🔧 Creating default header menu items...')
 
     // Check if menu items already exist
     const existingMenuItems = await prisma.headerMenuItem.findFirst()
@@ -147,9 +148,9 @@ export async function POST(request: NextRequest) {
       where: { isActive: true }
     })
     
-    console.log(`📊 Menu items created:`)
-    console.log(`   - Total menu items: ${menuItemsCount}`)
-    console.log(`   - Active menu items: ${activeMenuItemsCount}`)
+    logger.log(`📊 Menu items created:`)
+    logger.log(`   - Total menu items: ${menuItemsCount}`)
+    logger.log(`   - Active menu items: ${activeMenuItemsCount}`)
 
     return NextResponse.json({
       success: true,
@@ -160,7 +161,7 @@ export async function POST(request: NextRequest) {
       }
     })
   } catch (error) {
-    console.error('❌ Error creating default header menu items:', error)
+    logger.error('❌ Error creating default header menu items:', error)
     return NextResponse.json(
       { 
         error: 'Failed to create default header menu items',

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { X, Phone, Mail, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { logger } from '@/lib/logger';
 
 const spinnerClass = `
   inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]
@@ -209,10 +210,10 @@ export default function ContactSection() {
         const data = await response.json();
         setContactContent(data);
       } else {
-        console.error('Failed to fetch contact content');
+        logger.error('Failed to fetch contact content');
       }
     } catch (error) {
-      console.error('Error fetching contact content:', error);
+      logger.error('Error fetching contact content:', error);
     } finally {
       setContactContentLoading(false);
     }
@@ -228,10 +229,10 @@ export default function ContactSection() {
         const activeProcesses = allProcesses.filter((process: Process) => process.isMenuActive);
         setProcesses(activeProcesses);
       } else {
-        console.error('Failed to fetch processes');
+        logger.error('Failed to fetch processes');
       }
     } catch (error) {
-      console.error('Error fetching processes:', error);
+      logger.error('Error fetching processes:', error);
     } finally {
       setProcessesLoading(false);
     }
@@ -365,7 +366,7 @@ export default function ContactSection() {
 
       return true;
     } catch (error) {
-      console.error("Error submitting to Google Sheets:", error);
+      logger.error("Error submitting to Google Sheets:", error);
       throw new Error("Failed to save data. Please try again later.");
     }
   };
@@ -408,14 +409,14 @@ export default function ContactSection() {
       try {
         await submitToGoogleSheets();
       } catch (sheetsError) {
-        console.error('Google Sheets submission failed:', sheetsError);
+        logger.error('Google Sheets submission failed:', sheetsError);
         // Don't throw error here - form submission was successful
       }
       
       setShowSuccessModal(true);
       handleCancel();
     } catch (error: any) {
-      console.error("Error submitting form:", error);
+      logger.error("Error submitting form:", error);
       setErrorMessage(error.message || "There was an error sending your message. Please try again later.");
     } finally {
       setLoading(false);

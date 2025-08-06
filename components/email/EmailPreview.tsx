@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { AdminEmailTemplate } from './AdminEmailTemplate';
-import { UserEmailTemplate } from './UserEmailTemplate';
+import { logger } from '@/lib/logger';
+import {  UserEmailTemplate  } from './UserEmailTemplate';
 
 interface EmailPreviewProps {
   data: {
@@ -34,7 +35,7 @@ export default function EmailPreview({ data }: EmailPreviewProps) {
           });
         }
       } catch (error) {
-        console.error('Error fetching logo data:', error);
+        logger.error('Error fetching logo data:', error);
       }
     };
 

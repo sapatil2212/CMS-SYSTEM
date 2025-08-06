@@ -1,9 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Seeding about content...')
+  logger.log('🌱 Seeding about content...')
 
   // Seed main content
   const content = {
@@ -14,7 +15,7 @@ async function main() {
   }
   await prisma.aboutContent.deleteMany()
   await prisma.aboutContent.create({ data: content })
-  console.log('✅ Created about content')
+  logger.log('✅ Created about content')
 
   // Seed values
   const values = [
@@ -50,7 +51,7 @@ async function main() {
   await prisma.aboutValue.deleteMany()
   for (const value of values) {
     await prisma.aboutValue.create({ data: value })
-    console.log(`✅ Created value: ${value.title}`)
+    logger.log(`✅ Created value: ${value.title}`)
   }
 
   // Seed capabilities
@@ -101,7 +102,7 @@ async function main() {
   await prisma.aboutCapability.deleteMany()
   for (const capability of capabilities) {
     await prisma.aboutCapability.create({ data: capability })
-    console.log(`✅ Created capability: ${capability.title}`)
+    logger.log(`✅ Created capability: ${capability.title}`)
   }
 
   // Seed mission and vision
@@ -122,15 +123,15 @@ async function main() {
   await prisma.aboutMissionVision.deleteMany()
   for (const mv of missionVision) {
     await prisma.aboutMissionVision.create({ data: mv })
-    console.log(`✅ Created ${mv.type}: ${mv.title}`)
+    logger.log(`✅ Created ${mv.type}: ${mv.title}`)
   }
 
-  console.log('🎉 All about content seeded successfully!')
+  logger.log('🎉 All about content seeded successfully!')
 }
 
 main()
   .catch((e) => {
-    console.error(e)
+    logger.error(e)
     process.exit(1)
   })
   .finally(async () => {

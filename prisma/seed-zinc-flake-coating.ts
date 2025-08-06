@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
@@ -112,9 +113,9 @@ export default async function seedZincFlakeCoating() {
       })
     }
 
-    console.log('✅ Zinc flake coating content seeded successfully')
+    logger.log('✅ Zinc flake coating content seeded successfully')
   } catch (error) {
-    console.error('❌ Error seeding zinc flake coating content:', error)
+    logger.error('❌ Error seeding zinc flake coating content:', error)
     throw error
   }
 } 

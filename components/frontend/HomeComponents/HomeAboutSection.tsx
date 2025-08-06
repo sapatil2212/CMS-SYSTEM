@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { logger } from '@/lib/logger';
+import {  useState, useEffect  } from 'react';
 
 interface HomeAboutData {
   title: string
@@ -28,7 +29,7 @@ export default function HomeAboutSection() {
         setAboutData(data)
       }
     } catch (error) {
-      console.error('Failed to fetch home about data:', error)
+      logger.error('Failed to fetch home about data:', error)
     } finally {
       setLoading(false)
     }

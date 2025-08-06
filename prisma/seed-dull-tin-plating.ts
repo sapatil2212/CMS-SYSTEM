@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
@@ -112,9 +113,9 @@ export default async function seedDullTinPlating() {
       })
     }
 
-    console.log('✅ Dull tin plating content seeded successfully')
+    logger.log('✅ Dull tin plating content seeded successfully')
   } catch (error) {
-    console.error('❌ Error seeding dull tin plating content:', error)
+    logger.error('❌ Error seeding dull tin plating content:', error)
     throw error
   }
 } 

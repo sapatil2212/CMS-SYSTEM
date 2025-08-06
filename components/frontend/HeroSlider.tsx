@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { logger } from '@/lib/logger';
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import Link from 'next/link'
+import Link from 'next/link';
 
 interface HeroSlide {
   id: string
@@ -40,7 +41,7 @@ export default function HeroSlider() {
         setSlides(data)
       }
     } catch (error) {
-      console.error('Failed to fetch hero slides:', error)
+      logger.error('Failed to fetch hero slides:', error)
       // Fallback slides with dummy images
       setSlides([
         {

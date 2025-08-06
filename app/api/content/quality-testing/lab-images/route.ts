@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';;
 
 export async function GET() {
   try {
@@ -9,7 +10,7 @@ export async function GET() {
     });
     return NextResponse.json(labImages);
   } catch (error) {
-    console.error('Error fetching lab images:', error);
+    logger.error('Error fetching lab images:', error);
     return NextResponse.json(
       { error: 'Failed to fetch lab images' },
       { status: 500 }
@@ -96,7 +97,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(labImage);
     }
   } catch (error) {
-    console.error('Error creating lab image:', error);
+    logger.error('Error creating lab image:', error);
     return NextResponse.json(
       { error: 'Failed to create lab image' },
       { status: 500 }

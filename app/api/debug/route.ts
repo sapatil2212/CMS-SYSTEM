@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 // Helper function to safely get error message
 function getErrorMessage(error: unknown): string {
@@ -9,21 +10,21 @@ function getErrorMessage(error: unknown): string {
 
 export async function GET() {
   try {
-    console.log('Debug API: Starting database connection test...')
+    logger.log('Debug API: Starting database connection test...')
     
     // Test database connection
     await prisma.$connect()
-    console.log('Debug API: Database connected successfully')
+    logger.log('Debug API: Database connected successfully')
     
     // Test critical tables
     const heroSlides = await prisma.heroSlider.findMany()
-    console.log('Debug API: Hero slides query successful:', heroSlides.length)
+    logger.log('Debug API: Hero slides query successful:', heroSlides.length)
     
     // Check AboutContent and AboutValue counts
     const aboutContentCount = await prisma.aboutContent.count()
     const aboutValueCount = await prisma.aboutValue.count()
-    console.log('Debug API: AboutContent count:', aboutContentCount)
-    console.log('Debug API: AboutValue count:', aboutValueCount)
+    logger.log('Debug API: AboutContent count:', aboutContentCount)
+    logger.log('Debug API: AboutValue count:', aboutValueCount)
     
     // Test if process models exist
     let processModelsStatus: any = {}
@@ -70,7 +71,7 @@ export async function GET() {
       nodeVersion: process.version
     })
   } catch (error) {
-    console.error('Debug API Error:', error)
+    logger.error('Debug API Error:', error)
     
     const errorDetails = error instanceof Error ? {
       message: getErrorMessage(error),
@@ -101,12 +102,12 @@ export async function GET() {
 
 export async function POST() {
   try {
-    console.log('🌱 Starting production database seed...')
+    logger.log('🌱 Starting production database seed...')
     
     // Check if AboutContent exists
     const aboutContentCount = await prisma.aboutContent.count()
     if (aboutContentCount === 0) {
-      console.log('📝 Seeding AboutContent...')
+      logger.log('📝 Seeding AboutContent...')
       await prisma.aboutContent.create({
         data: {
           title: 'About Alkalyne',
@@ -115,13 +116,13 @@ export async function POST() {
           image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'
         }
       })
-      console.log('✅ AboutContent seeded')
+      logger.log('✅ AboutContent seeded')
     }
     
     // Check if AboutValue exists
     const aboutValueCount = await prisma.aboutValue.count()
     if (aboutValueCount === 0) {
-      console.log('📝 Seeding AboutValues...')
+      logger.log('📝 Seeding AboutValues...')
       await prisma.aboutValue.createMany({
         data: [
           {
@@ -154,7 +155,7 @@ export async function POST() {
           }
         ]
       })
-      console.log('✅ AboutValues seeded')
+      logger.log('✅ AboutValues seeded')
     }
     
     return NextResponse.json({
@@ -165,7 +166,7 @@ export async function POST() {
     })
     
   } catch (error) {
-    console.error('❌ Production seeding failed:', error)
+    logger.error('❌ Production seeding failed:', error)
     return NextResponse.json({
       status: 'error',
       message: 'Failed to seed production database',

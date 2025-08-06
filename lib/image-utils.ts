@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs'
-import path from 'path'
+import { logger } from '@/lib/logger';
+import path from 'path';
 
 export async function deleteImageFromPublic(imageUrl: string): Promise<void> {
   try {
@@ -17,13 +18,13 @@ export async function deleteImageFromPublic(imageUrl: string): Promise<void> {
       try {
         await fs.access(filePath)
         await fs.unlink(filePath)
-        console.log(`Deleted image: ${filename}`)
+        logger.log(`Deleted image: ${filename}`)
       } catch (error) {
-        console.log(`Image not found or already deleted: ${filename}`)
+        logger.log(`Image not found or already deleted: ${filename}`)
       }
     }
   } catch (error) {
-    console.error('Error deleting image:', error)
+    logger.error('Error deleting image:', error)
   }
 }
 

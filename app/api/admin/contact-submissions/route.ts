@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';;
 
 export async function GET(request: NextRequest) {
   try {
@@ -58,7 +59,7 @@ export async function GET(request: NextRequest) {
       }, {} as Record<string, number>)
     });
   } catch (error) {
-    console.error('Error fetching contact submissions:', error);
+    logger.error('Error fetching contact submissions:', error);
     return NextResponse.json(
       { error: 'Failed to fetch contact submissions' },
       { status: 500 }
@@ -91,7 +92,7 @@ export async function PUT(request: NextRequest) {
       submission: updatedSubmission
     });
   } catch (error) {
-    console.error('Error updating contact submission:', error);
+    logger.error('Error updating contact submission:', error);
     return NextResponse.json(
       { error: 'Failed to update contact submission' },
       { status: 500 }
@@ -120,7 +121,7 @@ export async function DELETE(request: NextRequest) {
       message: 'Contact submission deleted successfully'
     });
   } catch (error) {
-    console.error('Error deleting contact submission:', error);
+    logger.error('Error deleting contact submission:', error);
     return NextResponse.json(
       { error: 'Failed to delete contact submission' },
       { status: 500 }

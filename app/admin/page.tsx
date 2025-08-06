@@ -10,7 +10,8 @@ import ModernDashboardStats from '@/components/admin/ModernDashboardStats'
 import ModernTimeDisplay from '@/components/admin/ModernTimeDisplay'
 import QuickActions from '@/components/admin/QuickActions'
 import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
-import { Clock, Wifi, Calendar, Hand } from 'lucide-react'
+import { logger } from '@/lib/logger';
+import {  Clock, Wifi, Calendar, Hand  } from 'lucide-react';
 
 
 
@@ -21,7 +22,7 @@ export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
-    console.log('Admin dashboard auth check:', { user, loading })
+    logger.log('Admin dashboard auth check:', { user, loading })
     if (!loading && !user) {
       router.push('/login')
     }

@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import { Crown, Users, Award, Heart, Shield, Clock, Star, CheckCircle, Zap, Cog, Target, Eye } from 'lucide-react';
+import { logger } from '@/lib/logger';
+import {  Crown, Users, Award, Heart, Shield, Clock, Star, CheckCircle, Zap, Cog, Target, Eye  } from 'lucide-react';;
 
 interface AboutContent {
   title: string
@@ -101,7 +102,7 @@ const AboutSection: React.FC = () => {
         setMissionVision(missionVisionData)
       }
     } catch (error) {
-      console.error('Failed to fetch about data:', error)
+      logger.error('Failed to fetch about data:', error)
     } finally {
       setLoading(false)
     }

@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { logger } from '@/lib/logger';
+import Link from 'next/link';;
 import { 
   ChevronRight, Check, Shield, Zap, Layers, 
   Thermometer, CircuitBoard, Car, Battery, Factory, 
@@ -97,7 +98,7 @@ const BrassPlating = () => {
         setLastUpdate(Date.now());
       }
     } catch (error) {
-      console.error('Error fetching brass content:', error);
+      logger.error('Error fetching brass content:', error);
     } finally {
       setLoading(false);
     }
@@ -144,11 +145,11 @@ const BrassPlating = () => {
       <section className="mb-20 bg-gradient-to-r from-blue-900 to-gray-900 rounded-3xl p-8 md:p-12 text-white overflow-hidden relative">
         <div className="absolute inset-0 opacity-30">
           <img 
-            src={getImageSrc(content?.heroImage || "/uploads/brass/hero-brass-plating.jpg")} 
+            src={getImageSrc(content?.heroImage || "/uploads/brass/hero-brass-plating.svg")} 
             alt="Brass plating process" 
             className="w-full h-full object-cover"
             loading="eager"
-            onError={() => handleImageError(content?.heroImage || "/uploads/brass/hero-brass-plating.jpg")}
+            onError={() => handleImageError(content?.heroImage || "/uploads/brass/hero-brass-plating.svg")}
           />
         </div>
         <div className="relative z-10 max-w-4xl">

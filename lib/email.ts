@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
-import { createAdminEmailTemplate, createUserEmailTemplate } from './email-templates';
+import { logger } from '@/lib/logger';
+import {  createAdminEmailTemplate, createUserEmailTemplate  } from './email-templates';;
 
 // Create transporter
 const createTransporter = () => {
@@ -29,10 +30,10 @@ export const sendEmail = async (
     };
 
     const result = await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully:', result.messageId);
+    logger.log('Email sent successfully:', result.messageId);
     return true;
   } catch (error) {
-    console.error('Error sending email:', error);
+    logger.error('Error sending email:', error);
     return false;
   }
 };
@@ -72,7 +73,7 @@ export const sendContactFormEmails = async (data: {
       success: adminSent && userSent
     };
   } catch (error) {
-    console.error('Error sending contact form emails:', error);
+    logger.error('Error sending contact form emails:', error);
     return {
       adminSent: false,
       userSent: false,

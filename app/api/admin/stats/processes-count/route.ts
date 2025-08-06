@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 export async function GET() {
   try {
@@ -25,7 +26,7 @@ export async function GET() {
       count: totalActiveProcesses
     })
   } catch (error) {
-    console.error('Error fetching processes count:', error)
+    logger.error('Error fetching processes count:', error)
     return NextResponse.json(
       { error: 'Failed to fetch processes count' },
       { status: 500 }

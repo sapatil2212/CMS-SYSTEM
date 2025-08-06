@@ -1,3 +1,5 @@
+// Production logger - no import needed as it's self-contained
+
 /**
  * Production Logging System
  * Comprehensive logging for monitoring and debugging in production

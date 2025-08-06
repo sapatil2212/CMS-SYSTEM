@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
 
 export async function GET() {
   try {
@@ -27,7 +28,7 @@ export async function GET() {
 
     return NextResponse.json(baseMetalsWithHref)
   } catch (error) {
-    console.error('Error fetching active base metals:', error)
+    logger.error('Error fetching active base metals:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 } 

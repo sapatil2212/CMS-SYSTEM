@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
+import React, { useState, useEffect } from 'react';;
 import { 
   Settings, 
   Edit, 
@@ -148,7 +149,7 @@ const QualityTestingSidebar: React.FC = () => {
         setLabImages(labImagesData);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      logger.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
@@ -169,7 +170,7 @@ const QualityTestingSidebar: React.FC = () => {
         setEditMode(false);
       }
     } catch (error) {
-      console.error('Error saving content:', error);
+      logger.error('Error saving content:', error);
       alert('Error saving content');
     }
   };
@@ -191,7 +192,7 @@ const QualityTestingSidebar: React.FC = () => {
         fetchData();
       }
     } catch (error) {
-      console.error(`Error saving ${type}:`, error);
+      logger.error(`Error saving ${type}:`, error);
       alert(`Error saving ${type}`);
     }
   };
@@ -209,7 +210,7 @@ const QualityTestingSidebar: React.FC = () => {
         fetchData();
       }
     } catch (error) {
-      console.error(`Error deleting ${type}:`, error);
+      logger.error(`Error deleting ${type}:`, error);
       alert(`Error deleting ${type}`);
     }
   };

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import bcrypt from 'bcryptjs'
+import { logger } from '@/lib/logger';
+import bcrypt from 'bcryptjs';
 
 // GET - Fetch all users
 export async function GET() {
@@ -22,7 +23,7 @@ export async function GET() {
 
     return NextResponse.json(users)
   } catch (error) {
-    console.error('Error fetching users:', error)
+    logger.error('Error fetching users:', error)
     return NextResponse.json(
       { error: 'Failed to fetch users' },
       { status: 500 }
@@ -79,7 +80,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(user, { status: 201 })
   } catch (error) {
-    console.error('Error creating user:', error)
+    logger.error('Error creating user:', error)
     return NextResponse.json(
       { error: 'Failed to create user' },
       { status: 500 }
@@ -154,7 +155,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(updatedUser)
   } catch (error) {
-    console.error('Error updating user:', error)
+    logger.error('Error updating user:', error)
     return NextResponse.json(
       { error: 'Failed to update user' },
       { status: 500 }
@@ -197,7 +198,7 @@ export async function DELETE(request: NextRequest) {
       { status: 200 }
     )
   } catch (error) {
-    console.error('Error deleting user:', error)
+    logger.error('Error deleting user:', error)
     return NextResponse.json(
       { error: 'Failed to delete user' },
       { status: 500 }

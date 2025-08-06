@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
@@ -71,7 +72,7 @@ const steps = [
 
 async function seedHomeOrderProcess() {
   try {
-    console.log('🌱 Seeding HomeOrderProcess steps...')
+    logger.log('🌱 Seeding HomeOrderProcess steps...')
 
     // Clear existing steps
     await prisma.homeOrderProcessStep.deleteMany({})
@@ -83,9 +84,9 @@ async function seedHomeOrderProcess() {
       })
     }
 
-    console.log('✅ HomeOrderProcess steps seeded successfully!')
+    logger.log('✅ HomeOrderProcess steps seeded successfully!')
   } catch (error) {
-    console.error('❌ Error seeding HomeOrderProcess steps:', error)
+    logger.error('❌ Error seeding HomeOrderProcess steps:', error)
   } finally {
     await prisma.$disconnect()
   }

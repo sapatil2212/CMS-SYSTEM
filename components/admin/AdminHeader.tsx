@@ -5,6 +5,7 @@ import { Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, MagnifyingGlassIcon, UserIcon } from '@heroicons/react/24/outline'
 import { useAuth } from '@/lib/auth-provider'
 import NotificationCenter from './NotificationCenter'
+import { logger } from '@/lib/logger'
 
 interface AdminHeaderProps {
   setSidebarOpen: (open: boolean) => void
@@ -17,7 +18,7 @@ export default function AdminHeader({ setSidebarOpen }: AdminHeaderProps) {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     // Implement search functionality
-    console.log('Searching for:', searchQuery)
+    logger.log('Searching for:', searchQuery)
   }
 
   return (

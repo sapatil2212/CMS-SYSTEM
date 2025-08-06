@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { deleteImageFromPublic } from '@/lib/image-utils'
+import { logger } from '@/lib/logger';
+import {  deleteImageFromPublic  } from '@/lib/image-utils';
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(slides)
   } catch (error) {
-    console.error('Error fetching hero slider:', error)
+    logger.error('Error fetching hero slider:', error)
     return NextResponse.json(
       { error: 'Failed to fetch hero slider' },
       { status: 500 }
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(slide)
   } catch (error) {
-    console.error('Error creating hero slide:', error)
+    logger.error('Error creating hero slide:', error)
     return NextResponse.json(
       { error: 'Failed to create hero slide' },
       { status: 500 }
@@ -88,7 +89,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(slide)
   } catch (error) {
-    console.error('Error updating hero slide:', error)
+    logger.error('Error updating hero slide:', error)
     return NextResponse.json(
       { error: 'Failed to update hero slide' },
       { status: 500 }
@@ -135,7 +136,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ message: 'Slide deleted successfully' })
   } catch (error) {
-    console.error('Error deleting hero slide:', error)
+    logger.error('Error deleting hero slide:', error)
     return NextResponse.json(
       { error: 'Failed to delete hero slide' },
       { status: 500 }

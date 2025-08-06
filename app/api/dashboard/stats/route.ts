@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   try {
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest) {
       recentActivity: combinedActivity,
     })
   } catch (error) {
-    console.error('Error fetching dashboard stats:', error)
+    logger.error('Error fetching dashboard stats:', error)
     return NextResponse.json(
       { error: 'Failed to fetch dashboard stats' },
       { status: 500 }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 // POST - Deactivate all offer popups
 export async function POST() {
@@ -15,7 +16,7 @@ export async function POST() {
 
     return NextResponse.json({ message: 'All offer popups deactivated successfully' })
   } catch (error) {
-    console.error('Error deactivating offer popups:', error)
+    logger.error('Error deactivating offer popups:', error)
     return NextResponse.json(
       { error: 'Failed to deactivate offer popups' },
       { status: 500 }

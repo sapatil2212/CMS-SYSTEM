@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('Visitor visit tracked!')
+    logger.log('Visitor visit tracked!')
     
     // Use a transaction to prevent race conditions
     const visitCount = await prisma.$transaction(async (tx) => {
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
       visitCount: visitCount.count
     })
   } catch (error) {
-    console.error('Error tracking visitor:', error)
+    logger.error('Error tracking visitor:', error)
     return NextResponse.json(
       { error: 'Failed to track visitor' },
       { status: 500 }
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    console.log('Fetching visitor count...')
+    logger.log('Fetching visitor count...')
     
     // Get the current visit count
     const visitData = await prisma.visitCount.findUnique({
@@ -57,13 +58,13 @@ export async function GET() {
 
     const totalVisits = visitData?.count || 0
     
-    console.log('Total visits:', totalVisits)
+    logger.log('Total visits:', totalVisits)
     
     return NextResponse.json({
       totalVisits
     })
   } catch (error) {
-    console.error('Error fetching visitor count:', error)
+    logger.error('Error fetching visitor count:', error)
     return NextResponse.json(
       { error: 'Failed to fetch visitor count' },
       { status: 500 }

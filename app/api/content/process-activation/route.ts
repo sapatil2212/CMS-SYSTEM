@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 // Add OPTIONS method for CORS
 export async function OPTIONS() {
@@ -15,7 +16,7 @@ export async function OPTIONS() {
 
 export async function GET() {
   try {
-    console.log('Process activation GET request received')
+    logger.log('Process activation GET request received')
     
     // Get all process content with their activation status
     const processes = await Promise.all([
@@ -105,10 +106,10 @@ export async function GET() {
       }))
     ])
 
-    console.log('Processes fetched successfully:', processes.length)
+    logger.log('Processes fetched successfully:', processes.length)
     return NextResponse.json(processes)
   } catch (error) {
-    console.error('Error fetching process activation status:', error)
+    logger.error('Error fetching process activation status:', error)
     return NextResponse.json(
       { error: 'Failed to fetch process activation status' },
       { status: 500 }
@@ -118,24 +119,24 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    console.log('Process activation PUT request received')
-    console.log('Request method:', request.method)
-    console.log('Request URL:', request.url)
+    logger.log('Process activation PUT request received')
+    logger.log('Request method:', request.method)
+    logger.log('Request URL:', request.url)
     
     const body = await request.json()
-    console.log('Request body:', body)
+    logger.log('Request body:', body)
     
     const { processSlug, isMenuActive } = body
 
     if (!processSlug || typeof isMenuActive !== 'boolean') {
-      console.error('Invalid request data:', { processSlug, isMenuActive })
+      logger.error('Invalid request data:', { processSlug, isMenuActive })
       return NextResponse.json(
         { error: 'Invalid request data' },
         { status: 400 }
       )
     }
 
-    console.log('Processing request for:', processSlug, 'isMenuActive:', isMenuActive)
+    logger.log('Processing request for:', processSlug, 'isMenuActive:', isMenuActive)
 
     // Map process slugs to their respective Prisma models
     const processModelMap: { [key: string]: any } = {
@@ -155,14 +156,14 @@ export async function PUT(request: NextRequest) {
 
     const model = processModelMap[processSlug]
     if (!model) {
-      console.error('Invalid process slug:', processSlug)
+      logger.error('Invalid process slug:', processSlug)
       return NextResponse.json(
         { error: 'Invalid process slug' },
         { status: 400 }
       )
     }
 
-    console.log('Found model for process:', processSlug)
+    logger.log('Found model for process:', processSlug)
 
     // Update the first record (there should only be one per process)
     const updatedProcess = await model.updateMany({
@@ -170,10 +171,10 @@ export async function PUT(request: NextRequest) {
       data: { isMenuActive }
     })
 
-    console.log('Process updated successfully:', updatedProcess)
+    logger.log('Process updated successfully:', updatedProcess)
     return NextResponse.json({ success: true, updatedProcess })
   } catch (error) {
-    console.error('Error updating process activation status:', error)
+    logger.error('Error updating process activation status:', error)
     return NextResponse.json(
       { error: 'Failed to update process activation status' },
       { status: 500 }
@@ -184,24 +185,24 @@ export async function PUT(request: NextRequest) {
 // Add POST method as fallback for debugging
 export async function POST(request: NextRequest) {
   try {
-    console.log('Process activation POST request received (fallback)')
-    console.log('Request method:', request.method)
-    console.log('Request URL:', request.url)
+    logger.log('Process activation POST request received (fallback)')
+    logger.log('Request method:', request.method)
+    logger.log('Request URL:', request.url)
     
     const body = await request.json()
-    console.log('Request body:', body)
+    logger.log('Request body:', body)
     
     const { processSlug, isMenuActive } = body
 
     if (!processSlug || typeof isMenuActive !== 'boolean') {
-      console.error('Invalid request data:', { processSlug, isMenuActive })
+      logger.error('Invalid request data:', { processSlug, isMenuActive })
       return NextResponse.json(
         { error: 'Invalid request data' },
         { status: 400 }
       )
     }
 
-    console.log('Processing request for:', processSlug, 'isMenuActive:', isMenuActive)
+    logger.log('Processing request for:', processSlug, 'isMenuActive:', isMenuActive)
 
     // Map process slugs to their respective Prisma models
     const processModelMap: { [key: string]: any } = {
@@ -221,14 +222,14 @@ export async function POST(request: NextRequest) {
 
     const model = processModelMap[processSlug]
     if (!model) {
-      console.error('Invalid process slug:', processSlug)
+      logger.error('Invalid process slug:', processSlug)
       return NextResponse.json(
         { error: 'Invalid process slug' },
         { status: 400 }
       )
     }
 
-    console.log('Found model for process:', processSlug)
+    logger.log('Found model for process:', processSlug)
 
     // Update the first record (there should only be one per process)
     const updatedProcess = await model.updateMany({
@@ -236,10 +237,10 @@ export async function POST(request: NextRequest) {
       data: { isMenuActive }
     })
 
-    console.log('Process updated successfully:', updatedProcess)
+    logger.log('Process updated successfully:', updatedProcess)
     return NextResponse.json({ success: true, updatedProcess })
   } catch (error) {
-    console.error('Error updating process activation status:', error)
+    logger.error('Error updating process activation status:', error)
     return NextResponse.json(
       { error: 'Failed to update process activation status' },
       { status: 500 }

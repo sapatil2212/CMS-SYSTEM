@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
-import { existsSync } from 'fs'
+import { logger } from '@/lib/logger';
+import {  existsSync  } from 'fs';
 
 export async function POST(request: NextRequest) {
   try {
@@ -57,7 +58,7 @@ export async function POST(request: NextRequest) {
       filename: fileName
     })
   } catch (error) {
-    console.error('Upload error:', error)
+    logger.error('Upload error:', error)
     return NextResponse.json(
       { error: 'Failed to upload file' },
       { status: 500 }

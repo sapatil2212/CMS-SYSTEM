@@ -9,11 +9,6 @@ const nextConfig = {
     unoptimized: true
   },
   
-  // Ensure API routes work
-  experimental: {
-    appDir: true
-  },
-  
   // Production optimizations
   compress: true,
   

@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🔧 Fixing header menu items via API...')
+    logger.log('🔧 Fixing header menu items via API...')
 
     // Check if menu items already exist
     const existingMenuItems = await prisma.headerMenuItem.findFirst()
 
     if (!existingMenuItems) {
-      console.log('📝 Creating header menu items...')
+      logger.log('📝 Creating header menu items...')
       
       // Create default menu items
       const menuItems = [
@@ -131,23 +132,23 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      console.log('✅ Header menu items created successfully')
+      logger.log('✅ Header menu items created successfully')
     } else {
-      console.log('ℹ️ Header menu items already exist')
+      logger.log('ℹ️ Header menu items already exist')
       
       // Check if all menu items are active
       const allMenuItems = await prisma.headerMenuItem.findMany()
       const inactiveItems = allMenuItems.filter(item => !item.isActive)
       
       if (inactiveItems.length > 0) {
-        console.log('🔧 Activating inactive menu items...')
+        logger.log('🔧 Activating inactive menu items...')
         for (const item of inactiveItems) {
           await prisma.headerMenuItem.update({
             where: { id: item.id },
             data: { isActive: true }
           })
         }
-        console.log(`✅ Activated ${inactiveItems.length} menu items`)
+        logger.log(`✅ Activated ${inactiveItems.length} menu items`)
       }
     }
 
@@ -157,9 +158,9 @@ export async function POST(request: NextRequest) {
       where: { isActive: true }
     })
     
-    console.log(`📊 Menu items summary:`)
-    console.log(`   - Total menu items: ${menuItemsCount}`)
-    console.log(`   - Active menu items: ${activeMenuItemsCount}`)
+    logger.log(`📊 Menu items summary:`)
+    logger.log(`   - Total menu items: ${menuItemsCount}`)
+    logger.log(`   - Active menu items: ${activeMenuItemsCount}`)
 
     return NextResponse.json({
       success: true,
@@ -170,7 +171,7 @@ export async function POST(request: NextRequest) {
       }
     })
   } catch (error) {
-    console.error('❌ Error fixing header menu items:', error)
+    logger.error('❌ Error fixing header menu items:', error)
     return NextResponse.json(
       { 
         error: 'Failed to fix header menu items',

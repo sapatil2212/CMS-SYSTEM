@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/lib/auth-provider'
 import { useRouter } from 'next/navigation'
+import { logger } from '@/lib/logger';
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import AdminHeader from '@/components/admin/AdminHeader'
 import { Plus, Edit, Trash2, Eye, EyeOff, Upload, X, Save, Star, Loader2 } from 'lucide-react'
@@ -13,7 +14,7 @@ import ConfirmationModal from '@/components/admin/ConfirmationModal'
 import SuccessModal from '@/components/admin/SuccessModal'
 import ProfessionalLoader from '@/components/ui/ProfessionalLoader'
 import { useConfirmationModal } from '@/hooks/useConfirmationModal'
-import toast from 'react-hot-toast'
+import toast from 'react-hot-toast';
 
 
 
@@ -129,7 +130,7 @@ export default function HomeContentPage() {
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  console.log('HomeContentPage rendered:', { user, loading })
+  logger.log('HomeContentPage rendered:', { user, loading })
   const { modalState, showConfirmation, hideConfirmation, handleConfirm } = useConfirmationModal()
 
   const showSuccessModal = (message: string) => {
@@ -213,7 +214,7 @@ export default function HomeContentPage() {
     const imageInput = document.querySelector('input[name="image"]') as HTMLInputElement
     if (imageInput && uploadedImageUrl) {
       imageInput.value = uploadedImageUrl
-      console.log('useEffect: Updated hidden input value to:', uploadedImageUrl)
+      logger.log('useEffect: Updated hidden input value to:', uploadedImageUrl)
     }
   }, [uploadedImageUrl])
 
@@ -226,10 +227,10 @@ export default function HomeContentPage() {
 
 
   useEffect(() => {
-    console.log('Home page auth check:', { user, loading })
+    logger.log('Home page auth check:', { user, loading })
     // Temporarily comment out auth redirect to test navigation
     // if (!loading && !user) {
-    //   console.log('Redirecting to login from home page')
+    //   logger.log('Redirecting to login from home page')
     //   router.push('/login')
     // }
   }, [user, loading, router])
@@ -255,7 +256,7 @@ export default function HomeContentPage() {
         setHomeAboutData(data)
       }
     } catch (error) {
-      console.error('Failed to fetch home about data:', error)
+      logger.error('Failed to fetch home about data:', error)
     }
   }
 
@@ -291,7 +292,7 @@ export default function HomeContentPage() {
         setProcesses(data)
       }
     } catch (error) {
-      console.error('Failed to fetch processes:', error)
+      logger.error('Failed to fetch processes:', error)
     }
   }
 
@@ -310,7 +311,7 @@ export default function HomeContentPage() {
       currentImageValue = editingProcess.image
     }
     
-    console.log('Process submission data:', {
+    logger.log('Process submission data:', {
       uploadedImageUrl,
       imageInputValue: imageInput?.value,
       formDataImage: formDataObj.get('image'),
@@ -345,7 +346,7 @@ export default function HomeContentPage() {
 
       if (response.ok) {
         const result = await response.json()
-        console.log('Process saved successfully:', result)
+        logger.log('Process saved successfully:', result)
         
         setIsProcessModalOpen(false)
         setEditingProcess(null)
@@ -363,7 +364,7 @@ export default function HomeContentPage() {
         showSuccessModal(editingProcess ? 'Process updated successfully!' : 'Process created successfully!')
       } else {
         const errorData = await response.json()
-        console.error('Failed to save process:', errorData)
+        logger.error('Failed to save process:', errorData)
         toast.error(errorData.error || 'Failed to save process')
       }
     } catch (error) {
@@ -454,7 +455,7 @@ export default function HomeContentPage() {
         setSlides(data)
       }
     } catch (error) {
-      console.error('Failed to fetch slides:', error)
+      logger.error('Failed to fetch slides:', error)
     }
   }
 
@@ -496,11 +497,11 @@ export default function HomeContentPage() {
         showSuccessModal(editingSlide ? 'Slide updated successfully!' : 'Slide created successfully!')
       } else {
         const errorData = await response.json()
-        console.error('Failed to save slide:', errorData)
+        logger.error('Failed to save slide:', errorData)
         toast.error('Failed to save slide')
       }
     } catch (error) {
-      console.error('Failed to save slide:', error)
+      logger.error('Failed to save slide:', error)
       toast.error('Error saving slide')
     } finally {
       setIsLoading(false)
@@ -534,7 +535,7 @@ export default function HomeContentPage() {
             toast.error('Failed to delete slide')
           }
         } catch (error) {
-          console.error('Failed to delete slide:', error)
+          logger.error('Failed to delete slide:', error)
           toast.error('Error deleting slide')
         }
       },
@@ -561,7 +562,7 @@ export default function HomeContentPage() {
         toast.error('Failed to update slide status')
       }
     } catch (error) {
-      console.error('Failed to toggle slide status:', error)
+      logger.error('Failed to toggle slide status:', error)
       toast.error('Error updating slide status')
     }
   }
@@ -574,7 +575,7 @@ export default function HomeContentPage() {
         setOrderSteps(data)
       }
     } catch (error) {
-      console.error('Failed to fetch order process steps:', error)
+      logger.error('Failed to fetch order process steps:', error)
     }
   }
 
@@ -699,7 +700,7 @@ export default function HomeContentPage() {
         setWhyChooseUsFeatures(featuresData)
       }
     } catch (error) {
-      console.error('Failed to fetch why choose us data:', error)
+      logger.error('Failed to fetch why choose us data:', error)
     }
   }
 
@@ -840,7 +841,7 @@ export default function HomeContentPage() {
         setGalleryImages(imagesData)
       }
     } catch (error) {
-      console.error('Failed to fetch gallery data:', error)
+      logger.error('Failed to fetch gallery data:', error)
     }
   }
 
@@ -990,7 +991,7 @@ export default function HomeContentPage() {
         setTestimonials(testimonialsData)
       }
     } catch (error) {
-      console.error('Failed to fetch testimonial data:', error)
+      logger.error('Failed to fetch testimonial data:', error)
     }
   }
 
@@ -2860,20 +2861,20 @@ export default function HomeContentPage() {
                         <div className="flex items-center justify-center">
                           <ProcessImageUpload
                             onChange={(url) => {
-                              console.log('Image upload callback triggered with URL:', url)
+                              logger.log('Image upload callback triggered with URL:', url)
                               
                               // Update the form value
                               const imageInput = document.querySelector('input[name="image"]') as HTMLInputElement
                               if (imageInput) {
                                 imageInput.value = url
-                                console.log('Updated hidden input value to:', url)
+                                logger.log('Updated hidden input value to:', url)
                               } else {
-                                console.warn('Image input not found')
+                                logger.warn('Image input not found')
                               }
                               
                               // Update the state
                               setUploadedImageUrl(url)
-                              console.log('Updated uploadedImageUrl state to:', url)
+                              logger.log('Updated uploadedImageUrl state to:', url)
                               
                               // Show success message
                               showSuccessModal('Image uploaded successfully!')

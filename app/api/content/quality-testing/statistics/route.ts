@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';;
 
 export async function GET() {
   try {
@@ -9,7 +10,7 @@ export async function GET() {
     });
     return NextResponse.json(statistics);
   } catch (error) {
-    console.error('Error fetching statistics:', error);
+    logger.error('Error fetching statistics:', error);
     return NextResponse.json(
       { error: 'Failed to fetch statistics' },
       { status: 500 }
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(statistic);
   } catch (error) {
-    console.error('Error creating statistic:', error);
+    logger.error('Error creating statistic:', error);
     return NextResponse.json(
       { error: 'Failed to create statistic' },
       { status: 500 }

@@ -1,9 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 export async function seedCarbonSteelContent() {
-  console.log('🔶 Seeding Carbon Steel content...')
+  logger.log('🔶 Seeding Carbon Steel content...')
 
   try {
     // Clear existing content
@@ -15,7 +16,7 @@ export async function seedCarbonSteelContent() {
         heroTitle: "High-Performance Carbon Steel Plating Solutions",
         heroSubtitle: "Strength, Durability & Cost-Effectiveness",
         heroDescription: "Enhanced protection and performance for industrial applications requiring superior mechanical properties",
-        heroImage: "/uploads/carbon-steel/hero-carbon-steel.jpg",
+        heroImage: "/uploads/carbon-steel/hero-carbon-steel-plating.svg",
         whatIsTitle: "What is Carbon Steel Plating?",
         whatIsDescription: "Carbon steel plating involves applying protective coatings to carbon steel substrates to enhance corrosion resistance, wear resistance, and aesthetic appeal. This process extends the life of carbon steel components while maintaining their exceptional strength and cost-effectiveness.",
         whatIsImage: "/uploads/carbon-steel/carbon-process.jpg",
@@ -195,10 +196,10 @@ export async function seedCarbonSteelContent() {
       }
     })
 
-    console.log('✅ Carbon Steel content seeded successfully')
+    logger.log('✅ Carbon Steel content seeded successfully')
     return carbonSteelContent
   } catch (error) {
-    console.error('❌ Error seeding carbon steel content:', error)
+    logger.error('❌ Error seeding carbon steel content:', error)
     throw error
   }
 }

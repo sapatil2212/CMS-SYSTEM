@@ -1,9 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 export async function seedCopperContent() {
-  console.log('🔶 Seeding Copper content...')
+  logger.log('🔶 Seeding Copper content...')
 
   try {
     // Clear existing content
@@ -15,7 +16,7 @@ export async function seedCopperContent() {
         heroTitle: "Premium Copper Plating Services for Superior Conductivity",
         heroSubtitle: "Excellence in Electrical & Thermal Performance",
         heroDescription: "Exceptional conductivity, antimicrobial properties, and superior finish quality for critical applications",
-        heroImage: "/uploads/copper/hero-copper-plating.jpg",
+        heroImage: "/uploads/copper/hero-copper-plating.svg",
         whatIsTitle: "What is Copper Plating?",
         whatIsDescription: "Copper plating is an electrochemical process that deposits a layer of copper onto various substrate materials. Known for its excellent electrical and thermal conductivity, copper plating is essential in electronics, telecommunications, and power applications where performance and reliability are critical.",
         whatIsImage: "/uploads/copper/copper-process.jpg",
@@ -195,10 +196,10 @@ export async function seedCopperContent() {
       }
     })
 
-    console.log('✅ Copper content seeded successfully')
+    logger.log('✅ Copper content seeded successfully')
     return copperContent
   } catch (error) {
-    console.error('❌ Error seeding copper content:', error)
+    logger.error('❌ Error seeding copper content:', error)
     throw error
   }
 }

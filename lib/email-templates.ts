@@ -1,5 +1,6 @@
 // Import React Email templates
-import { renderAdminNotificationEmail, renderUserConfirmationEmail, type EmailData } from './react-email-templates';
+import { logger } from '@/lib/logger';
+import {  renderAdminNotificationEmail, renderUserConfirmationEmail, type EmailData  } from './react-email-templates';;
 
 /**
  * @deprecated Use renderAdminNotificationEmail from './react-email-templates' instead
@@ -9,7 +10,7 @@ export const createAdminEmailTemplate = async (data: EmailData): Promise<string>
   try {
     return await renderAdminNotificationEmail(data);
   } catch (error) {
-    console.warn('React Email failed, falling back to legacy template:', error);
+    logger.warn('React Email failed, falling back to legacy template:', error);
     // Fallback to original template
     return `
     <!DOCTYPE html>
@@ -204,7 +205,7 @@ export const createUserEmailTemplate = async (data: EmailData): Promise<string> 
   try {
     return await renderUserConfirmationEmail(data);
   } catch (error) {
-    console.warn('React Email failed, falling back to legacy template:', error);
+    logger.warn('React Email failed, falling back to legacy template:', error);
     // Fallback to original template
     return `
     <!DOCTYPE html>

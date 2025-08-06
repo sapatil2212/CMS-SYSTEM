@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CldUploadWidget } from 'next-cloudinary';
+import { logger } from '@/lib/logger';
+import {  CldUploadWidget  } from 'next-cloudinary';;
 
 interface CloudinaryUploadProps {
   onUpload: (url: string) => void;
@@ -52,7 +53,7 @@ export const CloudinaryUpload: React.FC<CloudinaryUploadProps> = ({
         }}
         onError={(error: any) => {
           setIsUploading(false);
-          console.error('Upload error:', error);
+          logger.error('Upload error:', error);
           onUploadError?.(error.message || 'Upload failed');
         }}
       >

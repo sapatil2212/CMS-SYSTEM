@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Sparkles, RefreshCw } from "lucide-react";
+import { logger } from '@/lib/logger';
 
 interface GalleryImage {
   id: string
@@ -90,7 +91,7 @@ const HomeGallery: React.FC = () => {
         setGalleryContent(contentData);
       }
     } catch (error) {
-      console.error('Failed to fetch gallery data:', error);
+      logger.error('Failed to fetch gallery data:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);

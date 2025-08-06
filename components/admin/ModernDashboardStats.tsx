@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import CountUp from 'react-countup'
+import { logger } from '@/lib/logger';
+import CountUp from 'react-countup';
 import { 
   Users, 
   Globe, 
@@ -55,7 +56,7 @@ export default function ModernDashboardStats() {
 
   const fetchStats = async () => {
     try {
-      console.log('Dashboard: Fetching enhanced stats...')
+      logger.log('Dashboard: Fetching enhanced stats...')
       
       // Fetch all stats in parallel including new ones
       const [visitsResponse, baseMetalsResponse, processesResponse, sectorsResponse] = await Promise.all([
@@ -82,7 +83,7 @@ export default function ModernDashboardStats() {
       const processesData = processesResponse.ok && 'json' in processesResponse ? await processesResponse.json() : { count: 0 }
       const sectorsData = sectorsResponse.ok && 'json' in sectorsResponse ? await sectorsResponse.json() : { count: 0 }
 
-      console.log('Dashboard: Received enhanced stats:', { visitsData, baseMetalsData, processesData, sectorsData })
+      logger.log('Dashboard: Received enhanced stats:', { visitsData, baseMetalsData, processesData, sectorsData })
       
       setStats({
         totalVisits: visitsData.totalVisits || 0,
@@ -93,7 +94,7 @@ export default function ModernDashboardStats() {
         contentCount: Math.floor(Math.random() * 100) + 50 // Simulated for demo
       })
     } catch (error) {
-      console.error('Dashboard: Failed to fetch stats:', error)
+      logger.error('Dashboard: Failed to fetch stats:', error)
       setStats({
         totalVisits: 0,
         baseMetalsCount: 0,
@@ -124,12 +125,12 @@ export default function ModernDashboardStats() {
           ...prevStats,
           totalVisits: 0
         }))
-        console.log('Visit count reset successfully')
+        logger.log('Visit count reset successfully')
       } else {
-        console.error('Failed to reset visit count')
+        logger.error('Failed to reset visit count')
       }
     } catch (error) {
-      console.error('Error resetting visit count:', error)
+      logger.error('Error resetting visit count:', error)
     } finally {
       setResetting(false)
     }

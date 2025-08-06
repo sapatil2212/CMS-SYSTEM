@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 // Add OPTIONS method for CORS
 export async function OPTIONS() {
@@ -40,7 +41,7 @@ export async function GET() {
     
     return NextResponse.json(services)
   } catch (error) {
-    console.error('Error fetching footer services:', error)
+    logger.error('Error fetching footer services:', error)
     return NextResponse.json(
       { error: 'Failed to fetch footer services' },
       { status: 500 }
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json(service)
   } catch (error) {
-    console.error('Error creating footer service:', error)
+    logger.error('Error creating footer service:', error)
     return NextResponse.json(
       { error: 'Failed to create footer service' },
       { status: 500 }
@@ -86,7 +87,7 @@ export async function PUT(request: NextRequest) {
     
     return NextResponse.json(service)
   } catch (error) {
-    console.error('Error updating footer service:', error)
+    logger.error('Error updating footer service:', error)
     return NextResponse.json(
       { error: 'Failed to update footer service' },
       { status: 500 }
@@ -112,7 +113,7 @@ export async function DELETE(request: NextRequest) {
     
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting footer service:', error)
+    logger.error('Error deleting footer service:', error)
     return NextResponse.json(
       { error: 'Failed to delete footer service' },
       { status: 500 }

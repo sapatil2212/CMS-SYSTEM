@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import nodemailer from 'nodemailer'
+import { logger } from '@/lib/logger';
+import nodemailer from 'nodemailer';
 
 // Clean up expired OTPs from database periodically
 setInterval(async () => {
@@ -13,7 +14,7 @@ setInterval(async () => {
       }
     })
   } catch (error) {
-    console.error('Error cleaning up expired OTPs:', error)
+    logger.error('Error cleaning up expired OTPs:', error)
   }
 }, 60000) // Check every minute
 
@@ -81,7 +82,7 @@ export async function POST(request: NextRequest) {
         type: 'ACCOUNT_DELETION'
       }
     })
-    console.log('OTP stored in database for user:', userId, 'OTP:', otp, 'Expires at:', expiresAt)
+    logger.log('OTP stored in database for user:', userId, 'OTP:', otp, 'Expires at:', expiresAt)
 
     // Email template
     const emailHtml = `
@@ -197,7 +198,7 @@ export async function POST(request: NextRequest) {
 
     // Check if email credentials are configured
     if (!hasEmailCredentials) {
-      console.log('Email credentials not configured. OTP for testing:', otp)
+      logger.log('Email credentials not configured. OTP for testing:', otp)
       return NextResponse.json({
         message: 'OTP generated successfully (email not sent - credentials not configured)',
         expiresIn: '10 minutes',
@@ -206,7 +207,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Log email configuration for debugging
-    console.log('Email configuration:', {
+    logger.log('Email configuration:', {
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
       user: process.env.EMAIL_USERNAME || process.env.EMAIL_USER,
@@ -222,14 +223,14 @@ export async function POST(request: NextRequest) {
         html: emailHtml
       })
       
-      console.log('Email sent successfully to:', user.email)
+      logger.log('Email sent successfully to:', user.email)
       
       return NextResponse.json({
         message: 'OTP sent successfully',
         expiresIn: '10 minutes'
       })
     } catch (emailError) {
-      console.error('Email sending failed:', emailError)
+      logger.error('Email sending failed:', emailError)
       return NextResponse.json({
         message: 'OTP generated but email failed to send',
         expiresIn: '10 minutes',
@@ -239,7 +240,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Error sending OTP:', error)
+    logger.error('Error sending OTP:', error)
     return NextResponse.json(
       { error: 'Failed to send OTP' },
       { status: 500 }
@@ -274,7 +275,7 @@ export async function PUT(request: NextRequest) {
       }
     })
     
-    console.log('OTP Verification Debug:', {
+    logger.log('OTP Verification Debug:', {
       userId,
       providedOTP: otp,
       storedOTP: storedOTP ? storedOTP.otp : 'NOT_FOUND',
@@ -291,7 +292,7 @@ export async function PUT(request: NextRequest) {
 
     // Verify OTP
     if (storedOTP.otp !== otp) {
-      console.log('OTP mismatch for user:', userId, 'Expected:', storedOTP.otp, 'Received:', otp)
+      logger.log('OTP mismatch for user:', userId, 'Expected:', storedOTP.otp, 'Received:', otp)
       return NextResponse.json(
         { error: 'Invalid OTP' },
         { status: 400 }
@@ -311,7 +312,7 @@ export async function PUT(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error verifying OTP:', error)
+    logger.error('Error verifying OTP:', error)
     return NextResponse.json(
       { error: 'Failed to verify OTP' },
       { status: 500 }

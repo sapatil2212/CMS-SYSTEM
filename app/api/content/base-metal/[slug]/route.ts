@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
@@ -87,7 +88,7 @@ export async function GET(
 
     return NextResponse.json(defaultContent)
   } catch (error) {
-    console.error(`Error fetching ${params.slug} content:`, error)
+    logger.error(`Error fetching ${params.slug} content:`, error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -116,7 +117,7 @@ export async function POST(
       create: { slug, content: body }
     })
 
-    console.log(`Content saved successfully for ${slug}`)
+    logger.log(`Content saved successfully for ${slug}`)
 
     return NextResponse.json({
       message: 'Content saved successfully',
@@ -126,7 +127,7 @@ export async function POST(
     })
 
   } catch (error) {
-    console.error(`Error saving ${params.slug} content:`, error)
+    logger.error(`Error saving ${params.slug} content:`, error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 } 

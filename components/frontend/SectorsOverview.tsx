@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { FiArrowRight, FiMail, FiChevronDown, FiChevronUp } from 'react-icons/fi';
-import { useRouter } from 'next/navigation';
+import { logger } from '@/lib/logger';
+import {  useRouter  } from 'next/navigation';;
 
 interface Sector {
   id: string;
@@ -69,7 +70,7 @@ const Sectors = () => {
         throw new Error('Failed to fetch data');
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      logger.error('Error fetching data:', error);
       setError('Failed to load sectors data. Please try again later.');
     } finally {
       setLoading(false);

@@ -13,7 +13,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'ALKALYNE - Advancing Eco-Conscious Technologies',
+  title: 'High-Precision Metal Plating & Finishing Services | Alkalyne Metal Plating Services in Nashik',
   description: 'Leading provider of advanced plating and surface treatment solutions for eco-conscious manufacturing',
 }
 
@@ -24,6 +24,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.variable}>
+      <head>
+        {/* Google Fonts */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+        
+        {/* Favicon */}
+        <link rel="icon" type="image/svg+xml" href="/assets/svg.png" />
+      </head>
       <body className={`${inter.className} font-sans antialiased`}>
         <AuthProvider>
           <VisitorTracker />

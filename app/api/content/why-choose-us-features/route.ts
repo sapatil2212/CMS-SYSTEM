@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 
 
@@ -13,7 +14,7 @@ export async function GET() {
     
     return NextResponse.json(features)
   } catch (error) {
-    console.error('Error fetching why choose us features:', error)
+    logger.error('Error fetching why choose us features:', error)
     return NextResponse.json(
       { error: 'Failed to fetch why choose us features' },
       { status: 500 }
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error creating why choose us feature:', error)
+    logger.error('Error creating why choose us feature:', error)
     return NextResponse.json(
       { error: 'Failed to create why choose us feature' },
       { status: 500 }
@@ -68,7 +69,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error updating why choose us feature:', error)
+    logger.error('Error updating why choose us feature:', error)
     return NextResponse.json(
       { error: 'Failed to update why choose us feature' },
       { status: 500 }
@@ -94,7 +95,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting why choose us feature:', error)
+    logger.error('Error deleting why choose us feature:', error)
     return NextResponse.json(
       { error: 'Failed to delete why choose us feature' },
       { status: 500 }

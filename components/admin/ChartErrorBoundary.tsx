@@ -1,7 +1,8 @@
 'use client'
 
 import { Component, ReactNode, ErrorInfo } from 'react'
-import { AlertTriangle } from 'lucide-react'
+import { logger } from '@/lib/logger';
+import {  AlertTriangle  } from 'lucide-react';
 
 interface Props {
   children: ReactNode
@@ -24,7 +25,7 @@ export default class ChartErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Chart Error Boundary caught an error:', error, errorInfo)
+    logger.error('Chart Error Boundary caught an error:', error, errorInfo)
     
     if (this.props.onError) {
       this.props.onError(error, errorInfo)

@@ -1,9 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 export default async function seedGallery() {
-  console.log('🌱 Seeding gallery content and images...')
+  logger.log('🌱 Seeding gallery content and images...')
 
   // Seed content
   const content = {
@@ -19,7 +20,7 @@ export default async function seedGallery() {
   await prisma.galleryContent.create({
     data: content
   })
-  console.log('✅ Created gallery content')
+  logger.log('✅ Created gallery content')
 
   // Seed images
   const images = [
@@ -68,8 +69,8 @@ export default async function seedGallery() {
     await prisma.galleryImage.create({
       data: image
     })
-    console.log(`✅ Created gallery image: ${image.title}`)
+    logger.log(`✅ Created gallery image: ${image.title}`)
   }
 
-  console.log('🎉 All gallery content and images seeded successfully!')
+  logger.log('🎉 All gallery content and images seeded successfully!')
 } 

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 
 export const dynamic = 'force-dynamic'
 
@@ -115,7 +116,7 @@ export async function PUT(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error updating profile:', error)
+    logger.error('Error updating profile:', error)
     return NextResponse.json(
       { error: 'Failed to update profile' },
       { status: 500 }
@@ -169,7 +170,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error getting profile:', error)
+    logger.error('Error getting profile:', error)
     return NextResponse.json(
       { error: 'Failed to get profile' },
       { status: 500 }

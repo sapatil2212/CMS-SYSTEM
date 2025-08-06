@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { createAPIHandler } from '@/lib/api-validation'
+import { logger } from '@/lib/logger';
+import {  createAPIHandler  } from '@/lib/api-validation';
 
 // GET all sectors (only active ones for admin dashboard)
 const getSectors = async (request: NextRequest) => {
@@ -16,7 +17,7 @@ const getSectors = async (request: NextRequest) => {
 
     return NextResponse.json(sectors)
   } catch (error) {
-    console.error('Error fetching sectors:', error)
+    logger.error('Error fetching sectors:', error)
     return NextResponse.json(
       { error: 'Failed to fetch sectors' },
       { status: 500 }
@@ -57,7 +58,7 @@ const createSector = async (request: NextRequest) => {
 
     return NextResponse.json(sector, { status: 201 })
   } catch (error) {
-    console.error('Error creating sector:', error)
+    logger.error('Error creating sector:', error)
     return NextResponse.json(
       { error: 'Failed to create sector' },
       { status: 500 }

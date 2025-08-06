@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Upload, X, Image as ImageIcon } from 'lucide-react'
+import { logger } from '@/lib/logger';
+import {  Upload, X, Image as ImageIcon  } from 'lucide-react';
 
 interface ProcessImageUploadProps {
   onChange: (url: string) => void
@@ -48,10 +49,10 @@ export default function ProcessImageUpload({
       }
 
       const data = await response.json()
-      console.log('Image uploaded successfully:', data)
+      logger.log('Image uploaded successfully:', data)
       onChange(data.url)
     } catch (err) {
-      console.error('Image upload failed:', err)
+      logger.error('Image upload failed:', err)
       setError(err instanceof Error ? err.message : 'Upload failed')
     } finally {
       setIsUploading(false)

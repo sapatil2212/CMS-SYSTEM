@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import nodemailer from 'nodemailer'
+import { logger } from '@/lib/logger';
+import nodemailer from 'nodemailer';
 
 // Generate 6-digit OTP
 function generateOTP(): string {
@@ -166,7 +167,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error sending forgot password OTP:', error)
+    logger.error('Error sending forgot password OTP:', error)
     return NextResponse.json(
       { error: 'Failed to send OTP' },
       { status: 500 }

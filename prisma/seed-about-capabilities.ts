@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
@@ -49,7 +50,7 @@ const capabilities = [
 
 async function seedAboutCapabilities() {
   try {
-    console.log('🌱 Seeding About capabilities...')
+    logger.log('🌱 Seeding About capabilities...')
 
     // Clear existing capabilities
     await prisma.aboutCapability.deleteMany({})
@@ -61,9 +62,9 @@ async function seedAboutCapabilities() {
       })
     }
 
-    console.log('✅ About capabilities seeded successfully!')
+    logger.log('✅ About capabilities seeded successfully!')
   } catch (error) {
-    console.error('❌ Error seeding About capabilities:', error)
+    logger.error('❌ Error seeding About capabilities:', error)
   } finally {
     await prisma.$disconnect()
   }

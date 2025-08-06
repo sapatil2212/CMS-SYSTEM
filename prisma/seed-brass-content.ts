@@ -1,9 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 export async function seedBrassContent() {
-  console.log('🔶 Seeding Brass content...')
+  logger.log('🔶 Seeding Brass content...')
 
   try {
     // Clear existing content
@@ -15,7 +16,7 @@ export async function seedBrassContent() {
         heroTitle: "Professional Brass Plating for Decorative & Functional Excellence",
         heroSubtitle: "Beauty Meets Performance",
         heroDescription: "Combining aesthetic appeal with corrosion resistance and antimicrobial properties for diverse applications",
-        heroImage: "/uploads/brass/hero-brass-plating.jpg",
+        heroImage: "/uploads/brass/hero-brass-plating.svg",
         whatIsTitle: "What is Brass Plating?",
         whatIsDescription: "Brass plating involves depositing a brass alloy layer (copper-zinc) onto various substrates. This process combines the electrical conductivity of copper with the corrosion resistance of zinc, creating an attractive golden finish that's both functional and decorative.",
         whatIsImage: "/uploads/brass/brass-process.jpg",
@@ -195,10 +196,10 @@ export async function seedBrassContent() {
       }
     })
 
-    console.log('✅ Brass content seeded successfully')
+    logger.log('✅ Brass content seeded successfully')
     return brassContent
   } catch (error) {
-    console.error('❌ Error seeding brass content:', error)
+    logger.error('❌ Error seeding brass content:', error)
     throw error
   }
 }

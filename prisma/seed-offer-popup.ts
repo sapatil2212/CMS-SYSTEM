@@ -1,9 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Seeding offer popup...')
+  logger.log('🌱 Seeding offer popup...')
 
   // Create a sample offer popup
   const offerPopup = await prisma.offerPopup.create({
@@ -17,12 +18,12 @@ async function main() {
     }
   })
 
-  console.log('✅ Offer popup seeded successfully:', offerPopup)
+  logger.log('✅ Offer popup seeded successfully:', offerPopup)
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding offer popup:', e)
+    logger.error('❌ Error seeding offer popup:', e)
     process.exit(1)
   })
   .finally(async () => {

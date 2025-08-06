@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { promises as fs } from 'fs'
-import path from 'path'
+import { logger } from '@/lib/logger';
+import path from 'path';
 
 export async function GET(
   request: NextRequest,
@@ -39,7 +40,7 @@ export async function GET(
       },
     })
   } catch (error) {
-    console.error('Error serving file:', error)
+    logger.error('Error serving file:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

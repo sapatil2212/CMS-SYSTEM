@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { XMarkIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
+import { logger } from '@/lib/logger';
+import {  XMarkIcon, ArrowRightIcon  } from '@heroicons/react/24/outline';
 
 interface OfferPopupData {
   id: string
@@ -40,7 +41,7 @@ export default function OfferPopup() {
         }
       }
     } catch (error) {
-      console.error('Error fetching offer popup:', error)
+      logger.error('Error fetching offer popup:', error)
     } finally {
       setIsLoading(false)
     }

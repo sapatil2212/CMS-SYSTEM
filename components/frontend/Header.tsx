@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '@/lib/auth-provider'
 import { Menu, X, Phone, ChevronDown, LogOut } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { logger } from '@/lib/logger';
 
 interface BaseMetal {
   slug: string
@@ -102,7 +103,7 @@ export default function Header() {
         setHeaderSettings(data)
       }
     } catch (error) {
-      console.error('Error fetching header settings:', error)
+      logger.error('Error fetching header settings:', error)
     }
   }
 
@@ -114,7 +115,7 @@ export default function Header() {
         setMenuItems(data)
       }
     } catch (error) {
-      console.error('Error fetching menu items:', error)
+      logger.error('Error fetching menu items:', error)
     }
   }
 
@@ -126,7 +127,7 @@ export default function Header() {
         setMenuActiveProcesses(data)
       }
     } catch (error) {
-      console.error('Error fetching menu active processes:', error)
+      logger.error('Error fetching menu active processes:', error)
     }
   }
 
@@ -138,7 +139,7 @@ export default function Header() {
         setMenuActiveBaseMetals(data)
       }
     } catch (error) {
-      console.error('Error fetching menu active base metals:', error)
+      logger.error('Error fetching menu active base metals:', error)
     }
   }
 
@@ -159,7 +160,7 @@ export default function Header() {
         ])
       }
     } catch (error) {
-      console.error('Error fetching active base metals:', error)
+      logger.error('Error fetching active base metals:', error)
       // Fallback to default base metals
       setActiveBaseMetals([
         { slug: 'aluminium', name: 'Aluminium', href: '/basemetals/aluminium', isActive: true },

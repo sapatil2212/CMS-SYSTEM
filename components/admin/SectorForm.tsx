@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { Dialog } from '@headlessui/react'
-import { XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline'
+import { logger } from '@/lib/logger';
+import {  XMarkIcon, PhotoIcon  } from '@heroicons/react/24/outline';
 
 interface Sector {
   id: string
@@ -127,7 +128,7 @@ export default function SectorForm({ sector, onClose, onSubmit }: SectorFormProp
         alert(`Upload failed: ${error.error}`)
       }
     } catch (error) {
-      console.error('Upload error:', error)
+      logger.error('Upload error:', error)
       alert('Failed to upload image')
     } finally {
       setImageUploading(false)

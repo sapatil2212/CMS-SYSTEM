@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth-provider'
 import { useRouter } from 'next/navigation'
-import toast from 'react-hot-toast'
+import { logger } from '@/lib/logger';
+import toast from 'react-hot-toast';
 
 interface DashboardStats {
   totalPages: number
@@ -49,7 +50,7 @@ export default function UserDashboard() {
         setStats(data)
       }
     } catch (error) {
-      console.error('Failed to fetch dashboard data:', error)
+      logger.error('Failed to fetch dashboard data:', error)
       toast.error('Failed to load dashboard data')
     } finally {
       setLoadingStats(false)

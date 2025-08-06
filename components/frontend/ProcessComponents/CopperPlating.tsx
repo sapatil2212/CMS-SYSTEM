@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ChevronRight, Check, Zap, Layers, Activity, Cpu, CircuitBoard, TestTube2, Wrench, Plane, HardHat, Anchor } from 'lucide-react'
+import { logger } from '@/lib/logger';
+import {  ChevronRight, Check, Zap, Layers, Activity, Cpu, CircuitBoard, TestTube2, Wrench, Plane, HardHat, Anchor  } from 'lucide-react';
 
 const CopperPlating = () => {
   const [content, setContent] = useState<any>(null)
@@ -31,7 +32,7 @@ const CopperPlating = () => {
         setContent(getDefaultContent())
       }
     } catch (error) {
-      console.error('Error fetching content:', error)
+      logger.error('Error fetching content:', error)
       setContent(getDefaultContent())
     } finally {
       setLoading(false)
@@ -40,7 +41,7 @@ const CopperPlating = () => {
 
   // Force refresh function that can be called externally
   const forceRefresh = () => {
-    console.log('CopperPlating: Force refresh triggered')
+    logger.log('CopperPlating: Force refresh triggered')
     setLastUpdate(Date.now())
   }
 
@@ -48,7 +49,7 @@ const CopperPlating = () => {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       (window as any).refreshCopperPlating = forceRefresh
-      console.log('CopperPlating: Refresh function exposed globally')
+      logger.log('CopperPlating: Refresh function exposed globally')
     }
   }, [])
 
@@ -128,7 +129,7 @@ const CopperPlating = () => {
       // For any other type, return empty array
       return [];
     } catch (error) {
-      console.error('Error parsing JSON data:', error, 'Data:', data);
+      logger.error('Error parsing JSON data:', error, 'Data:', data);
       return [];
     }
   }

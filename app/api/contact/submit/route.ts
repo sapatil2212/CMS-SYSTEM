@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { sendContactFormEmails } from '@/lib/email';
+import { logger } from '@/lib/logger';
+import {  sendContactFormEmails  } from '@/lib/email';;
 
 export async function POST(request: NextRequest) {
   try {
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
         adminEmail = contactContent.email;
       }
     } catch (error) {
-      console.error('Error fetching contact content for admin email:', error);
+      logger.error('Error fetching contact content for admin email:', error);
     }
 
     // Fetch header settings for logo
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
         logoAlt = headerSettings.logoAlt || undefined;
       }
     } catch (error) {
-      console.error('Error fetching header settings for logo:', error);
+      logger.error('Error fetching header settings for logo:', error);
     }
 
     // Send emails
@@ -85,7 +86,7 @@ export async function POST(request: NextRequest) {
       message: 'Contact form submitted successfully'
     });
   } catch (error) {
-    console.error('Error submitting contact form:', error);
+    logger.error('Error submitting contact form:', error);
     return NextResponse.json(
       { error: 'Failed to submit contact form' },
       { status: 500 }

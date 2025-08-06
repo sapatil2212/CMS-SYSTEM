@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth-provider'
-import { Activity, Clock, User, Settings, FileText, Zap } from 'lucide-react'
+import { logger } from '@/lib/logger';
+import {  Activity, Clock, User, Settings, FileText, Zap  } from 'lucide-react';
 
 interface ActivityData {
   id: string
@@ -57,7 +58,7 @@ export default function RecentContent() {
         setRecentContent(data)
       }
     } catch (error) {
-      console.error('Failed to fetch recent content:', error)
+      logger.error('Failed to fetch recent content:', error)
     } finally {
       setLoading(false)
     }
@@ -81,7 +82,7 @@ export default function RecentContent() {
         setActivityStats(stats)
       }
     } catch (error) {
-      console.error('Failed to fetch activities:', error)
+      logger.error('Failed to fetch activities:', error)
     }
   }
 

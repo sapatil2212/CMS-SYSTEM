@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { ToggleLeft, ToggleRight, CheckCircle, AlertCircle, Package, XCircle, RefreshCw } from 'lucide-react'
+import { logger } from '@/lib/logger'
 
 interface BaseMetal {
   id: string
@@ -19,7 +20,7 @@ export default function BaseMetalActivationManagement() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    console.log('BaseMetalActivationManagement component mounted')
+    logger.log('BaseMetalActivationManagement component mounted')
     fetchBaseMetals()
   }, [])
 
@@ -37,22 +38,22 @@ export default function BaseMetalActivationManagement() {
     try {
       setLoading(true)
       setError(null)
-      console.log('Fetching base metals from API...')
+      logger.log('Fetching base metals from API...')
       
       const response = await fetch('/api/content/base-metal-activation')
-      console.log('API response status:', response.status)
+      logger.log('API response status:', response.status)
       
       if (response.ok) {
         const data = await response.json()
-        console.log('Base metals data received:', data)
+        logger.log('Base metals data received:', data)
         setBaseMetals(data)
       } else {
         const errorText = await response.text()
-        console.error('API error:', errorText)
+        logger.error('API error:', errorText)
         throw new Error(`Failed to fetch base metals: ${response.status} ${errorText}`)
       }
     } catch (error) {
-      console.error('Error fetching base metals:', error)
+      logger.error('Error fetching base metals:', error)
       setError(error instanceof Error ? error.message : 'Failed to load base metals')
       setMessage({ type: 'error', text: 'Failed to load base metals' })
     } finally {
@@ -66,7 +67,7 @@ export default function BaseMetalActivationManagement() {
       setMessage(null)
       setError(null)
 
-      console.log('Toggling base metal:', baseMetalSlug, 'to:', isMenuActive)
+      logger.log('Toggling base metal:', baseMetalSlug, 'to:', isMenuActive)
 
       // Try multiple HTTP methods as fallbacks
       const methods = ['PUT', 'POST', 'PATCH']
@@ -75,7 +76,7 @@ export default function BaseMetalActivationManagement() {
 
       for (const method of methods) {
         try {
-          console.log(`Trying ${method} method...`)
+          logger.log(`Trying ${method} method...`)
           response = await fetch('/api/content/base-metal-activation', {
             method,
             headers: {
@@ -84,24 +85,24 @@ export default function BaseMetalActivationManagement() {
             body: JSON.stringify({ baseMetalSlug, isMenuActive }),
           })
 
-          console.log(`${method} response status:`, response.status)
+          logger.log(`${method} response status:`, response.status)
 
           if (response.ok) {
-            console.log(`${method} succeeded`)
+            logger.log(`${method} succeeded`)
             break
           } else {
             lastError = `${method} failed with status ${response.status}`
-            console.log(lastError)
+            logger.log(lastError)
           }
         } catch (error) {
           lastError = `${method} failed: ${error}`
-          console.log(lastError)
+          logger.log(lastError)
         }
       }
 
       if (response && response.ok) {
         const result = await response.json()
-        console.log('Toggle API response:', result)
+        logger.log('Toggle API response:', result)
         setMessage({ type: 'success', text: 'Base metal activation updated successfully!' })
         // Refresh the data
         await fetchBaseMetals()
@@ -109,7 +110,7 @@ export default function BaseMetalActivationManagement() {
         throw new Error(lastError || 'All HTTP methods failed')
       }
     } catch (error) {
-      console.error('Error updating base metal activation:', error)
+      logger.error('Error updating base metal activation:', error)
       setError(error instanceof Error ? error.message : 'Failed to update base metal activation')
       setMessage({ type: 'error', text: 'Failed to update base metal activation' })
     } finally {
@@ -121,7 +122,7 @@ export default function BaseMetalActivationManagement() {
     fetchBaseMetals()
   }
 
-  console.log('BaseMetalActivationManagement render - loading:', loading, 'baseMetals count:', baseMetals.length, 'error:', error)
+  logger.log('BaseMetalActivationManagement render - loading:', loading, 'baseMetals count:', baseMetals.length, 'error:', error)
 
   if (loading) {
     return (

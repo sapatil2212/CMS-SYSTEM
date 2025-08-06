@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
@@ -142,7 +143,7 @@ const processes = [
 
 async function seedHomeProcesses() {
   try {
-    console.log('🌱 Seeding HomeProcesses...')
+    logger.log('🌱 Seeding HomeProcesses...')
 
     // Clear existing processes
     await prisma.homeProcess.deleteMany({})
@@ -154,9 +155,9 @@ async function seedHomeProcesses() {
       })
     }
 
-    console.log('✅ HomeProcesses seeded successfully!')
+    logger.log('✅ HomeProcesses seeded successfully!')
   } catch (error) {
-    console.error('❌ Error seeding HomeProcesses:', error)
+    logger.error('❌ Error seeding HomeProcesses:', error)
   } finally {
     await prisma.$disconnect()
   }

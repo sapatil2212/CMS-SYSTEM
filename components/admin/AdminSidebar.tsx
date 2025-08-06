@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
+import { logger } from '@/lib/logger';
 import {
   HomeIcon,
   InformationCircleIcon,
@@ -70,7 +71,7 @@ export default function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
         setHeaderSettings(data)
       }
     } catch (error) {
-      console.error('Error fetching header settings:', error)
+      logger.error('Error fetching header settings:', error)
     }
   }
 
@@ -118,7 +119,7 @@ export default function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
                             <li key={item.name}>
                               <button
                                 onClick={() => {
-                                  console.log('Mobile sidebar link clicked:', item.href)
+                                  logger.log('Mobile sidebar link clicked:', item.href)
                                   router.push(item.href)
                                   setOpen(false)
                                 }}
@@ -193,7 +194,7 @@ export default function AdminSidebar({ open, setOpen }: AdminSidebarProps) {
                     <li key={item.name}>
                       <button
                         onClick={() => {
-                          console.log('Sidebar link clicked:', item.href)
+                          logger.log('Sidebar link clicked:', item.href)
                           router.push(item.href)
                         }}
                         className={`

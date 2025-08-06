@@ -1,9 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 export default async function seedHeaderMenuItems() {
-  console.log('🌱 Seeding header menu items...')
+  logger.log('🌱 Seeding header menu items...')
 
   // Check if menu items already exist
   const existingMenuItems = await prisma.headerMenuItem.findFirst()
@@ -129,12 +130,12 @@ export default async function seedHeaderMenuItems() {
       }
     }
 
-    console.log('✅ Header menu items created successfully')
+    logger.log('✅ Header menu items created successfully')
   } else {
-    console.log('ℹ️ Header menu items already exist, skipping...')
+    logger.log('ℹ️ Header menu items already exist, skipping...')
   }
 
-  console.log('✅ Header menu items seeding completed!')
+  logger.log('✅ Header menu items seeding completed!')
 }
 
 async function main() {

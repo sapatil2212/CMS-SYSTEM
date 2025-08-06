@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   try {
@@ -81,7 +82,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(content)
   } catch (error) {
-    console.error('Error fetching home content:', error)
+    logger.error('Error fetching home content:', error)
     return NextResponse.json(
       { error: 'Failed to fetch home content' },
       { status: 500 }
@@ -163,7 +164,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ message: 'Home content saved successfully' })
   } catch (error) {
-    console.error('Error saving home content:', error)
+    logger.error('Error saving home content:', error)
     return NextResponse.json(
       { error: 'Failed to save home content' },
       { status: 500 }

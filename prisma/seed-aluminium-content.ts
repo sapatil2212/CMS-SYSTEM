@@ -1,9 +1,10 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 export async function seedAluminiumContent() {
-  console.log('🔶 Seeding Aluminium content...')
+  logger.log('🔶 Seeding Aluminium content...')
 
   try {
     // Clear existing content
@@ -15,7 +16,7 @@ export async function seedAluminiumContent() {
         heroTitle: "Specialised Aluminium Plating Services Across India",
         heroSubtitle: "Advanced Metal Finishing Solutions",
         heroDescription: "Reliable Protection, Enhanced Functionality, and Precision Finishing for Modern Industries",
-        heroImage: "/uploads/aluminium/hero-aluminium-plating.jpg",
+        heroImage: "/uploads/aluminium/hero-aluminium-plating.svg",
         whatIsTitle: "What is Aluminium Plating?",
         whatIsDescription: "Aluminium is a lightweight metal known for its excellent strength-to-weight ratio and natural corrosion resistance. Our specialized plating processes enhance these inherent properties for demanding applications, providing improved durability, conductivity, wear resistance, and decorative finishes.",
         whatIsImage: "/uploads/aluminium/aluminium-process.jpg",
@@ -195,10 +196,10 @@ export async function seedAluminiumContent() {
       }
     })
 
-    console.log('✅ Aluminium content seeded successfully')
+    logger.log('✅ Aluminium content seeded successfully')
     return aluminiumContent
   } catch (error) {
-    console.error('❌ Error seeding aluminium content:', error)
+    logger.error('❌ Error seeding aluminium content:', error)
     throw error
   }
 }

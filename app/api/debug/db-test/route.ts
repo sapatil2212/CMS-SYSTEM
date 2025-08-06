@@ -1,24 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 export async function GET() {
   try {
-    console.log('Database connection test started')
+    logger.log('Database connection test started')
     
     // Test basic database connection
     const result = await prisma.$queryRaw`SELECT 1 as test`
-    console.log('Basic connection test passed:', result)
+    logger.log('Basic connection test passed:', result)
     
     // Test header menu items table
     const menuItemsCount = await prisma.headerMenuItem.count()
-    console.log('Header menu items count:', menuItemsCount)
+    logger.log('Header menu items count:', menuItemsCount)
     
     // Test process activation tables
     const copperPlatingCount = await prisma.copperPlatingContent.count()
     const silverPlatingCount = await prisma.silverPlatingContent.count()
     const goldPlatingCount = await prisma.goldPlatingContent.count()
     
-    console.log('Process content counts:', {
+    logger.log('Process content counts:', {
       copperPlating: copperPlatingCount,
       silverPlating: silverPlatingCount,
       goldPlating: goldPlatingCount
@@ -35,7 +36,7 @@ export async function GET() {
       }
     })
     
-    console.log('Sample menu items:', menuItems)
+    logger.log('Sample menu items:', menuItems)
     
     return NextResponse.json({
       success: true,
@@ -52,7 +53,7 @@ export async function GET() {
       }
     })
   } catch (error) {
-    console.error('Database connection test failed:', error)
+    logger.error('Database connection test failed:', error)
     return NextResponse.json(
       { 
         success: false,

@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import { Users, Mic, Palette, Calendar, ChevronRight, Star, Crown, MapPin, Home, Sparkles, Utensils, ParkingCircle, Brain, FlaskConical, RotateCcw, Settings, Zap, Truck, UserCheck } from 'lucide-react';
+import { logger } from '@/lib/logger';
+import {  Users, Mic, Palette, Calendar, ChevronRight, Star, Crown, MapPin, Home, Sparkles, Utensils, ParkingCircle, Brain, FlaskConical, RotateCcw, Settings, Zap, Truck, UserCheck  } from 'lucide-react';;
 
 interface WhyChooseUsFeature {
   id: string
@@ -58,7 +59,7 @@ const WhyChooseUs: React.FC = () => {
         setContent(contentData);
       }
     } catch (error) {
-      console.error('Failed to fetch why choose us data:', error);
+      logger.error('Failed to fetch why choose us data:', error);
     } finally {
       setLoading(false);
     }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { logger } from '@/lib/logger';
+import {  prisma  } from '@/lib/db';
 
 
 
@@ -13,7 +14,7 @@ export async function GET() {
     
     return NextResponse.json(capabilities)
   } catch (error) {
-    console.error('Error fetching about capabilities:', error)
+    logger.error('Error fetching about capabilities:', error)
     return NextResponse.json(
       { error: 'Failed to fetch about capabilities' },
       { status: 500 }
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error creating about capability:', error)
+    logger.error('Error creating about capability:', error)
     return NextResponse.json(
       { error: 'Failed to create about capability' },
       { status: 500 }
@@ -64,7 +65,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Error updating about capability:', error)
+    logger.error('Error updating about capability:', error)
     return NextResponse.json(
       { error: 'Failed to update about capability' },
       { status: 500 }
@@ -90,7 +91,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting about capability:', error)
+    logger.error('Error deleting about capability:', error)
     return NextResponse.json(
       { error: 'Failed to delete about capability' },
       { status: 500 }

@@ -1,10 +1,11 @@
-import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger';
+import {  PrismaClient  } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
 async function seedAboutContent() {
   try {
-    console.log('🌱 Seeding About content...')
+    logger.log('🌱 Seeding About content...')
 
     // Clear existing content
     await prisma.aboutContent.deleteMany({})
@@ -19,9 +20,9 @@ async function seedAboutContent() {
       }
     })
 
-    console.log('✅ About content seeded successfully!')
+    logger.log('✅ About content seeded successfully!')
   } catch (error) {
-    console.error('❌ Error seeding About content:', error)
+    logger.error('❌ Error seeding About content:', error)
   } finally {
     await prisma.$disconnect()
   }

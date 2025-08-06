@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, User, Star, Quote, Play, Pause, Factory, HardHat, Shield, Award, ClipboardCheck } from "lucide-react";
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Navigation, Pagination } from 'swiper/modules';
+import { logger } from '@/lib/logger';
+import {  Autoplay, Navigation, Pagination  } from 'swiper/modules';;
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
@@ -84,7 +85,7 @@ const Testimonials: React.FC = () => {
         setTestimonialContent(contentData);
       }
     } catch (error) {
-      console.error('Failed to fetch testimonial data:', error);
+      logger.error('Failed to fetch testimonial data:', error);
     } finally {
       setIsLoading(false);
     }
