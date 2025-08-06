@@ -58,20 +58,39 @@ const Sectors = () => {
         fetch('/api/sectors-overview')
       ]);
 
+      logger.log('API Responses:', {
+        sectors: { status: sectorsResponse.status, ok: sectorsResponse.ok },
+        content: { status: contentResponse.status, ok: contentResponse.ok }
+      });
+
       if (sectorsResponse.ok && contentResponse.ok) {
         const [sectorsData, contentData] = await Promise.all([
           sectorsResponse.json(),
           contentResponse.json()
         ]);
 
+        logger.log('Fetched data:', {
+          sectorsCount: sectorsData.length,
+          hasContent: !!contentData,
+          contentTitle: contentData?.title
+        });
+
         setSectors(sectorsData);
         setContent(contentData);
       } else {
-        throw new Error('Failed to fetch data');
+        const sectorsText = await sectorsResponse.text();
+        const contentText = await contentResponse.text();
+        
+        logger.error('API Error Details:', {
+          sectors: { status: sectorsResponse.status, text: sectorsText },
+          content: { status: contentResponse.status, text: contentText }
+        });
+        
+        throw new Error(`API Error: Sectors (${sectorsResponse.status}), Content (${contentResponse.status})`);
       }
     } catch (error) {
       logger.error('Error fetching data:', error);
-      setError('Failed to load sectors data. Please try again later.');
+      setError(`Failed to load sectors data: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }

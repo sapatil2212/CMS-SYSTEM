@@ -14,7 +14,10 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "seed:sectors": "node scripts/seed-all-sectors.js",
+    "deploy:sectors": "node scripts/deploy-sectors.js",
+    "test:sectors": "node scripts/test-sectors-api.js"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
