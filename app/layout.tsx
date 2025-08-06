@@ -6,11 +6,15 @@ import { AuthProvider } from '@/lib/auth-provider'
 import FrontendLayout from '@/components/layout/FrontendLayout'
 import VisitorTracker from '@/components/VisitorTracker'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter'
+})
 
 export const metadata: Metadata = {
-  title: 'CMS System',
-  description: 'Full-stack CMS system with Next.js',
+  title: 'ALKALYNE - Advancing Eco-Conscious Technologies',
+  description: 'Leading provider of advanced plating and surface treatment solutions for eco-conscious manufacturing',
 }
 
 export default function RootLayout({
@@ -19,8 +23,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className={inter.variable}>
+      <body className={`${inter.className} font-sans antialiased`}>
         <AuthProvider>
           <VisitorTracker />
           <FrontendLayout>
