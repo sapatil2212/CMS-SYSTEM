@@ -58,34 +58,45 @@ export default function BaseMetalsPage() {
   }, [user, authLoading, router])
 
   useEffect(() => {
+    console.log('🔄 Dashboard: Component mounted, fetching base metals...')
     fetchAllBaseMetals()
   }, [])
+
+  // Debug state changes
+  useEffect(() => {
+    console.log('📊 Dashboard: Base metals state updated:', baseMetals.length, 'items')
+  }, [baseMetals])
 
   const fetchAllBaseMetals = async () => {
     setLoading(true)
     try {
+      console.log('🔍 Dashboard: Fetching base metal settings...')
       // Fetch base metal settings from database
       const settingsResponse = await fetch('/api/admin/base-metal-settings')
       if (!settingsResponse.ok) {
         throw new Error('Failed to fetch base metal settings')
       }
       const settings = await settingsResponse.json()
+      console.log('📊 Dashboard: Base metal settings:', settings)
 
       // Fetch content for each base metal
       const promises = settings.map(async (setting: any) => {
         try {
+          console.log(`🔍 Dashboard: Fetching content for ${setting.slug}...`)
           // For base metals, always use the base-metal specific route first
           let response = await fetch(`/api/content/base-metal/${setting.slug}`)
           let data = null
           
           if (response.ok) {
             data = await response.json()
+            console.log(`✅ Dashboard: Content for ${setting.slug}:`, data)
           } else {
             // If base-metal route fails, try the regular process route as fallback
-            console.log(`Base-metal route failed for ${setting.slug}, trying regular route`)
+            console.log(`❌ Dashboard: Base-metal route failed for ${setting.slug}, trying regular route`)
             response = await fetch(`/api/content/${setting.slug}`)
             if (response.ok) {
               data = await response.json()
+              console.log(`✅ Dashboard: Content for ${setting.slug} (fallback):`, data)
             }
           }
           
@@ -103,6 +114,7 @@ export default function BaseMetalsPage() {
           }
           
           // If no content found, still return the base metal entry with default content structure
+          console.log(`📝 Dashboard: Using default content for ${setting.slug}`)
           return {
             id: setting.slug,
             name: setting.name,
@@ -118,7 +130,7 @@ export default function BaseMetalsPage() {
             heroSubtitle: `Professional ${setting.name} Plating Solutions`
           }
         } catch (error) {
-          console.error(`Failed to fetch ${setting.slug} content:`, error)
+          console.error(`❌ Dashboard: Failed to fetch ${setting.slug} content:`, error)
           // Even on error, return the base metal with default content
           return {
             id: setting.slug,
@@ -138,9 +150,27 @@ export default function BaseMetalsPage() {
       })
 
       const updatedBaseMetals = await Promise.all(promises)
-      setBaseMetals(updatedBaseMetals)
+      console.log('📊 Dashboard: Final base metals array:', updatedBaseMetals)
+      console.log('🔄 Dashboard: Setting base metals state with', updatedBaseMetals.length, 'items')
+      
+      // Force a more explicit state update with useCallback to ensure proper re-render
+      setBaseMetals(prevState => {
+        console.log('🔄 Dashboard: Previous state length:', prevState.length)
+        console.log('🔄 Dashboard: New state length:', updatedBaseMetals.length)
+        return [...updatedBaseMetals]
+      })
+      console.log('✅ Dashboard: setBaseMetals called with callback')
+      
+      // Use a ref to track the actual state update
+      const checkStateUpdate = () => {
+        console.log('🔄 Dashboard: Checking state update...')
+        // This will be called after the state update
+      }
+      
+      // Schedule the check after the state update
+      setTimeout(checkStateUpdate, 100)
     } catch (error) {
-      console.error('Failed to fetch base metals:', error)
+      console.error('❌ Dashboard: Failed to fetch base metals:', error)
       toast.error('Failed to load base metals')
     } finally {
       setLoading(false)
@@ -405,6 +435,17 @@ export default function BaseMetalsPage() {
     return null
   }
 
+  console.log('🔄 Dashboard: Component rendering with', baseMetals.length, 'base metals')
+  console.log('🔄 Dashboard: Base metals array:', baseMetals)
+  
+  // Add a more explicit check for the state update
+  useEffect(() => {
+    if (baseMetals.length > 0) {
+      console.log('✅ Dashboard: State successfully updated with', baseMetals.length, 'base metals')
+      console.log('✅ Dashboard: First base metal:', baseMetals[0]?.name)
+    }
+  }, [baseMetals])
+  
   return (
     <div className="min-h-screen bg-gray-100">
       <AdminSidebar open={sidebarOpen} setOpen={setSidebarOpen} />
@@ -443,18 +484,45 @@ export default function BaseMetalsPage() {
 
             ) : (
               <>
-                {/* Base Metal Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {baseMetals.map((baseMetal) => (
-                    <ProcessCard
-                      key={baseMetal.id}
-                      process={baseMetal}
-                      onEdit={() => handleEditBaseMetal(baseMetal)}
-                      onDelete={() => handleDeleteBaseMetal(baseMetal)}
-                      onToggleActive={() => handleToggleActive(baseMetal)}
-                    />
-                  ))}
+                {/* Debug Info */}
+                <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded">
+                  <p className="text-sm text-blue-800">
+                    <strong>Debug Info:</strong> Base metals count: {baseMetals.length} | Loading: {loading.toString()}
+                  </p>
+                  {baseMetals.length > 0 && (
+                    <div className="mt-2">
+                      <p className="text-xs text-blue-700">Base metals found:</p>
+                      <ul className="text-xs text-blue-700 ml-4">
+                        {baseMetals.map((bm, index) => (
+                          <li key={index}>{bm.name} (ID: {bm.id})</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
+
+                                 {/* Base Metal Cards Grid */}
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                   {console.log('🔄 Dashboard: Rendering', baseMetals.length, 'ProcessCard components')}
+                   {baseMetals.length > 0 ? (
+                     baseMetals.map((baseMetal) => {
+                       console.log('🔄 Dashboard: Creating ProcessCard for:', baseMetal.name)
+                       return (
+                         <ProcessCard
+                           key={baseMetal.id}
+                           process={baseMetal}
+                           onEdit={() => handleEditBaseMetal(baseMetal)}
+                           onDelete={() => handleDeleteBaseMetal(baseMetal)}
+                           onToggleActive={() => handleToggleActive(baseMetal)}
+                         />
+                       )
+                     })
+                   ) : (
+                     <div className="col-span-full text-center py-8">
+                       <p className="text-gray-500">No base metals found in state</p>
+                     </div>
+                   )}
+                 </div>
 
                 {/* Empty State */}
                 {baseMetals.length === 0 && (

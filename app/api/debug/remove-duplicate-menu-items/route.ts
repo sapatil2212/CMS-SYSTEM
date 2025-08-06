@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { HeaderMenuItem, HeaderMenuDropdownItem } from '@prisma/client'
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,8 +17,8 @@ export async function POST(request: NextRequest) {
     console.log(`📊 Found ${allMenuItems.length} total menu items`)
 
     // Group by name to find duplicates
-    const menuItemsByName = {}
-    const duplicates = []
+    const menuItemsByName: Record<string, (HeaderMenuItem & { dropdownItems: HeaderMenuDropdownItem[] })[]> = {}
+    const duplicates: (HeaderMenuItem & { dropdownItems: HeaderMenuDropdownItem[] })[] = []
 
     allMenuItems.forEach(item => {
       if (!menuItemsByName[item.name]) {
@@ -27,7 +28,11 @@ export async function POST(request: NextRequest) {
     })
 
     // Find duplicates
-    const duplicateGroups = []
+    const duplicateGroups: {
+      name: string;
+      items: (HeaderMenuItem & { dropdownItems: HeaderMenuDropdownItem[] })[];
+      duplicates: (HeaderMenuItem & { dropdownItems: HeaderMenuDropdownItem[] })[];
+    }[] = []
     Object.keys(menuItemsByName).forEach(name => {
       const items = menuItemsByName[name]
       if (items.length > 1) {
@@ -63,7 +68,11 @@ export async function POST(request: NextRequest) {
 
     // Remove duplicates
     console.log('\n🗑️ Removing duplicate menu items...')
-    const removedItems = []
+    const removedItems: {
+      id: string;
+      name: string;
+      dropdownItemsRemoved: number;
+    }[] = []
     for (const duplicate of duplicates) {
       // Delete dropdown items first (due to foreign key constraint)
       const deletedDropdownItems = await prisma.headerMenuDropdownItem.deleteMany({

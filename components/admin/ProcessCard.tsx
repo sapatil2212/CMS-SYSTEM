@@ -23,6 +23,8 @@ interface ProcessCardProps {
 
 export default function ProcessCard({ process, onEdit, onDelete, onToggleActive }: ProcessCardProps) {
   const [isHovered, setIsHovered] = useState(false)
+  
+  console.log('🔄 ProcessCard rendering:', process.name, 'ID:', process.id)
 
   const hasContent = process.content && (
     process.content.heroTitle || 
