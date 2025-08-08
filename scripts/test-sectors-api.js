@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 async function testSectorsAPI() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://alkalyne.in';
