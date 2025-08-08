@@ -146,24 +146,44 @@ export function requireAuth() {
     const authHeader = request.headers.get('authorization');
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      logger.error('Auth error: Missing or invalid authorization header', {
+        hasHeader: !!authHeader,
+        headerStartsWithBearer: authHeader?.startsWith('Bearer ')
+      });
       throw new AuthenticationError('Missing or invalid authorization header');
     }
     
     const token = authHeader.substring(7);
     
     if (!token) {
+      logger.error('Auth error: Token is empty');
       throw new AuthenticationError('Token is required');
     }
     
-    // Verify JWT token
-    const { verifyToken } = require('@/lib/auth');
-    const payload = verifyToken(token);
-    
-    if (!payload) {
+    try {
+      // Verify JWT token
+      const { verifyToken } = require('@/lib/auth');
+      const payload = verifyToken(token);
+      
+      if (!payload) {
+        logger.error('Auth error: Invalid or expired token', {
+          tokenLength: token.length,
+          tokenPrefix: token.substring(0, 10) + '...'
+        });
+        throw new AuthenticationError('Invalid or expired token');
+      }
+      
+      logger.log('Auth success: Token verified', {
+        userId: payload.userId,
+        email: payload.email,
+        role: payload.role
+      });
+      
+      return payload;
+    } catch (error) {
+      logger.error('Auth error: Token verification failed', error);
       throw new AuthenticationError('Invalid or expired token');
     }
-    
-    return payload;
   };
 }
 

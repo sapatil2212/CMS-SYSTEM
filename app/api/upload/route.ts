@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import { join } from 'path'
 import { logger } from '@/lib/logger';
-import {  existsSync  } from 'fs';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,30 +30,31 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'public', 'assets', 'sectors')
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true })
-    }
-
-    // Generate unique filename
-    const timestamp = Date.now()
-    const fileExtension = file.name.split('.').pop()
-    const fileName = `sector-${timestamp}.${fileExtension}`
-    const filePath = join(uploadsDir, fileName)
-
-    // Convert file to buffer and save
+    // Convert file to buffer
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    await writeFile(filePath, buffer)
 
-    // Return the public URL
-    const publicUrl = `/assets/sectors/${fileName}`
+    // Upload to Cloudinary
+    const cloudinaryUrl = await uploadToCloudinary(buffer, 'sectors')
+
+    if (!cloudinaryUrl) {
+      return NextResponse.json(
+        { error: 'Failed to upload to cloud storage' },
+        { status: 500 }
+      )
+    }
+
+    logger.log('File uploaded successfully:', {
+      filename: file.name,
+      size: file.size,
+      type: file.type,
+      url: cloudinaryUrl
+    })
 
     return NextResponse.json({
       success: true,
-      url: publicUrl,
-      filename: fileName
+      url: cloudinaryUrl,
+      filename: file.name
     })
   } catch (error) {
     logger.error('Upload error:', error)

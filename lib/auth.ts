@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import { prisma } from './db'
+import { logger } from './logger'
 
 export interface JWTPayload {
   userId: string
@@ -17,13 +18,30 @@ export async function verifyPassword(password: string, hashedPassword: string): 
 }
 
 export function generateToken(payload: JWTPayload): string {
-  return jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: '7d' })
+  if (!process.env.JWT_SECRET) {
+    logger.error('JWT_SECRET environment variable is not set');
+    throw new Error('JWT_SECRET not configured');
+  }
+  
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' })
 }
 
 export function verifyToken(token: string): JWTPayload | null {
   try {
-    return jwt.verify(token, process.env.JWT_SECRET!) as JWTPayload
+    if (!process.env.JWT_SECRET) {
+      logger.error('JWT_SECRET environment variable is not set');
+      return null;
+    }
+    
+    const payload = jwt.verify(token, process.env.JWT_SECRET) as JWTPayload;
+    logger.log('Token verified successfully', {
+      userId: payload.userId,
+      email: payload.email,
+      role: payload.role
+    });
+    return payload;
   } catch (error) {
+    logger.error('Token verification failed:', error);
     return null
   }
 }

@@ -1,114 +1,133 @@
-# 🚨 CRITICAL: Use PRODUCTION Environment Variables
+# Production Environment Variables Setup for Vercel
 
-## ❌ Problem Identified
+## Critical Environment Variables Required
 
-You're using **LOCAL** environment variables in your Vercel deployment:
-
+### 1. Database Configuration
 ```bash
-DATABASE_URL="mysql://root:swapnil2212@localhost:3306/cms_db"  # ❌ This is LOCAL
-NEXTAUTH_URL="http://localhost:3000"                           # ❌ This is LOCAL
+DATABASE_URL="mysql://username:password@host:port/database_name?connection_limit=5&pool_timeout=2"
 ```
 
-**Vercel can't connect to `localhost` - that's why you're getting internal server errors!**
-
-## ✅ CORRECT Production Environment Variables
-
-**Replace ALL your Vercel environment variables with these EXACT values:**
-
+### 2. JWT Authentication
 ```bash
-# ✅ PRODUCTION Database (Railway)
-DATABASE_URL=mysql://root:HiIpumviyWmCJJvKpJwIKddQvikGvuAa@crossover.proxy.rlwy.net:26043/railway
-
-# ✅ PRODUCTION URL (Your Vercel deployment)
-NEXTAUTH_URL=https://cms-system-i8sq8dk44-sapatil2212s-projects.vercel.app
-
-# ✅ Production Auth Secret (Generate a new one for security)
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production-PROD-2024
-NEXTAUTH_SECRET=your-nextauth-secret-key-change-this-in-production-PROD-2024
-
-# ✅ Email Configuration (Keep the same)
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USERNAME=saptechnoeditors@gmail.com
-EMAIL_PASSWORD=uyqhyiptjkarfgdq
-
-# ✅ CRITICAL: Cloudinary (You're missing these!)
-CLOUDINARY_CLOUD_NAME=ddk4z10vi
-CLOUDINARY_API_KEY=985312945233712
-CLOUDINARY_API_SECRET=E1pJh7HZR6Xaa04CqM4zmWcoMi8
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=ddk4z10vi
-
-# ✅ File Upload Settings
-MAX_FILE_SIZE=5242880
+JWT_SECRET="your-super-secret-jwt-key-change-this-in-production"
 ```
 
-## 🚀 IMMEDIATE ACTION STEPS
+### 3. Cloudinary Configuration (for file uploads)
+```bash
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+```
 
-### Step 1: Delete Current Variables
-1. Go to Vercel Dashboard → Your Project → Settings → Environment Variables
-2. **DELETE ALL existing variables**
+### 4. Email Configuration (optional)
+```bash
+EMAIL_HOST="smtp.gmail.com"
+EMAIL_PORT="587"
+EMAIL_USERNAME="your-email@gmail.com"
+EMAIL_PASSWORD="your-app-password"
+```
 
-### Step 2: Add Production Variables
-1. Add each variable above **exactly as shown**
-2. Make sure to set them for **Production** environment
-3. Double-check there are no extra spaces
+## How to Set Environment Variables in Vercel
 
-### Step 3: Force Redeploy
-1. Go to Deployments tab
-2. Click "Redeploy" on the latest deployment
-3. Wait for deployment to complete
+### Method 1: Vercel Dashboard
+1. Go to your Vercel project dashboard
+2. Navigate to Settings → Environment Variables
+3. Add each variable with the exact names above
+4. Set the environment to "Production" (and optionally "Preview" for testing)
 
-### Step 4: Test Immediately
-1. Go to `/admin/process`
-2. Try opening any process
-3. Should work without internal server errors
+### Method 2: Vercel CLI
+```bash
+# Install Vercel CLI if not already installed
+npm i -g vercel
 
-## 🔍 Key Differences
+# Login to Vercel
+vercel login
 
-| Variable | ❌ Your Current (Local) | ✅ Should Be (Production) |
-|----------|------------------------|---------------------------|
-| DATABASE_URL | `localhost:3306` | `crossover.proxy.rlwy.net:26043` |
-| NEXTAUTH_URL | `http://localhost:3000` | `https://cms-system-i8sq...` |
-| Cloudinary | Missing completely | All 4 variables required |
+# Add environment variables
+vercel env add DATABASE_URL
+vercel env add JWT_SECRET
+vercel env add CLOUDINARY_CLOUD_NAME
+vercel env add CLOUDINARY_API_KEY
+vercel env add CLOUDINARY_API_SECRET
+vercel env add NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+```
 
-## 🛠️ Why This Will Fix Your Issues
+## Troubleshooting Common Issues
 
-1. **Database Connection**: Will connect to your Railway production database instead of localhost
-2. **Image Uploads**: Cloudinary variables will enable image upload functionality
-3. **Authentication**: Production URL will fix auth redirects
-4. **API Routes**: All endpoints will have access to correct environment
+### 1. JWT_SECRET Issues
+- **Problem**: 403 Forbidden errors on admin routes
+- **Solution**: Ensure JWT_SECRET is set and consistent across deployments
+- **Check**: Verify token generation and verification in logs
 
-## 📋 Verification Checklist
+### 2. Database Connection Issues
+- **Problem**: 500 errors on database operations
+- **Solution**: Verify DATABASE_URL is correct and accessible from Vercel
+- **Check**: Test database connection in Vercel function logs
 
-After setting the correct variables:
+### 3. File Upload Issues
+- **Problem**: 500 errors on image uploads
+- **Solution**: Ensure all Cloudinary variables are set
+- **Check**: Verify Cloudinary credentials are valid
 
-- [ ] All environment variables deleted and re-added
-- [ ] DATABASE_URL points to Railway (not localhost)
-- [ ] NEXTAUTH_URL points to Vercel (not localhost) 
-- [ ] All 4 Cloudinary variables are present
-- [ ] Application redeployed
-- [ ] `/admin/process` loads without errors
-- [ ] Can open process edit modals
-- [ ] Can upload images
-- [ ] Can save content changes
+## Testing Environment Variables
 
-## 🆘 Still Having Issues?
+### 1. Check JWT_SECRET
+```javascript
+// Add this to any API route temporarily for debugging
+console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+console.log('JWT_SECRET length:', process.env.JWT_SECRET?.length);
+```
 
-If you still get errors after this fix:
+### 2. Check Cloudinary Configuration
+```javascript
+// Add this to upload route for debugging
+console.log('Cloudinary config:', {
+  cloud_name: !!process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: !!process.env.CLOUDINARY_API_KEY,
+  api_secret: !!process.env.CLOUDINARY_API_SECRET
+});
+```
 
-1. **Check Vercel Function Logs**:
-   - Go to Vercel Dashboard → Functions
-   - Look for specific error messages
+### 3. Check Database Connection
+```javascript
+// Add this to any database route for debugging
+console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
+```
 
-2. **Check Browser Console**:
-   - Open Developer Tools → Console
-   - Look for failed API calls
+## Security Best Practices
 
-3. **Test Database Connection**:
-   - The Railway database URL should work from anywhere
+1. **Never commit environment variables** to version control
+2. **Use different secrets** for development and production
+3. **Rotate secrets regularly** in production
+4. **Use strong, random JWT secrets** (at least 32 characters)
+5. **Limit database user permissions** to only what's needed
 
----
+## Deployment Checklist
 
-**Root Cause**: Using local development environment variables in production deployment.
+- [ ] DATABASE_URL configured and accessible
+- [ ] JWT_SECRET set with strong random value
+- [ ] Cloudinary credentials configured
+- [ ] All environment variables added to Vercel
+- [ ] Database migrations run successfully
+- [ ] Test login functionality
+- [ ] Test file upload functionality
+- [ ] Test admin routes access
 
-**Solution**: Use production database and service URLs in Vercel environment variables.
+## Common Error Messages and Solutions
+
+### "JWT_SECRET not configured"
+- **Cause**: Missing JWT_SECRET environment variable
+- **Solution**: Add JWT_SECRET to Vercel environment variables
+
+### "Cloudinary credentials not configured"
+- **Cause**: Missing Cloudinary environment variables
+- **Solution**: Add all Cloudinary variables to Vercel
+
+### "Database connection failed"
+- **Cause**: Invalid DATABASE_URL or network issues
+- **Solution**: Verify DATABASE_URL and ensure database is accessible from Vercel
+
+### "403 Forbidden"
+- **Cause**: Authentication/authorization issues
+- **Solution**: Check JWT_SECRET and user role verification
