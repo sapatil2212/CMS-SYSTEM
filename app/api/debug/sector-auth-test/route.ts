@@ -95,7 +95,7 @@ const testSectorAuth = async (request: NextRequest) => {
         errorMessage: error instanceof Error ? error.message : 'Unknown error',
         hasJwtSecret: !!process.env.JWT_SECRET,
         nodeEnv: process.env.NODE_ENV,
-        errorType: error.constructor.name
+        errorType: error instanceof Error ? error.constructor.name : 'Unknown'
       }
     }, { status: 500 })
   }
