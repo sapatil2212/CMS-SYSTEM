@@ -45,6 +45,21 @@ const updateSector = async (
   { params }: { params: { id: string } }
 ) => {
   try {
+    // Log request details for debugging
+    const authHeader = request.headers.get('authorization')
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null
+    
+    logger.log('Sector update request', {
+      sectorId: params.id,
+      hasAuthHeader: !!authHeader,
+      hasToken: !!token,
+      tokenLength: token?.length || 0,
+      method: request.method,
+      url: request.url,
+      userAgent: request.headers.get('user-agent'),
+      origin: request.headers.get('origin')
+    })
+
     const body = await request.json()
     const { name, description, details, image, order, isActive } = body
 
@@ -70,9 +85,18 @@ const updateSector = async (
       }
     })
 
+    logger.log('Sector updated successfully', {
+      sectorId: params.id,
+      sectorName: sector.name
+    })
+
     return NextResponse.json(sector)
   } catch (error) {
-    logger.error('Error updating sector:', error)
+    logger.error('Error updating sector:', {
+      sectorId: params.id,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    })
     return NextResponse.json(
       { error: 'Failed to update sector' },
       { status: 500 }
