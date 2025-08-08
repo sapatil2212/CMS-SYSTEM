@@ -13,6 +13,18 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient({
   },
   // Add connection pooling configuration for serverless
   log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  // Add connection timeout for serverless environments
+  __internal: {
+    engine: {
+      connectTimeout: 20000, // 20 seconds
+      pool: {
+        min: 0,
+        max: 10,
+        idleTimeoutMillis: 30000,
+        acquireTimeoutMillis: 20000,
+      },
+    },
+  },
 })
 
 // Add connection cleanup on process termination

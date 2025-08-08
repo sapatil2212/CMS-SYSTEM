@@ -28,7 +28,8 @@ const getSectors = async (request: NextRequest) => {
 export const GET = createAPIHandler(getSectors, {
   methods: ['GET'],
   requireAuth: false,  // Allow public access for viewing sectors
-  requireAdmin: false
+  requireAdmin: false,
+  cors: true
 })
 
 // POST new sector
@@ -69,5 +70,6 @@ const createSector = async (request: NextRequest) => {
 export const POST = createAPIHandler(createSector, {
   methods: ['POST'],
   requireAuth: true,
-  requireAdmin: true
+  requireAdmin: true,
+  cors: true
 }) 

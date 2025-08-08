@@ -35,7 +35,8 @@ const getSector = async (
 export const GET = createAPIHandler(getSector, {
   methods: ['GET'],
   requireAuth: false,  // Allow public access for viewing single sector
-  requireAdmin: false
+  requireAdmin: false,
+  cors: true
 })
 
 // PUT update sector
@@ -82,7 +83,8 @@ const updateSector = async (
 export const PUT = createAPIHandler(updateSector, {
   methods: ['PUT'],
   requireAuth: true,
-  requireAdmin: true
+  requireAdmin: true,
+  cors: true
 })
 
 // DELETE sector (soft delete)
@@ -131,5 +133,6 @@ const deleteSector = async (
 export const DELETE = createAPIHandler(deleteSector, {
   methods: ['DELETE'],
   requireAuth: true,
-  requireAdmin: true
+  requireAdmin: true,
+  cors: true
 }) 

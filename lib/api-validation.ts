@@ -148,7 +148,9 @@ export function requireAuth() {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       logger.error('Auth error: Missing or invalid authorization header', {
         hasHeader: !!authHeader,
-        headerStartsWithBearer: authHeader?.startsWith('Bearer ')
+        headerStartsWithBearer: authHeader?.startsWith('Bearer '),
+        method: request.method,
+        url: request.url
       });
       throw new AuthenticationError('Missing or invalid authorization header');
     }
@@ -168,9 +170,21 @@ export function requireAuth() {
       if (!payload) {
         logger.error('Auth error: Invalid or expired token', {
           tokenLength: token.length,
-          tokenPrefix: token.substring(0, 10) + '...'
+          tokenPrefix: token.substring(0, 10) + '...',
+          method: request.method,
+          url: request.url
         });
         throw new AuthenticationError('Invalid or expired token');
+      }
+      
+      // Additional validation for production
+      if (!payload.userId || !payload.email || !payload.role) {
+        logger.error('Auth error: Invalid token payload', {
+          hasUserId: !!payload.userId,
+          hasEmail: !!payload.email,
+          hasRole: !!payload.role
+        });
+        throw new AuthenticationError('Invalid token payload');
       }
       
       logger.log('Auth success: Token verified', {
@@ -181,7 +195,11 @@ export function requireAuth() {
       
       return payload;
     } catch (error) {
-      logger.error('Auth error: Token verification failed', error);
+      logger.error('Auth error: Token verification failed', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        method: request.method,
+        url: request.url
+      });
       throw new AuthenticationError('Invalid or expired token');
     }
   };
@@ -203,6 +221,8 @@ export function corsHeaders(origin?: string) {
   const allowedOrigins = [
     'http://localhost:3000',
     'https://cms-system-1kcb.vercel.app',
+    'https://alkalyne.in',
+    'https://www.alkalyne.in',
     // Add your production domains here
   ];
   
@@ -211,7 +231,7 @@ export function corsHeaders(origin?: string) {
   return {
     'Access-Control-Allow-Origin': isAllowed ? (origin || '*') : 'null',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
     'Access-Control-Max-Age': '86400',
   };
 }
