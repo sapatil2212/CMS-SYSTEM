@@ -70,6 +70,6 @@ const createSector = async (request: NextRequest) => {
 export const POST = createAPIHandler(createSector, {
   methods: ['POST'],
   requireAuth: true,
-  requireAdmin: true,
+  requireAdmin: false,  // Allow both USER and ADMIN to create sectors
   cors: true
 }) 

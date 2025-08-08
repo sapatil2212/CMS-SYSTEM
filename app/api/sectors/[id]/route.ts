@@ -107,7 +107,7 @@ const updateSector = async (
 export const PUT = createAPIHandler(updateSector, {
   methods: ['PUT'],
   requireAuth: true,
-  requireAdmin: true,
+  requireAdmin: false,  // Allow both USER and ADMIN to update sectors
   cors: true
 })
 
@@ -157,6 +157,6 @@ const deleteSector = async (
 export const DELETE = createAPIHandler(deleteSector, {
   methods: ['DELETE'],
   requireAuth: true,
-  requireAdmin: true,
+  requireAdmin: false,  // Allow both USER and ADMIN to delete sectors
   cors: true
 }) 

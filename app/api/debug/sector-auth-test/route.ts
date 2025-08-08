@@ -57,20 +57,7 @@ const testSectorAuth = async (request: NextRequest) => {
       }, { status: 401 })
     }
 
-    // Test admin role requirement
-    if (payload.role !== 'ADMIN') {
-      return NextResponse.json({
-        success: false,
-        error: 'Admin access required',
-        debug: {
-          userRole: payload.role,
-          requiredRole: 'ADMIN',
-          userId: payload.userId,
-          email: payload.email
-        }
-      }, { status: 403 })
-    }
-
+    // Allow both USER and ADMIN roles (no admin requirement)
     return NextResponse.json({
       success: true,
       user: {
@@ -83,7 +70,9 @@ const testSectorAuth = async (request: NextRequest) => {
         hasJwtSecret: !!process.env.JWT_SECRET,
         nodeEnv: process.env.NODE_ENV,
         userRole: payload.role,
-        isAdmin: payload.role === 'ADMIN'
+        isAdmin: payload.role === 'ADMIN',
+        isUser: payload.role === 'USER',
+        canPerformCRUD: true  // Both USER and ADMIN can perform CRUD
       }
     })
   } catch (error) {
