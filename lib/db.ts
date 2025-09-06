@@ -11,8 +11,15 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient({
       url: process.env.DATABASE_URL,
     },
   },
-  // Add connection pooling configuration for serverless
+  // Enhanced connection configuration for TiDB Cloud
   log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  // Add connection pooling and timeout configurations
+  __internal: {
+    engine: {
+      connectTimeout: 60000, // 60 seconds
+      queryTimeout: 30000,   // 30 seconds
+    },
+  },
 })
 
 // Add connection cleanup on process termination
@@ -33,20 +40,46 @@ if (typeof window === 'undefined') {
   })
 }
 
-// Add error handling for connection issues
+// Enhanced error handling for connection issues
 prisma.$use(async (params, next) => {
-  try {
-    return await next(params)
-  } catch (error: any) {
-    // Handle connection closed errors
-    if (error?.code === 'P1017' || error?.message?.includes('Server has closed the connection')) {
-      logger.log('Database connection closed, attempting to reconnect...')
-      // Force disconnect and reconnect
-      await prisma.$disconnect()
-      // The next query will automatically reconnect
+  let retryCount = 0
+  const maxRetries = 3
+  
+  while (retryCount < maxRetries) {
+    try {
+      return await next(params)
+    } catch (error: any) {
+      // Handle connection closed errors and other connection issues
+      if (error?.code === 'P1017' || 
+          error?.message?.includes('Server has closed the connection') ||
+          error?.message?.includes('Connection terminated') ||
+          error?.code === 'P1001') {
+        
+        retryCount++
+        logger.log(`Database connection error (attempt ${retryCount}/${maxRetries}): ${error.message}`)
+        
+        if (retryCount < maxRetries) {
+          // Wait before retrying (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, Math.pow(2, retryCount) * 1000))
+          
+          // Force disconnect and reconnect
+          try {
+            await prisma.$disconnect()
+          } catch (disconnectError) {
+            // Ignore disconnect errors
+          }
+          
+          // The next query will automatically reconnect
+          continue
+        }
+      }
+      
+      // If it's not a connection error or we've exhausted retries, throw the error
+      throw error
     }
-    throw error
   }
+  
+  throw new Error('Max retry attempts exceeded for database connection')
 })
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma 

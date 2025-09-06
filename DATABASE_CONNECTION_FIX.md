@@ -1,97 +1,124 @@
-# Database Connection Issue - Resolution
+# Database Connection Fix for TiDB Cloud
 
-## Problem
-The CMS system was experiencing "Too many database connections opened: ERROR HY000 (1040): Too many connections" errors, which prevented users from updating content and images in the Process Content Management system.
+## Problem Identified
+Your CMS system is experiencing database connection issues with TiDB Cloud. The main problems are:
 
-## Root Cause
-Each API route was creating a new `PrismaClient` instance instead of using a shared instance. This caused the database to exceed its connection limit when multiple requests were made simultaneously.
+1. **Malformed DATABASE_URL**: The connection string has line breaks and formatting issues
+2. **Missing connection parameters**: TiDB Cloud requires specific SSL and connection parameters
+3. **Insufficient connection resilience**: The current setup doesn't handle connection drops properly
 
-## Solution Applied
+## Solution
 
-### 1. Fixed Database Configuration (`lib/db.ts`)
-- Updated to use proper connection pooling
-- Added connection cleanup on process termination
-- Added logging configuration for better debugging
+### Step 1: Fix Your .env File
 
-### 2. Updated Environment Configuration (`env.example`)
-- Added connection pooling parameters to DATABASE_URL:
-  ```
-  DATABASE_URL="mysql://root:swapnil2212@localhost:3306/cms_db?connection_limit=5&pool_timeout=2"
-  ```
+Replace your current DATABASE_URL in the `.env` file with this corrected version:
 
-### 3. Fixed All API Routes
-Updated all API routes to use the shared Prisma instance instead of creating new ones:
-
-**Before:**
-```typescript
-import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient()
+```bash
+DATABASE_URL="mysql://3qmhCmh9ujF3xSJ.root:qyht9OHze8DvmK3Q@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/cms?sslaccept=strict&sslmode=require&connection_limit=5&pool_timeout=20&connect_timeout=60"
 ```
 
-**After:**
-```typescript
-import { prisma } from '@/lib/db'
+**Important Notes:**
+- Remove all line breaks from the DATABASE_URL
+- The connection string must be on a single line
+- Added connection pooling parameters for better stability
+
+### Step 2: Alternative Connection String (if the above doesn't work)
+
+If you continue to have issues, try this alternative format:
+
+```bash
+DATABASE_URL="mysql://3qmhCmh9ujF3xSJ.root:qyht9OHze8DvmK3Q@gateway01.ap-southeast-1.prod.aws.tidbcloud.com:4000/cms?sslaccept=strict&sslmode=require&connection_limit=3&pool_timeout=30&connect_timeout=60&socket_timeout=60"
 ```
 
-### 4. Routes Fixed
-- All content API routes in `app/api/content/`
-- All admin API routes in `app/api/admin/`
-- All auth API routes in `app/api/auth/`
-- Dynamic process routes in `app/api/content/[process]/`
+### Step 3: Test the Connection
+
+After updating your `.env` file:
+
+1. **Restart your development server**:
+   ```bash
+   # Stop the current server (Ctrl+C)
+   # Then restart
+   npm run dev
+   ```
+
+2. **Test the database health**:
+   ```bash
+   curl http://localhost:3000/api/debug/database-health
+   ```
+
+3. **Check the server logs** for any connection errors
+
+### Step 4: Verify TiDB Cloud Settings
+
+Make sure your TiDB Cloud cluster is configured correctly:
+
+1. **Check cluster status** in TiDB Cloud dashboard
+2. **Verify connection settings**:
+   - Host: `gateway01.ap-southeast-1.prod.aws.tidbcloud.com`
+   - Port: `4000`
+   - SSL: Required
+   - Database: `cms`
+
+3. **Check user permissions**:
+   - Username: `3qmhCmh9ujF3xSJ.root`
+   - Ensure the user has proper permissions on the `cms` database
+
+### Step 5: Additional Troubleshooting
+
+If you still have issues:
+
+1. **Check TiDB Cloud connection limits**:
+   - Ensure you're not exceeding connection limits
+   - Check if there are any IP restrictions
+
+2. **Test with a simple connection**:
+   ```bash
+   # Install mysql client if not already installed
+   mysql -h gateway01.ap-southeast-1.prod.aws.tidbcloud.com -P 4000 -u 3qmhCmh9ujF3xSJ.root -p --ssl-mode=REQUIRED cms
+   ```
+
+3. **Check network connectivity**:
+   - Ensure your local machine can reach TiDB Cloud
+   - Check firewall settings
+
+## What I've Fixed in the Code
+
+1. **Enhanced Prisma Configuration** (`lib/db.ts`):
+   - Added connection timeouts
+   - Improved error handling with retry logic
+   - Better connection pooling configuration
+
+2. **Database Health Check** (`app/api/debug/database-health/route.ts`):
+   - Created a health check endpoint to monitor database status
+   - Provides detailed connection information
+
+3. **Connection Testing Utilities** (`lib/database-connection-test.ts`):
+   - Functions to test database connectivity
+   - Performance monitoring
+   - Detailed error reporting
+
+## Expected Results
+
+After applying these fixes:
+
+1. ✅ Database connection errors should be resolved
+2. ✅ API endpoints should work properly
+3. ✅ Base metal activation should function
+4. ✅ Gallery content should load
+5. ✅ All database operations should be stable
+
+## Monitoring
+
+Use the health check endpoint to monitor your database:
+- **URL**: `http://localhost:3000/api/debug/database-health`
+- **Expected Response**: Status 200 with connection details
+- **Error Response**: Status 503 with error details
 
 ## Next Steps
 
-### 1. Create Environment File
-Create a `.env` file in the root directory with the following content:
-```
-# Database Configuration
-DATABASE_URL="mysql://root:swapnil2212@localhost:3306/cms_db?connection_limit=5&pool_timeout=2"
+1. Update your `.env` file with the corrected DATABASE_URL
+2. Restart your development server
+3. Test the health check endpoint
+4. Verify that your application is working properly
 
-# JWT Secret
-JWT_SECRET="your-super-secret-jwt-key-change-this-in-production"
-
-# NextAuth Configuration
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-nextauth-secret-key-change-this-in-production"
-
-# Email Configuration
-EMAIL_HOST="smtp.gmail.com"
-EMAIL_PORT="587"
-EMAIL_USERNAME="saptechnoeditors@gmail.com"
-EMAIL_PASSWORD="uyqhyiptjkarfgdq"
-
-# File Upload Configuration
-UPLOAD_DIR="public/uploads"
-MAX_FILE_SIZE="5242880" # 5MB
-
-# Cloudinary Configuration
-CLOUDINARY_CLOUD_NAME="your-cloud-name"
-CLOUDINARY_API_KEY="your-api-key"
-CLOUDINARY_API_SECRET="your-api-secret"
-```
-
-### 2. Restart the Development Server
-```bash
-npm run dev
-```
-
-### 3. Test the Fix
-- Try updating content in the Process Content Management system
-- Upload images and verify they appear instantly
-- Check that multiple concurrent requests work without connection errors
-
-## Benefits
-- ✅ Eliminates "Too many connections" errors
-- ✅ Improves performance with connection pooling
-- ✅ Enables instant content updates and image uploads
-- ✅ Better error handling and logging
-- ✅ Proper connection cleanup
-
-## Monitoring
-The system now includes:
-- Connection pooling with a limit of 5 connections
-- 2-second timeout for connection requests
-- Automatic connection cleanup on process termination
-- Development logging for debugging
-
-This should resolve the issues with content updates and image uploads not being reflected instantly on the frontend. 
+If you continue to have issues after these steps, please share the output of the health check endpoint and any error messages from the server logs.

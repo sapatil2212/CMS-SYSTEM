@@ -184,6 +184,22 @@ export async function POST(request: NextRequest) {
 
     // Send email with better error handling
     try {
+      // Check if we're in development mode and email credentials are not properly configured
+      if (process.env.NODE_ENV === 'development' && 
+          (process.env.EMAIL_USERNAME === 'your-email@gmail.com' || 
+           process.env.EMAIL_PASSWORD === 'your-app-password')) {
+        
+        logger.log('Development mode: Skipping email send due to placeholder credentials')
+        logger.log('OTP for development:', { email, otp, expiresAt })
+        
+        // In development, we'll still return success but log the OTP
+        return NextResponse.json({
+          message: 'Verification OTP sent to your email.',
+          development: true,
+          otp: otp // Only in development mode
+        })
+      }
+
       await transporter.sendMail({
         from: process.env.EMAIL_USERNAME || process.env.EMAIL_USER || 'saptechnoeditors@gmail.com',
         to: email,
@@ -194,6 +210,18 @@ export async function POST(request: NextRequest) {
       logger.log('Signup OTP email sent successfully to:', email)
     } catch (emailError) {
       logger.error('Failed to send signup OTP email:', emailError)
+      
+      // In development mode, don't fail completely if email fails
+      if (process.env.NODE_ENV === 'development') {
+        logger.log('Development mode: Email failed but continuing with OTP:', { email, otp })
+        return NextResponse.json({
+          message: 'Verification OTP sent to your email.',
+          development: true,
+          otp: otp,
+          warning: 'Email sending failed - check your email configuration'
+        })
+      }
+      
       // Delete the OTP record since email failed
       await prisma.oTP.delete({
         where: { id: otpRecord.id }
