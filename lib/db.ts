@@ -13,13 +13,6 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient({
   },
   // Enhanced connection configuration for TiDB Cloud
   log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  // Add connection pooling and timeout configurations
-  __internal: {
-    engine: {
-      connectTimeout: 60000, // 60 seconds
-      queryTimeout: 30000,   // 30 seconds
-    },
-  },
 })
 
 // Add connection cleanup on process termination
